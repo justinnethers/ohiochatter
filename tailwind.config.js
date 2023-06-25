@@ -6,8 +6,16 @@ export default {
         "./resources/**/*.vue",
     ],
   theme: {
-    extend: {},
+    extend: {
+        fontFamily: {
+            display: ['Merriweather', 'sans-serif'],
+            body: ['Merriweather', 'sans-serif'],
+            sans: ['Work Sans', 'sans-serif'],
+            serif: ['Merriweather', 'serif'],
+            headline: ['Work Sans', 'sans-serif'],
+        },
+    },
   },
-  plugins: [],
+  plugins: [require('@tailwindcss/typography')],
 }
 

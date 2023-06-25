@@ -5,3 +5,31 @@
 h1 {
     @apply text-4xl;
 }
+
+h1, h2, h3, h4, h5{
+    @apply font-headline;
+}
+
+p {
+    @apply font-body;
+}
+
+.pagination-link {
+    @apply relative inline-flex items-center py-2 text-sm font-medium text-gray-200 bg-gray-700 leading-5;
+}
+
+.pagination-link:hover {
+    @apply bg-blue-700 text-white;
+}
+
+.pagination-links .pagination-link:first-child {
+    @apply mr-0 rounded-l-md;
+}
+
+.pagination-links .pagination-link:last-child {
+    @apply ml-0 rounded-r-md;
+}
+
+blockquote {
+    @apply border-l-4 border-gray-600 px-8 py-4 bg-gray-700 !important;
+}

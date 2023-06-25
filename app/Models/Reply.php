@@ -13,4 +13,11 @@ class Reply extends Model
     protected $guarded = [];
 
     protected $dates = ['deleted_at'];
+
+    protected $with = ['owner'];
+
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

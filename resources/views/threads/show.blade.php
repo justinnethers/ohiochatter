@@ -1,12 +1,13 @@
-@extends('layouts.app')
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-3xl text-gray-800 dark:text-gray-200 leading-tight">
+            {{ $thread->title }}
+        </h2>
+    </x-slot>
 
-@section('content')
-    <div>
-        <article>
-            <h1>{{ $thread->title }}</h1>
-            <p>{!! $thread->body !!}</p>
-        </article>
-        <pre wrap>{{ $thread }}</pre>
-        <pre wrap>{{ $op }}</pre>
-    </div>
-@stop
+    <x-thread.show :$thread :$replies />
+
+    {{ $replies->onEachSide(3)->links() }}
+
+    <div class="h-8"></div>
+</x-app-layout>

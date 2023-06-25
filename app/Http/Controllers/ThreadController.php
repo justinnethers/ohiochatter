@@ -13,7 +13,7 @@ class ThreadController extends Controller
     public function index()
     {
         $forums = Forum::all();
-        $threads = Thread::orderBy('updated_at', 'desc')->paginate(50);
+        $threads = Thread::with(['forum'])->orderBy('updated_at', 'desc')->paginate(50);
 
         $forums = $forums->reject(function (Forum $forum) {
             return !$forum->is_active;
@@ -41,14 +41,10 @@ class ThreadController extends Controller
     {
         if ($forum->slug !== $thread->forum->slug) abort(404);
 
-        $replies = $thread->replies()->paginate(50);
-        $op = $thread->owner;
-
         return view('threads.show', [
             'forum' => $forum,
             'thread' => $thread,
-            'replies' => $replies,
-            'op' => $op,
+            'replies' => $thread->replies()->paginate(25),
         ]);
     }
 

@@ -5,15 +5,31 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
+                    <a class="text-gray-100 font-bold text-xl" href="{{ route('thread.index') }}">
                         <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
                     </a>
                 </div>
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
+{{--                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">--}}
+{{--                        {{ __('Dashboard') }}--}}
+{{--                    </x-nav-link>--}}
+
+                    <x-nav-link :href="route('thread.index')" :active="request()->routeIs('thread.index')">
+                        {{ __('All Threads') }}
+                    </x-nav-link>
+
+                    <x-nav-link href="/forums/serious-business" :active="request()->is('forums/serious-business')">
+                        {{ __('Serious Business') }}
+                    </x-nav-link>
+
+                    <x-nav-link href="/forums/sports" :active="request()->is('forums/sports')">
+                        {{ __('Sports') }}
+                    </x-nav-link>
+
+                    <x-nav-link href="/forums/politics" :active="request()->is('forums/politics')">
+                        {{ __('Politics') }}
                     </x-nav-link>
                 </div>
             </div>

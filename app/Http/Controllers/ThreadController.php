@@ -13,7 +13,7 @@ class ThreadController extends Controller
     public function index()
     {
         $forums = Forum::all();
-        $threads = Thread::with(['forum'])->orderBy('updated_at', 'desc')->paginate(50);
+        $threads = Thread::with(['forum'])->latest('updated_at')->paginate(50);
 
         $forums = $forums->reject(function (Forum $forum) {
             return !$forum->is_active;

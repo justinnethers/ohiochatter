@@ -1,15 +1,17 @@
-@extends('layouts.app')
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-2xl text-gray-800 dark:text-gray-200 leading-tight">
+            {{ $forum->name }}
+        </h2>
+    </x-slot>
 
-@section('content')
-    <div>
+    <div class="rounded-lg bg-gray-800 p-8 mt-4">
         <section class="container">
             @foreach ($threads as $thread)
-                <article>
-                    <a href="/forums/{{ $forum->slug }}/{{ $thread->slug }}">{{ $thread->title }}</a>
-                </article>
+                <x-thread.listing :$thread :$forum />
             @endforeach
         </section>
 
         {{ $threads->links() }}
     </div>
-@stop
+</x-app-layout>

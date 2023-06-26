@@ -6,6 +6,7 @@
     </x-slot>
 
     <div class="rounded-lg bg-gray-800 p-8 mt-4">
+        {{ $threads->links() }}
         <section class="container">
             @foreach ($threads as $thread)
                 <x-thread.listing :$thread :$forum />

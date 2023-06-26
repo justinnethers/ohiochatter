@@ -1,21 +1,19 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+        <h2 class="font-semibold text-2xl text-gray-800 dark:text-gray-200 leading-tight">
             All Threads
         </h2>
     </x-slot>
 
     <div>
-        <ul class="text-white">
-            @unless(Auth::check())
-                <p>Please <a href="/login">sign in</a> to participate in this discussion.</p>
-            @endunless
+        <div class="rounded-lg bg-gray-800 p-8 mt-4">
+            <section class="container">
+                @foreach ($threads as $thread)
+                    <x-thread.listing :$thread />
+                @endforeach
+            </section>
 
-            @foreach ($threads as $thread)
-                <li>
-                    <a href="/forums/{{ $thread->forum->slug }}/{{ $thread->slug }}">{{ $thread->title }}</a>
-                </li>
-            @endforeach
-        </ul>
+            {{ $threads->links() }}
+        </div>
     </div>
 </x-app-layout>

@@ -1,4 +1,4 @@
-<article class="bg-gray-700 px-4 pt-4 pb-5 text-gray-100 font-body rounded-md mb-2 shadow">
+<article class="bg-gray-700 px-4 pt-4 pb-5 text-gray-100 font-body rounded-md mb-6 shadow-lg">
 
     <a class="text-2xl hover:underline text-gray-200" href="/forums/{{ $thread->forum->slug }}/{{ $thread->slug }}">
         @if (auth()->check() && auth()->user()->hasRepliedTo($thread))

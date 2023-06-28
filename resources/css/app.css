@@ -31,7 +31,7 @@ p {
 }
 
 blockquote {
-    @apply border-l-4 border-gray-600 px-8 py-4 bg-gray-700 !important;
+    @apply border-l-8 border-gray-600 px-4 md:px-8 py-4 bg-gray-700 !important;
 }
 
 .prose img {

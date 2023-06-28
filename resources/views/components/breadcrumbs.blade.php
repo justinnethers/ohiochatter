@@ -1,4 +1,4 @@
-<div class="bg-gray-800 rounded-lg p-2 px-6 my-4 font-headline text-xl text-white">
+<div class="bg-gray-800 md:rounded-lg p-2 md:px-6 my-1.5 md:my-4 font-headline text-xl text-white">
     @if ($forum)
         <a href="/">Home</a>
         <span >&blacktriangleright;</span>

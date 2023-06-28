@@ -1,12 +1,12 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-2xl text-gray-800 dark:text-gray-200 leading-tight">
+        <h2 class="font-semibold text-3xl text-gray-800 dark:text-gray-200 leading-tight">
             All Threads
         </h2>
     </x-slot>
 
     <div>
-        <div class="rounded-lg bg-gray-800 p-8 mt-4">
+        <div class="md:rounded-lg md:bg-gray-800 p-2 md:p-8 md:mt-4">
             <section class="container">
                 @foreach ($threads as $thread)
                     <x-thread.listing :$thread />

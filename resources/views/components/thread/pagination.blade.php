@@ -1,4 +1,4 @@
-<div class="flex space-x-1 md:ml-2 order-2 font-headline">
+<div class="flex space-x-1 md:ml-2 order-2">
     @if ($thread->replies_count > 25)
         @php
             $pages = intval($thread->replies_count / 25) + 1
@@ -11,7 +11,7 @@
                     @endif
                     <a
                         href="{{ $thread->path() }}?page={{ $i }}"
-                        class="bg-gray-800 p-1 px-3 rounded text-gray-200 text-lg leading-none flex items-center md:text-sm hover:shadow"
+                        class="flex items-center justify-items bg-gray-800 p-2 px-3 md:p-1 md:px-2 rounded text-gray-200 hover:shadow-lg leading-none"
                     >
                         {{ $i }}
                     </a>
@@ -21,7 +21,7 @@
     @endif
     <a
         href="{{ $thread->path() }}/?newestpost=true"
-        class="bg-gray-800 p-1 px-3 rounded text-gray-200 text-lg leading-none flex items-center md:text-sm hover:shadow"
+        class="flex items-center justify-items bg-gray-800 p-2 px-3 md:p-1 md:px-2 rounded text-gray-200 hover:shadow-lg leading-none"
     >
         Latest Post &raquo;
     </a>

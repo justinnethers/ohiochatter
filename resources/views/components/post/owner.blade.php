@@ -1,4 +1,4 @@
-<section class="w-64 flex flex-col items-center p-8 space-y-4 text-white">
+<section class="hidden w-64 md:flex flex-col items-center p-8 space-y-4 text-white">
     <div class="text-center">
         <h3 class="text-2xl text-gray-200 font-bold leading-tight">{{ $owner->username }}</h3>
         <h4>{{ $owner->usertitle }}</h4>
@@ -21,5 +21,13 @@
                 {{ \Carbon\Carbon::parse($owner->created_at)->format('M Y') }}
             @endif
         </div>
+    </div>
+</section>
+
+<section class="md:hidden flex items-center p-8 space-x-8 text-white">
+    <x-avatar size="16" :avatar-path="$owner->avatar_path" />
+    <div>
+        <h3 class="text-2xl text-gray-200 font-bold leading-tight">{{ $owner->username }}</h3>
+        <h4>{{ $owner->usertitle }}</h4>
     </div>
 </section>

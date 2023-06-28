@@ -1,8 +1,10 @@
 <div>
     <x-breadcrumbs :forum="$thread->forum" />
-{{--    <h1 class="text-6xl text-white mb-8">{{ $thread->title }}</h1>--}}
-    <x-post.post :post="$thread" />
-    @foreach ($replies as $post)
-        <x-post.post :$post />
-    @endforeach
+
+    <div class="p-2 pt-0 md:p-0">
+        <x-post.post :post="$thread" />
+        @foreach ($replies as $post)
+            <x-post.post :$post />
+        @endforeach
+    </div>
 </div>

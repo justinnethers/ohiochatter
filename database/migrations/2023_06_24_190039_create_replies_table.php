@@ -11,10 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-//        Schema::create('replies', function (Blueprint $table) {
-//            $table->id();
-//            $table->timestamps();
-//        });
+        Schema::create('replies', function (Blueprint $table) {
+            $table->id();
+            $table->integer('thread_id');
+            $table->integer('user_id');
+            $table->text('body');
+            $table->timestamps();
+            $table->softDeletes();
+        });
     }
 
     /**

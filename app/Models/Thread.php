@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Forum\Poll\Poll;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -13,7 +12,7 @@ class Thread extends Model
 
     protected $guarded = [];
 
-    protected $with = ['owner', 'forum', 'replies'];
+    protected $with = ['owner', 'forum', 'replies', 'poll'];
 
     public function replies()
     {
@@ -30,6 +29,11 @@ class Thread extends Model
         return $this->belongsTo(Forum::class);
     }
 
+    public function poll()
+    {
+        return $this->hasOne(Poll::class);
+    }
+
     public function hasBeenRepliedToBy($user)
     {
         return $user->hasRepliedTo($this);
@@ -38,6 +42,15 @@ class Thread extends Model
     public function lastViewedByUser($user)
     {
         return $this->views()->where('user_id', $user->id)->first();
+    }
+
+    public function hasUpdatesFor($user)
+    {
+        $lastVisit = $user->lastVisitToThread($this);
+
+        if (! $lastVisit) return true;
+
+        return $this->updated_at > $lastVisit->last_view;
     }
 
     public function getRouteKeyName(): string

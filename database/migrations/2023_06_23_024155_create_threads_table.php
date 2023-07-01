@@ -11,10 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-//        Schema::create('threads', function (Blueprint $table) {
-//            $table->id();
-//            $table->timestamps();
-//        });
+        Schema::create('threads', function (Blueprint $table) {
+            $table->id();
+            $table->integer('user_id');
+            $table->integer('forum_id');
+            $table->string('slug')->unique()->nullable();
+            $table->integer('replies_count')->default(0);
+            $table->integer('views')->default(0);
+            $table->string('title');
+            $table->text('body');
+            $table->boolean('locked')->default(false);
+            $table->timestamps();
+            $table->softDeletes();
+        });
     }
 
     /**
@@ -22,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-//        Schema::dropIfExists('threads');
+        Schema::dropIfExists('threads');
     }
 };

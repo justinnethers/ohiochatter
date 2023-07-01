@@ -1,10 +1,19 @@
 <article class="bg-gray-700 p-3 md:px-4 md:pt-4 md:pb-5 text-gray-100 font-body rounded md:rounded-md mb-2 md:mb-6 shadow-lg">
 
     <a class="text-2xl hover:underline text-gray-200" href="/forums/{{ $thread->forum->slug }}/{{ $thread->slug }}">
+        @if ($thread->locked)
+            <span class="text-2xl">🔒</span>
+        @endif
         @if (auth()->check() && auth()->user()->hasRepliedTo($thread))
             <span class="">&raquo;</span>
         @endif
-        {{ $thread->title }}
+        @if (auth()->check() && $thread->hasUpdatesFor(auth()->user()))
+            <span class="font-bold">
+                @if ($thread->poll)Poll: @endif{{ $thread->title }}
+            </span>
+        @else
+            @if ($thread->poll)Poll: @endif{{ $thread->title }}
+        @endif
     </a>
 
     <div class="md:flex text-lg justify-between rounded md:rounded-md px-2 mt-3 mb-4 bg-gray-800 shadow">

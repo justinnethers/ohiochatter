@@ -80,10 +80,43 @@ class ThreadController extends Controller
             return redirect($redirect);
         }
 
+        $poll = false;
+        $hasVoted = false;
+        $voteCount = 0;
+
+        if ($thread->poll) {
+            $poll = $thread->poll;
+
+            foreach ($poll->pollOptions as $option) {
+                foreach ($option->votes as $vote) {
+                    if ($vote->user->id == auth()->id()) {
+                        $hasVoted = true;
+                    }
+                    $voteCount++;
+                }
+            }
+        }
+
+        $replies = $thread->replies()->paginate($repliesPerPage);
+
+//        if (auth()->check()) {
+//            return view('threads.show', [
+//                'forum' => $forum,
+//                'thread' => $thread,
+//                'replies' => $replies,
+//                'poll' => $poll,
+//                'hasVoted' => $hasVoted,
+//                'voteCount' => $voteCount,
+//            ]);
+//        }
+
         return view('threads.show', [
             'forum' => $forum,
             'thread' => $thread,
-            'replies' => $thread->replies()->paginate($repliesPerPage),
+            'replies' => $replies,
+            'poll' => $poll,
+            'hasVoted' => $hasVoted,
+            'voteCount' => $voteCount,
         ]);
     }
 

@@ -5,7 +5,7 @@
         </h2>
     </x-slot>
 
-    <x-thread.show :$thread :$replies />
+    <x-thread.show :$thread :$replies :$poll :$hasVoted :$voteCount />
 
     {{ $replies->onEachSide(3)->links() }}
 

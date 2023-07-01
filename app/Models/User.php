@@ -106,4 +106,14 @@ class User extends Authenticatable
         $this->last_activity = $this->freshTimestamp();
         return $this->save();
     }
+
+    public function lastVisitToThread(Thread $thread)
+    {
+//        return Cache::remember("user-" . auth()->id() . "-viewed-thread-{$thread->id}", 7200, function() use ($thread) {
+            return DB::table('threads_users_views')
+                ->where('user_id', '=', auth()->user()->id)
+                ->where('thread_id', '=', $thread->id)
+                ->first();
+//        });
+    }
 }

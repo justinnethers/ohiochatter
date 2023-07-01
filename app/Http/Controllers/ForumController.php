@@ -22,7 +22,7 @@ class ForumController extends Controller
     // show the forum and a paginated list of its threads
     public function show(Forum $forum)
     {
-        $threads = Thread::where('forum_id', $forum->id)->orderBy('updated_at', 'desc')->paginate(20);
+        $threads = Thread::where('forum_id', $forum->id)->orderBy('updated_at', 'desc')->paginate(config('forum.threads_per_page'));
         return view('forums.show', compact('forum', 'threads'));
     }
 }

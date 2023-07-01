@@ -1,7 +1,10 @@
 <div class="flex space-x-1 md:ml-2 order-2">
-    @if ($thread->replies_count > 25)
+    @php
+        $repliesPerPage = auth()->check() ? auth()->user()->repliesPerPage() : config('forum.replies_per_page')
+    @endphp
+    @if ($thread->replies_count > $repliesPerPage)
         @php
-            $pages = intval($thread->replies_count / 25) + 1
+            $pages = intval($thread->replies_count / $repliesPerPage) + 1
         @endphp
         @if ($pages > 1)
             @for ($i = 1; $i <= $pages; $i++)

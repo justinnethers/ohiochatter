@@ -13,7 +13,7 @@ class ThreadController extends Controller
     public function index()
     {
         $forums = Forum::all();
-        $threads = Thread::with(['forum'])->latest('updated_at')->paginate(50);
+        $threads = Thread::with(['forum'])->latest('updated_at')->paginate(config('forum.threads_per_page'));
 
         $forums = $forums->reject(function (Forum $forum) {
             return !$forum->is_active;
@@ -41,10 +41,49 @@ class ThreadController extends Controller
     {
         if ($forum->slug !== $thread->forum->slug) abort(404);
 
+        $redirect = false;
+        $repliesPerPage = config('forum.replies_per_page');
+        $repliesCount = $thread->replyCount();
+
+        if (auth()->check()) {
+
+            $repliesPerPage = auth()->user()->repliesPerPage();
+
+            if (request()->exists('newestpost')) {
+                $lastView = auth()->user()->lastViewedThreadAt($thread);
+
+                if ($lastView) {
+                    $repliesSinceLastView = $thread->replies()->where('created_at', '>=', $lastView)->get();
+                    $repliesSinceLastViewCount = $repliesSinceLastView->count();
+                    if ($repliesSinceLastViewCount > 0) {
+                        $key = $repliesSinceLastView->keys()[0];
+                        $page = (int) (($repliesCount - $repliesSinceLastViewCount) / $repliesPerPage) + 1;
+                        $redirect = "/forums/{$forum->slug}/{$thread->slug}/?page={$page}#reply-{$repliesSinceLastView[$key]->id}";
+                    } else {
+                        $page = (int) ($repliesCount / $repliesPerPage) + 1;
+                        $redirect = "/forums/{$forum->slug}/{$thread->slug}?page={$page}#reply-{$thread->replies->last()->id}";
+                    }
+                }
+
+            }
+
+            auth()->user()->read($thread);
+            auth()->user()->touchActivity();
+        } else {
+            // if unauthed user attempts to view restricted forum thread, redirect to login
+            if ($forum->is_restricted) {
+                return redirect("login");
+            }
+        }
+
+        if ($redirect) {
+            return redirect($redirect);
+        }
+
         return view('threads.show', [
             'forum' => $forum,
             'thread' => $thread,
-            'replies' => $thread->replies()->paginate(25),
+            'replies' => $thread->replies()->paginate($repliesPerPage),
         ]);
     }
 

@@ -7,7 +7,7 @@
         {{ $thread->title }}
     </a>
 
-    <div class="md:flex justify-between rounded md:rounded-md p-2 mt-3 mb-4 bg-gray-800 shadow">
+    <div class="md:flex text-lg justify-between rounded md:rounded-md px-2 mt-3 mb-4 bg-gray-800 shadow">
 
         <div class="flex items-center space-x-2">
             @if ($thread->owner)
@@ -21,7 +21,7 @@
 
         <hr class="border-gray-700 border-2 md:hidden mt-2 mb-1.5">
 
-        <div class="flex items-center justify-end space-x-2 bg-main-color posted-by-when rounded shadow md:shadow-none md:p-2 md:p-0 md:mb-2 md:m-0">
+        <div class="flex items-center justify-end space-x-2 bg-main-color posted-by-when rounded shadow md:shadow-none md:p-2 md:p-0 md:m-0">
             @if ($thread->replies->last())
                 <div class="text-right">
                     <span class="md:mr-1">last post was</span>

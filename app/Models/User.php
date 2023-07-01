@@ -7,7 +7,9 @@ use App\Models\Reply;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -56,7 +58,7 @@ class User extends Authenticatable
         return asset('images/avatars/default.png');
     }
 
-    public function hasRepliedTo($thread)
+    public function hasRepliedTo(Thread $thread)
     {
         return Cache::rememberForever(
             "user-{$this->id}-replied-to-thread-{$thread->id}",
@@ -65,5 +67,43 @@ class User extends Authenticatable
                     ->where('thread_id', '=', $thread->id)->count();
             }
         );
+    }
+
+    // Mark when the user has read the given thread.
+    public function read(Thread $thread): void
+    {
+        DB::table('threads_users_views')
+            ->where('user_id', $this->id)
+            ->where('thread_id', $thread->id)
+            ->updateOrInsert(
+                ['user_id' => $this->id, 'thread_id' => $thread->id],
+                ['last_view' => Carbon::now()]
+            );
+    }
+
+    // Get the last time the user viewed the given thread.
+    public function lastViewedThreadAt($thread)
+    {
+        $view = DB::table('threads_users_views')
+            ->where('user_id', $this->id)
+            ->where('thread_id', $thread->id)
+            ->first();
+
+        return $view?->last_view;
+
+    }
+
+    public function repliesPerPage()
+    {
+        if ($this->id === 1) {
+            return 55;
+        }
+        return config('forum.replies_per_page');
+    }
+
+    public function touchActivity()
+    {
+        $this->last_activity = $this->freshTimestamp();
+        return $this->save();
     }
 }

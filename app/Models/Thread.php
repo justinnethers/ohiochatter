@@ -2,17 +2,18 @@
 
 namespace App\Models;
 
+use App\Reppable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Thread extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, Reppable;
 
     protected $guarded = [];
 
-    protected $with = ['owner', 'forum', 'replies', 'poll'];
+    protected $with = ['owner', 'forum', 'replies', 'poll', 'reps', 'negs'];
 
     public function replies()
     {

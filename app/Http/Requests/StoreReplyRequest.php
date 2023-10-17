@@ -11,7 +11,7 @@ class StoreReplyRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return auth()->check() && ! auth()->user()->is_banned;
     }
 
     /**

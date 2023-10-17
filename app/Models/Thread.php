@@ -68,4 +68,9 @@ class Thread extends Model
     {
         return $this->replies->count();
     }
+
+    public function addReply($reply)
+    {
+        return $this->replies()->create($reply);
+    }
 }

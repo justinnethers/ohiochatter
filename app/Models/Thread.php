@@ -15,6 +15,19 @@ class Thread extends Model
 
     protected $with = ['owner', 'forum', 'replies', 'poll', 'reps', 'negs'];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($thread) {
+            $thread->replies->each->delete();
+        });
+
+        static::created(function ($thread) {
+            $thread->update(['slug' => $thread->title]);
+        });
+    }
+
     public function replies()
     {
         return $this->hasMany(Reply::class);
@@ -72,5 +85,16 @@ class Thread extends Model
     public function addReply($reply)
     {
         return $this->replies()->create($reply);
+    }
+
+    public function setSlugAttribute($value)
+    {
+        $slug = str_slug($value);
+
+        while (static::whereSlug($slug)->exists()) {
+            $slug = "{$slug}-" . $this->id;
+        }
+
+        $this->attributes['slug'] = $slug;
     }
 }

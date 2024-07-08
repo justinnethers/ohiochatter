@@ -11,7 +11,7 @@ class StoreThreadRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return auth()->check();
     }
 
     /**
@@ -22,7 +22,9 @@ class StoreThreadRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'title' => 'required',
+            'body' => 'required',
+            'forum_id' => 'required|exists:forums,id'
         ];
     }
 }

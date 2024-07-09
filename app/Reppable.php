@@ -28,67 +28,45 @@ trait Reppable
         return $this->morphMany(Neg::class, 'negged');
     }
 
-    public function rep($comment = null)
-    {
-        $attributes = ['user_id' => auth()->id(), 'comment' => $comment];
-        if (!$this->reps()->where($attributes)->exists() && !$this->isNegged()) {
-            $this->owner->updateReputation(auth()->user());
-            return $this->reps()->create($attributes);
-        }
-    }
-
-    public function neg($comment)
-    {
-        $attributes = ['user_id' => auth()->id(), 'comment' => $comment];
-        if (!$this->negs()->where($attributes)->exists() && !$this->isRepped()) {
-            $this->owner->updateReputation(auth()->user(), true);
-            return $this->negs()->create($attributes);
-        }
-    }
-
-    public function unrep()
+    public function rep()
     {
         $attributes = ['user_id' => auth()->id()];
 
-        $this->reps()->where($attributes)->get()->each->delete();
-        $this->owner->updateReputation(auth()->user(), true);
+        if ($this->isReppedBy(auth()->user())) {
+            $this->reps()->where($attributes)->get()->each->delete();
+            return;
+        }
+
+        if ($this->isNeggedBy(auth()->user())) {
+            $this->negs()->where($attributes)->get()->each->delete();
+        }
+
+        return $this->reps()->create($attributes);
     }
 
-    public function unneg()
+    public function neg()
     {
         $attributes = ['user_id' => auth()->id()];
 
-        $this->negs()->where($attributes)->get()->each->delete();
-        $this->owner->updateReputation(auth()->user());
+        if ($this->isNeggedBy(auth()->user())) {
+            $this->negs()->where($attributes)->get()->each->delete();
+            return;
+        }
+
+        if ($this->isReppedBy(auth()->user())) {
+            $this->reps()->where($attributes)->get()->each->delete();
+        }
+
+        return $this->negs()->create($attributes);
     }
 
-    public function isRepped()
+    public function isReppedBy(User $user)
     {
-        return $this->reps->where('user_id', auth()->id())->count();
+        return $this->reps->where('user_id', $user->id)->count();
     }
 
-    public function isNegged()
+    public function isNeggedBy(User $user)
     {
-        return $this->negs->where('user_id', auth()->id())->count();
-    }
-
-    public function getIsReppedAttribute()
-    {
-        return $this->isRepped();
-    }
-
-    public function getIsNeggedAttribute()
-    {
-        return $this->isNegged();
-    }
-
-    public function getRepsCountAttribute()
-    {
-        return $this->reps->count();
-    }
-
-    public function getNegsCountAttribute()
-    {
-        return $this->negs->count();
+        return $this->negs->where('user_id', $user->id)->count();
     }
 }

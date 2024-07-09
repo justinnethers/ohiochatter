@@ -9,8 +9,7 @@
             {!! $post->body !!}
         </div>
         <div class="flex justify-end p-4 space-x-4">
-            <x-reputation.reps :$post />
-            <x-reputation.negs :$post />
+            <livewire:reputation :post="$post" />
         </div>
     </div>
 </article>

@@ -6,14 +6,18 @@ use App\Reppable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Laravel\Scout\Searchable;
 
 class Thread extends Model
 {
-    use HasFactory, SoftDeletes, Reppable;
+    use HasFactory;
+    use Reppable;
+    use Searchable;
+    use SoftDeletes;
 
     protected $guarded = [];
 
-    protected $with = ['owner', 'forum', 'replies', 'poll', 'reps', 'negs'];
+    protected $with = ['owner', 'replies', 'forum', 'poll'];
 
     protected static function boot()
     {
@@ -46,16 +50,6 @@ class Thread extends Model
     public function poll()
     {
         return $this->hasOne(Poll::class);
-    }
-
-    public function hasBeenRepliedToBy($user)
-    {
-        return $user->hasRepliedTo($this);
-    }
-
-    public function lastViewedByUser($user)
-    {
-        return $this->views()->where('user_id', $user->id)->first();
     }
 
     public function hasUpdatesFor($user)

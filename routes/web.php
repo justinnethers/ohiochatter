@@ -12,7 +12,10 @@ Route::get('/', function () {
 
 Route::get('/threads', [ThreadController::class, 'index'])->name('thread.index');
 
-Route::get('/forums', [ForumController::class, 'index'])->name('forum.index');
+Route::get('/forums', function () {
+    return redirect('threads');
+})->name('forum.index');
+
 Route::get('/forums/{forum}', [ForumController::class, 'show'])->name('forum.show');
 Route::get('/forums/{forum}/{thread}', [ThreadController::class, 'show'])->name('thread.show');
 

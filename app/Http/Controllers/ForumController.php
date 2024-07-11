@@ -8,21 +8,15 @@ use Illuminate\Http\Request;
 
 class ForumController extends Controller
 {
-
-    public function index()
-    {
-        $forums = Forum::all();
-
-        $forums = $forums->reject(function (Forum $forum) {
-            return !$forum->is_active;
-        });
-        return view('forums.index', compact('forums'));
-    }
-
-    // show the forum and a paginated list of its threads
     public function show(Forum $forum)
     {
-        $threads = Thread::where('forum_id', $forum->id)->orderBy('updated_at', 'desc')->paginate(config('forum.threads_per_page'));
-        return view('forums.show', compact('forum', 'threads'));
+        $threads = Thread::where('forum_id', $forum->id)
+            ->orderBy('updated_at', 'desc')
+            ->paginate(config('forum.threads_per_page'));
+
+        return view(
+            'forums.show',
+            compact('forum', 'threads')
+        );
     }
 }

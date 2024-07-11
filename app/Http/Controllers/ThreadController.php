@@ -14,13 +14,13 @@ class ThreadController extends Controller
 {
     public function index()
     {
-        $forums = Forum::all();
-        $threads = Thread::with(['forum'])->latest('updated_at')->paginate(config('forum.threads_per_page'));
+        $threads = Thread::latest('updated_at')
+            ->paginate(config('forum.threads_per_page'));
 
-        $forums = $forums->reject(function (Forum $forum) {
-            return !$forum->is_active;
-        });
-        return view('threads.index', compact('forums', 'threads'));
+        return view(
+            'threads.index',
+            compact('threads')
+        );
     }
 
     public function create(Forum $forum)
@@ -34,7 +34,7 @@ class ThreadController extends Controller
     public function store(StoreThreadRequest $request)
     {
         if (auth()->user()->is_banned) {
-            return redirect("/forum")
+            return redirect("/threads")
                 ->with('message', 'No.');
         }
 
@@ -45,13 +45,15 @@ class ThreadController extends Controller
             'body' => request('body')
         ]);
 
-        Cache::rememberForever("thread-{$thread->id}-latest-post", function() use ($thread) {
-            return $thread;
-        });
+        Cache::rememberForever(
+            "thread-{$thread->id}-latest-post",
+            fn () => $thread
+        );
 
-        Cache::rememberForever("forum-{$thread->forum_id}-latest-post", function() use ($thread) {
-            return $thread;
-        });
+        Cache::rememberForever(
+            "forum-{$thread->forum_id}-latest-post",
+            fn () => $thread
+        );
 
         Cache::forget('forums');
 

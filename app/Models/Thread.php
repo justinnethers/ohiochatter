@@ -6,6 +6,7 @@ use App\Reppable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 use Laravel\Scout\Searchable;
 
 class Thread extends Model
@@ -83,7 +84,7 @@ class Thread extends Model
 
     public function setSlugAttribute($value)
     {
-        $slug = str_slug($value);
+        $slug = Str::slug($value);
 
         while (static::whereSlug($slug)->exists()) {
             $slug = "{$slug}-" . $this->id;

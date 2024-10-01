@@ -11,10 +11,12 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\HasApiTokens;
+use Laravel\Scout\Searchable;
 
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
+    use Searchable;
 
     /**
      * The attributes that are mass assignable.
@@ -116,4 +118,14 @@ class User extends Authenticatable
                 ->first();
 //        });
     }
+
+//    public function getScoutKey(): mixed
+//    {
+//        return $this->username;
+//    }
+//
+//    public function getScoutKeyName(): mixed
+//    {
+//        return 'username';
+//    }
 }

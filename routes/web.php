@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ArchiveController;
 use App\Http\Controllers\ForumController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReplyController;
@@ -34,6 +35,12 @@ Route::middleware('auth')->group(function () {
     Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+Route::prefix('archive')->group(function () {
+    Route::get('', [ArchiveController::class, 'index']);
+    Route::get('{forum}', [ArchiveController::class, 'forum']);
+    Route::get('{forum}/{thread}', [ArchiveController::class, 'thread']);
 });
 
 //Route::get('search', [\App\Http\Controllers\SearchController::class, 'index'])->name('search.index');

@@ -17,7 +17,7 @@
                             @endif
                         </div>
                         <div class="flex-1">
-                            {{ $post->pagetext }}</div>
+                            {!! parseBBCode($post->pagetext) !!}</div>
                     </div>
                 </li>
             @endforeach
@@ -26,3 +26,14 @@
         {{ $posts->links() }}
     </div>
 </x-app-layout>
+
+<style scoped>
+    cite {
+        display: block;
+        margin-bottom: 1rem;
+    }
+
+    blockquote {
+        margin-bottom: 1rem;
+    }
+</style>

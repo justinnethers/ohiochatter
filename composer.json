@@ -13,7 +13,8 @@
         "laravel/sanctum": "^3.2",
         "laravel/scout": "^10.10",
         "laravel/tinker": "^2.8",
-        "livewire/livewire": "^3.5"
+        "livewire/livewire": "^3.5",
+        "s9e/text-formatter": "^2.18"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.8",

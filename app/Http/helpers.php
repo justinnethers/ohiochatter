@@ -3,6 +3,13 @@
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use s9e\TextFormatter\Bundles\Forum as TextFormatter;
+
+function parseBBCode($text)
+{
+    $xml = TextFormatter::parse($text);
+    return TextFormatter::render($xml);
+}
 
 function paginate($items, $perPage = 15, $page = null, $options = [])
 {

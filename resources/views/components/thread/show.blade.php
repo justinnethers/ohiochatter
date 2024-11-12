@@ -8,6 +8,7 @@
         @endif
 
         @foreach ($replies as $post)
+{{--                <livewire:post-component :$post />--}}
             <x-post.post :$post :poll="false" :hasVoted="false" :voteCount="0" />
         @endforeach
 
@@ -18,7 +19,8 @@
                 method="POST"
             >
                 @csrf
-                <x-wysiwyg />
+{{--                <livewire:wysiwyg-editor wire:model.defer="body" :editorId="'editor-'. $thread->id" />--}}
+                <x-wysiwyg wire:model.defer="body" />
                 <div class="h-4"></div>
                 <x-primary-button>Submit Post</x-primary-button>
             </form>

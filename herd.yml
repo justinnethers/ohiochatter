@@ -1,0 +1,5 @@
+integrations:
+  forge:
+    dev.ohiochatter.com:
+      server-id: 694784
+      site-id: 2021400

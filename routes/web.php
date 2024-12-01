@@ -25,6 +25,18 @@ Route::middleware('auth')->group(function () {
     Route::get('forums/{forum}/threads/create', [ThreadController::class, 'create']);
     Route::post('threads', [ThreadController::class, 'store']);
     Route::post('forums/{forum}/{thread}/replies', [ReplyController::class, 'store']);
+
+    Route::post('upload-image', function (Request $request) {
+        $upload = request()->file('image');
+        $path = $upload->store('images', 'public');
+
+        $response = [
+            'success' => true,
+            'url' => url('/storage').'/'.$path
+        ];
+
+        return response()->json($response);
+    });
 });
 
 Route::get('dashboard', function () {
@@ -48,3 +60,17 @@ Route::prefix('archive')->group(function () {
 //Route::get('search?search={search}', [\App\Http\Controllers\SearchController::class, 'show'])->name('search.index');
 
 require __DIR__.'/auth.php';
+
+Route::middleware('auth')->group(function () {
+    Route::post('upload-image', function (Request $request) {
+        $upload = request()->file('image');
+        $path = $upload->store('images', 'public');
+
+        $response = [
+            'success' => true,
+            'url' => url('/storage').'/'.$path
+        ];
+
+        return response()->json($response);
+    });
+});

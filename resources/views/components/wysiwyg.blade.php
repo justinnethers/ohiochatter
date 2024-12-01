@@ -20,6 +20,7 @@
 {{--        <script src="https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.27.3/plugins/upload/trumbowyg.upload.min.js"></script>--}}
 {{--        <script src="https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.27.3/plugins/pasteembed/trumbowyg.pasteembed.min.js"></script>--}}
         <script>
+            let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             $('.editor').trumbowyg({
                 btnsDef: {
                     // Create a new dropdown
@@ -43,14 +44,14 @@
                     giphy: {
                         apiKey: '62PK2gWy7WRueqj7TcH96h4cGRnSYvqM'
                     },
-                    // upload: {
-                    //     serverPath: '/upload-image?_token=' + window.App.csrfToken,
-                    //     fileFieldName: 'image',
-                    //     urlPropertyName: 'url',
-                    //     error: (error) => {
-                    //         console.log('funking error', error)
-                    //     }
-                    // }
+                    upload: {
+                        serverPath: '/upload-image?_token=' + csrfToken,
+                        fileFieldName: 'image',
+                        urlPropertyName: 'url',
+                        error: (error) => {
+                            console.log('funking error', error)
+                        }
+                    }
                 }
             });
         </script>

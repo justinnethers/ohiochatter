@@ -3,20 +3,19 @@
 namespace Database\Factories;
 
 use App\Models\User;
-use App\Models\Thread;
-use App\Models\Reply;
+use App\Models\PollOption;
+use App\Models\PollVote;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class ReplyFactory extends Factory
+class PollVoteFactory extends Factory
 {
-    protected $model = Reply::class;
+    protected $model = PollVote::class;
 
     public function definition(): array
     {
         return [
-            'thread_id' => Thread::factory(),
             'user_id' => User::factory(),
-            'body' => fake()->paragraphs(2, true),
+            'poll_option_id' => PollOption::factory(),
         ];
     }
 }

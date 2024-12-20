@@ -13,18 +13,18 @@ class CreateForumsTable extends Migration
      */
     public function up()
     {
-//        Schema::create('forums', function (Blueprint $table) {
-//            $table->id();
-//            $table->integer('creator_id');
-//            $table->string('name', 50);
-//            $table->string('slug', 50);
-//            $table->string('description');
-//            $table->integer('order');
-//            $table->string('color');
-//            $table->boolean('is_active')->default(true);
-//            $table->boolean('is_restricted')->default(false);
-//            $table->timestamps();
-//        });
+        Schema::create('forums', function (Blueprint $table) {
+            $table->id();
+            $table->integer('creator_id');
+            $table->string('name', 50);
+            $table->string('slug', 50);
+            $table->string('description');
+            $table->integer('order');
+            $table->string('color');
+            $table->boolean('is_active')->default(true);
+            $table->boolean('is_restricted')->default(false);
+            $table->timestamps();
+        });
     }
 
     /**
@@ -34,6 +34,6 @@ class CreateForumsTable extends Migration
      */
     public function down()
     {
-//        Schema::dropIfExists('forums');
+        Schema::dropIfExists('forums');
     }
 }

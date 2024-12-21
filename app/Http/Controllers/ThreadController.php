@@ -15,7 +15,14 @@ class ThreadController extends Controller
 {
     public function index()
     {
-        $threads = Thread::latest('updated_at')
+        $threads = Thread::with(['owner', 'forum', 'poll'])
+            ->select('threads.*')
+            ->leftJoin('replies', function($join) {
+                $join->on('threads.id', '=', 'replies.thread_id')
+                    ->whereNull('replies.deleted_at');
+            })
+            ->groupBy('threads.id')
+            ->orderByRaw('GREATEST(COALESCE(MAX(replies.created_at), threads.created_at), threads.updated_at) DESC')
             ->paginate(config('forum.threads_per_page'));
 
         return view('threads.index', compact('threads'));

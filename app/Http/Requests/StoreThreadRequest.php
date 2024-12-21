@@ -24,7 +24,11 @@ class StoreThreadRequest extends FormRequest
         return [
             'title' => 'required',
             'body' => 'required',
-            'forum_id' => 'required|exists:forums,id'
+            'forum_id' => 'required|exists:forums,id',
+            'has_poll' => 'sometimes|boolean', // sometimes instead of required
+            'poll_type' => 'required_if:has_poll,1|in:single,multiple',
+            'options' => 'required_if:has_poll,1|array|min:2',
+            'options.*' => 'string'
         ];
     }
 }

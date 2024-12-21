@@ -3,6 +3,8 @@
 namespace App\Actions\Threads;
 
 use App\Models\Thread;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class FetchThreadDetails
 {
@@ -10,10 +12,28 @@ class FetchThreadDetails
     {
         $repliesPerPage = $this->getRepliesPerPage();
 
+        // Eager load thread relationships up front
+        $thread->load(['reps.user', 'negs.user']);
+
+        // Load paginated replies with all needed relationships
+        $replies = $thread->replies()
+            ->with(['owner', 'reps.user', 'negs.user'])
+            ->paginate($repliesPerPage);
+
+        // Cache user's view status
+//        $lastView = auth()->check() ?
+//            Cache::remember("user-".auth()->id()."-thread-{$thread->id}-view", 3600, function() use ($thread) {
+//                return DB::table('threads_users_views')
+//                    ->where('user_id', auth()->id())
+//                    ->where('thread_id', $thread->id)
+//                    ->first();
+//            }) : null;
+
         return [
             'forum' => $thread->forum,
             'thread' => $thread,
-            'replies' => $thread->replies()->paginate($repliesPerPage),
+            'replies' => $replies,
+//            'lastView' => $lastView,
             ...$this->getPollDetails($thread)
         ];
     }

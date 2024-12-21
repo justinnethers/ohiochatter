@@ -18,7 +18,7 @@ class Thread extends Model
 
     protected $guarded = [];
 
-    protected $with = ['owner', 'replies', 'forum', 'poll'];
+    protected $with = ['owner', 'forum', 'poll', 'reps', 'negs'];
 
     protected static function boot()
     {

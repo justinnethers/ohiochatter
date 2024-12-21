@@ -5,6 +5,7 @@ use App\Http\Controllers\ForumController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReplyController;
 use App\Http\Controllers\ThreadController;
+use App\Modules\Messages\Http\Controllers\MessageController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('', function () {
@@ -60,6 +61,15 @@ Route::prefix('archive')->group(function () {
 //Route::get('search?search={search}', [\App\Http\Controllers\SearchController::class, 'show'])->name('search.index');
 
 require __DIR__.'/auth.php';
+
+Route::middleware('auth')->group(function () {
+    Route::get('messages', [MessageController::class, 'index'])->name('messages.index');
+    Route::get('messages/create', [MessageController::class, 'create'])->name('messages.create');
+    Route::post('messages', [MessageController::class, 'store'])->name('messages.store');
+    Route::get('messages/{thread}', [MessageController::class, 'show'])->name('messages.show');
+    Route::post('messages/{thread}/reply', [MessageController::class, 'addMessage'])->name('messages.add_message');
+});
+
 
 Route::middleware('auth')->group(function () {
     Route::post('upload-image', function (Request $request) {

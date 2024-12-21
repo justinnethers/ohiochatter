@@ -8,6 +8,7 @@
         "php": "^8.1",
         "algolia/algoliasearch-client-php": "^3.4",
         "blinq/synth": "^1.0",
+        "cmgmyr/messenger": "^2.30",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.2",

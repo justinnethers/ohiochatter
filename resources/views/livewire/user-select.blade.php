@@ -22,16 +22,17 @@
         <div class="mt-2 flex flex-wrap gap-2">
             @foreach($selectedUsers as $user)
                 <span class="inline-flex items-center gap-1 rounded-full bg-blue-400/10 px-2 py-1 text-xs font-semibold text-blue-400">
-                {{ $user->username }}
-                <button
-                    type="button"
-                    wire:click="removeUser({{ $user->id }})"
-                    class="text-blue-400/50 hover:text-blue-400"
-                >
-                    <span class="sr-only">Remove user {{ $user->username }}</span>
-                    ×
-                </button>
-            </span>
+                    <x-avatar :avatar-path="$user->avatar_path" :size="6"/>
+                    {{ $user->username }}
+                    <button
+                        type="button"
+                        wire:click="removeUser({{ $user->id }})"
+                        class="text-blue-400/50 hover:text-blue-400"
+                    >
+                        <span class="sr-only">Remove user {{ $user->username }}</span>
+                        ×
+                    </button>
+                </span>
             @endforeach
         </div>
     @endif
@@ -51,8 +52,9 @@
                 <button
                     type="button"
                     wire:click="selectUser({{ $user->id }})"
-                    class="relative w-full cursor-pointer select-none py-2 px-3 text-gray-100 hover:bg-gray-700"
+                    class="text-left flex gap-2 relative w-full cursor-pointer select-none py-2 px-3 text-gray-100 hover:bg-gray-700"
                 >
+                    <x-avatar :avatar-path="$user->avatar_path" :size="6"/>
                     {{ $user->username }}
                 </button>
             @endforeach

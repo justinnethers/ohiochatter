@@ -1,0 +1,17 @@
+# Stash any unstaged changes
+#git stash -q --keep-index
+
+echo "Running Laravel tests..."
+php artisan test
+RESULT=$?
+
+# Unstash changes
+#git stash pop -q
+
+if [ $RESULT -ne 0 ]; then
+    echo "❌ Laravel tests failed. Please fix the tests before committing."
+    exit 1
+fi
+
+echo "✅ All tests passed!"
+exit 0

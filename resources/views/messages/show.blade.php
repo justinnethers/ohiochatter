@@ -11,6 +11,20 @@
     <div>
         <div class="md:rounded-lg md:bg-gray-800 p-2 md:p-8 md:mt-4">
             <section class="container space-y-6">
+                <!-- Participants List -->
+                <div class="bg-gray-700 p-3 md:px-4 md:pt-4 md:pb-5 text-gray-100 font-body rounded md:rounded-md shadow-lg">
+                    <div class="flex flex-wrap gap-2">
+                        <h3 class="text-lg font-semibold mb-2 w-full">Participants</h3>
+                        @foreach($thread->participants as $participant)
+                            <div class="flex items-center gap-2 bg-gray-800 rounded-full px-3 py-1">
+                                <x-avatar size="6" :avatar-path="$participant->user->avatar_path" />
+                                <span class="text-sm">{{ $participant->user->username }}</span>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
+                <!-- Messages -->
                 @foreach($thread->messages as $message)
                     <article class="bg-gray-700 p-3 md:px-4 md:pt-4 md:pb-5 text-gray-100 font-body rounded md:rounded-md shadow-lg">
                         <div class="flex items-center space-x-3 mb-4">
@@ -31,6 +45,7 @@
                     </article>
                 @endforeach
 
+                <!-- Reply Form -->
                 <div class="bg-gray-700 p-3 md:px-4 md:pt-4 md:pb-5 text-gray-100 font-body rounded md:rounded-md shadow-lg">
                     <form action="{{ route('messages.add_message', $thread) }}" method="POST">
                         @csrf
@@ -46,21 +61,9 @@
                             ></textarea>
                         </div>
 
-                        @if($users->count() > 0)
-                            <div class="mt-4">
-                                <label for="recipients" class="block text-sm font-medium text-gray-200">Add Participants</label>
-                                <select
-                                    id="recipients"
-                                    name="recipients[]"
-                                    multiple
-                                    class="mt-1 block w-full rounded-md border-gray-600 bg-gray-800 text-gray-100 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                                >
-                                    @foreach($users as $user)
-                                        <option value="{{ $user->id }}">{{ $user->username }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        @endif
+{{--                        <div class="mt-4">--}}
+{{--                            <livewire:user-select :selected-users="$thread->participants" />--}}
+{{--                        </div>--}}
 
                         <div class="mt-4 flex justify-end">
                             <x-primary-button>

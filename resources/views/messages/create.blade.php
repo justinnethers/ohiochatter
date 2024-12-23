@@ -17,18 +17,7 @@
 
                         <div class="space-y-4">
                             <div>
-                                <label for="recipients" class="block text-sm font-medium text-gray-200">Recipients</label>
-                                <select
-                                    id="recipients"
-                                    name="recipients[]"
-                                    multiple
-                                    class="mt-1 block w-full rounded-md border-gray-600 bg-gray-800 text-gray-100 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                                    required
-                                >
-                                    @foreach($users as $user)
-                                        <option value="{{ $user->id }}">{{ $user->username }}</option>
-                                    @endforeach
-                                </select>
+                                <livewire:user-select />
                                 @error('recipients')
                                 <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
@@ -63,9 +52,9 @@
                             </div>
 
                             <div class="flex justify-end gap-x-3">
-                                <x-primary-button type="button" onclick="window.history.back()">
+                                <x-secondary-button type="button" onclick="window.history.back()">
                                     Cancel
-                                </x-primary-button>
+                                </x-secondary-button>
                                 <x-primary-button>
                                     Send Message
                                 </x-primary-button>

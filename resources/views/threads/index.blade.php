@@ -19,7 +19,13 @@
                 @endforeach
             </section>
 
-            {{ $threads->links() }}
+            <div class="flex gap-4">
+
+                {{ $threads->links() }}
+                <div class="flex-1">
+                    <x-search-form />
+                </div>
+            </div>
         </div>
     </div>
 </x-app-layout>

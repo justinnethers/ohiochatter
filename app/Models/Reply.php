@@ -25,4 +25,12 @@ class Reply extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function toSearchableArray()
+    {
+        return [
+            'id' => $this->id,
+            'body' => $this->body,
+        ];
+    }
 }

@@ -92,4 +92,12 @@ class Thread extends Model
 
         $this->attributes['slug'] = $slug;
     }
+
+    public function toSearchableArray()
+    {
+        return [
+            'title' => $this->title,
+            'body' => $this->body,
+        ];
+    }
 }

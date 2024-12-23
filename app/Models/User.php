@@ -129,4 +129,16 @@ class User extends Authenticatable
 //    {
 //        return 'username';
 //    }
+
+    public function toSearchableArray()
+    {
+        return [
+            'username' => $this->username,
+        ];
+    }
+
+    public function searches()
+    {
+        return $this->hasMany(Search::class);
+    }
 }

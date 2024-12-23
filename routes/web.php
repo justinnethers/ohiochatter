@@ -4,6 +4,7 @@ use App\Http\Controllers\ArchiveController;
 use App\Http\Controllers\ForumController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReplyController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ThreadController;
 use App\Modules\Messages\Http\Controllers\MessageController;
 use Illuminate\Support\Facades\Route;
@@ -55,6 +56,8 @@ Route::prefix('archive')->group(function () {
     Route::get('{forum}', [ArchiveController::class, 'forum']);
     Route::get('{forum}/{thread}', [ArchiveController::class, 'thread']);
 });
+
+Route::get('search', [SearchController::class, 'show'])->name('search.show');
 
 //Route::get('search', [\App\Http\Controllers\SearchController::class, 'index'])->name('search.index');
 //Route::post('search', [\App\Http\Controllers\SearchController::class, 'show'])->name('search.show');

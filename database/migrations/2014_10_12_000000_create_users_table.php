@@ -31,7 +31,6 @@ return new class extends Migration {
             $table->string('ip_address', 45)->nullable();
             $table->datetime('legacy_join_date')->nullable();
             $table->boolean('verified')->default(false);
-            $table->datetime('email_verified_at')->nullable();
             $table->string('token')->nullable();
             $table->string('theme', 50)->nullable();
             $table->string('timezone')->nullable();

@@ -17,6 +17,7 @@
     "vite": "^4.0.0"
   },
   "dependencies": {
-    "@tailwindcss/typography": "github:tailwindcss/typography"
+    "@tailwindcss/typography": "github:tailwindcss/typography",
+    "alpinejs": "^3.14.8"
   }
 }

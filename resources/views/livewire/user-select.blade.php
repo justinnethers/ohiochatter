@@ -46,7 +46,7 @@
     @if(count($filteredUsers) > 0 && $search !== '')
         <div
             x-show="open"
-            class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-gray-800 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+            class="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-gray-800 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
         >
             @foreach($filteredUsers as $user)
                 <button

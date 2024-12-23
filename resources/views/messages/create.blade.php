@@ -39,13 +39,14 @@
 
                             <div>
                                 <label for="message" class="block text-sm font-medium text-gray-200">Message</label>
-                                <textarea
-                                    id="message"
-                                    name="message"
-                                    rows="4"
-                                    class="mt-1 block w-full rounded-md border-gray-600 bg-gray-800 text-gray-100 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                                    required
-                                ></textarea>
+{{--                                <textarea--}}
+{{--                                    id="message"--}}
+{{--                                    name="message"--}}
+{{--                                    rows="4"--}}
+{{--                                    class="mt-1 block w-full rounded-md border-gray-600 bg-gray-800 text-gray-100 shadow-sm focus:border-blue-500 focus:ring-blue-500"--}}
+{{--                                    required--}}
+{{--                                ></textarea>--}}
+                                <x-wysiwyg id="message" name="message" />
                                 @error('message')
                                 <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror

@@ -40,7 +40,7 @@
                         </div>
 
                         <div class="prose prose-invert max-w-none">
-                            {!! nl2br(e($message->body)) !!}
+                            {!! $message->body !!}
                         </div>
                     </article>
                 @endforeach
@@ -51,19 +51,15 @@
                         @csrf
                         <div>
                             <label for="body" class="sr-only">Your message</label>
-                            <textarea
+                            <x-wysiwyg
                                 name="body"
                                 id="body"
                                 rows="3"
                                 class="w-full rounded-md border-gray-600 bg-gray-800 text-gray-100 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                                 placeholder="Write your reply..."
                                 required
-                            ></textarea>
+                            ></x-wysiwyg>
                         </div>
-
-{{--                        <div class="mt-4">--}}
-{{--                            <livewire:user-select :selected-users="$thread->participants" />--}}
-{{--                        </div>--}}
 
                         <div class="mt-4 flex justify-end">
                             <x-primary-button>

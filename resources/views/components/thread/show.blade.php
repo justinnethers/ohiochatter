@@ -20,7 +20,7 @@
             >
                 @csrf
 {{--                <livewire:wysiwyg-editor wire:model.defer="body" :editorId="'editor-'. $thread->id" />--}}
-                <x-wysiwyg wire:model.defer="body" />
+                <x-wysiwyg id="body" wire:model.defer="body" />
                 <div class="h-4"></div>
                 <x-primary-button>Submit Post</x-primary-button>
             </form>

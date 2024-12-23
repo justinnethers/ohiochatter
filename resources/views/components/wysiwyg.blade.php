@@ -1,8 +1,8 @@
 <div>
     <div
-        id="body"
         class="editor text-white bg-transparent"
         style="min-height: 300px;"
+        {{ $attributes }}
     ></div>
 
     <x-slot name="head">

@@ -12,10 +12,6 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-{{--                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">--}}
-{{--                        {{ __('Dashboard') }}--}}
-{{--                    </x-nav-link>--}}
-
                     <x-nav-link :href="route('thread.index')" :active="request()->routeIs('thread.index')">
                         {{ __('All Threads') }}
                     </x-nav-link>
@@ -45,9 +41,7 @@
                             <div class="relative">
                                 <x-avatar size="6" :avatar-path="Auth::user()->avatar_path" />
                                 @auth
-                                    @if(auth()->user()->threads->filter(function($thread) {
-                                        return $thread->isUnread(auth()->id());
-                                    })->count() > 0)
+                                    @if($count = Auth::user()->newThreadsCount() > 0)
                                         <span class="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-red-500"></span>
                                     @endif
                                 @endauth
@@ -116,8 +110,30 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
+            <x-responsive-nav-link :href="route('thread.index')" :active="request()->routeIs('thread.index')">
+                {{ __('All Threads') }}
+            </x-responsive-nav-link>
+
+            <x-responsive-nav-link href="/forums/serious-business" :active="request()->is('forums/serious-business')">
+                {{ __('Serious Business') }}
+            </x-responsive-nav-link>
+
+            <x-responsive-nav-link href="/forums/sports" :active="request()->is('forums/sports')">
+                {{ __('Sports') }}
+            </x-responsive-nav-link>
+
+            <x-responsive-nav-link href="/forums/politics" :active="request()->is('forums/politics')">
+                {{ __('Politics') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('messages.index')" :active="request()->routeIs('messages.index')">
+                {{ __('Messages') }}
+                @auth
+                    @if(($unreadCount = auth()->user()->threads->filter(function($thread) {
+                        return $thread->isUnread(auth()->id());
+                    })->count()) > 0)
+                        <span class="text-red-500">[{{ $unreadCount }} new]</span>
+                    @endif
+                @endauth
             </x-responsive-nav-link>
         </div>
 
@@ -126,7 +142,6 @@
         <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
             <div class="px-4">
                 <div class="font-medium text-base text-gray-800 dark:text-gray-200">{{ Auth::user()->username }}</div>
-                <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
             </div>
 
             <div class="mt-3 space-y-1">

@@ -42,7 +42,11 @@
                                                             <x-avatar :size="6" :avatar-path="$item->owner->avatar_path" />
                                                             <a href="/profiles/{{ $item->owner->username }}" class="text-blue-500 hover:underline">{{ $item->owner->username }}</a>
                                                         </span>&nbsp;
-                                                        <span class="flex">in&nbsp;<x-thread.forum-tag :thread="$item" /></span>
+                                                        <span class="flex gap-2">
+                                                            <span>{{ \Carbon\Carbon::parse($item->created_at)->setTimezone((auth()->check() ? auth()->user()->timezone : null))->diffForHumans() }}</span>
+                                                            <span>in</span>
+                                                            <x-thread.forum-tag :thread="$item" />
+                                                        </span>
                                                     </div>
                                                 @elseif($item instanceof \App\Models\Reply)
                                                     <div class="text-lg font-semibold">

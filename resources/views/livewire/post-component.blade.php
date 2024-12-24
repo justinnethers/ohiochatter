@@ -5,7 +5,6 @@
     <x-post.owner :owner="$post->owner" />
     <div class="flex-1 flex flex-col relative">
         <x-post.header :date="$post->created_at">
-            <!-- Edit Mode Toggle Button -->
             <div class="flex gap-2 text-xs font-semibold">
                 @if ($editMode)
                     <button wire:click="save" class="text-green-950 hover:text-white bg-green-500 hover:bg-green-700 py-1 px-2 rounded">
@@ -20,7 +19,44 @@
 
         <div class="prose prose-invert prose-lg p-4 md:p-8 flex-1">
             @if ($editMode)
-                <livewire:wysiwyg-editor wire:model.defer="body" :editorId="'editor-'. $post->id" />
+                <div x-data="{
+                    editor: null,
+                    init() {
+                        this.$nextTick(() => {
+                            if (!this.editor) {
+                                this.editor = $(`#editor-{{ $post->id }}`).trumbowyg({
+                                    btns: [
+                                        ['viewHTML'],
+                                        ['formatting'],
+                                        ['strong', 'em'],
+                                        ['link'],
+                                        ['insertImage'],
+                                        ['justifyLeft', 'justifyCenter', 'justifyRight'],
+                                        ['unorderedList', 'orderedList'],
+                                        ['horizontalRule'],
+                                        ['removeformat'],
+                                    ],
+                                    removeformatPasted: true
+                                });
+
+                                this.editor.on('tbwchange', () => {
+                                    @this.set('body', this.editor.trumbowyg('html'));
+                                });
+                            }
+                        });
+                    },
+                    destroy() {
+                        if (this.editor) {
+                            this.editor.trumbowyg('destroy');
+                            this.editor = null;
+                        }
+                    }
+                }"
+                     @wire:model.change="body"
+                     wire:ignore
+                     x-on:livewire:update="destroy">
+                    <textarea id="editor-{{ $post->id }}">{{ $body }}</textarea>
+                </div>
             @else
                 {!! $post->body !!}
             @endif

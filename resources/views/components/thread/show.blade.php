@@ -8,8 +8,8 @@
         @endif
 
         @foreach ($replies as $post)
-{{--                <livewire:post-component :$post />--}}
-            <x-post.post :$post :poll="false" :hasVoted="false" :voteCount="0" />
+                <livewire:post-component :$post />
+{{--            <x-post.post :$post :poll="false" :hasVoted="false" :voteCount="0" />--}}
         @endforeach
 
         @if (auth()->check())

@@ -4,7 +4,8 @@
     <div class="p-2 pt-0 md:p-0">
 
         @if (app('request')->input('page') == 1 || !app('request')->input('page'))
-            <x-post.post :post="$thread" :$poll :$hasVoted :$voteCount />
+            <livewire:post-component :post="$thread" />
+{{--            <x-post.post :post="$thread" :$poll :$hasVoted :$voteCount />--}}
         @endif
 
         @foreach ($replies as $post)
@@ -19,7 +20,6 @@
                 method="POST"
             >
                 @csrf
-{{--                <livewire:wysiwyg-editor wire:model.defer="body" :editorId="'editor-'. $thread->id" />--}}
                 <x-wysiwyg id="body" wire:model.defer="body" />
                 <div class="h-4"></div>
                 <x-primary-button>Submit Post</x-primary-button>

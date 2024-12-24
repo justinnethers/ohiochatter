@@ -37,7 +37,7 @@
                 </x-select>
             </div>
             <div>
-                <x-wysiwyg />
+                <x-wysiwyg id="body" />
                 <div class="h-4"></div>
                 <x-primary-button>Publish Thread</x-primary-button>
 {{--                <button @click.prevent="togglePoll" class="button red" :class="{ 'btn-danger': showPoll }" v-text="showPoll ? 'Remove Poll' : 'Add Poll'"></button>--}}

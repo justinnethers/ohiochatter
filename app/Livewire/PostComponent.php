@@ -36,6 +36,7 @@ class PostComponent extends Component
 
     public function save(): void
     {
+        die('here');
 //        $this->validate();
         $this->post->body = $this->body;
         dump($this->post);

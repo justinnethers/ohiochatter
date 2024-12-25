@@ -38,6 +38,8 @@ class PostComponent extends Component
     {
 //        $this->validate();
         $this->post->body = $this->body;
+        dump($this->post);
+        dump($this->body);
         $this->post->save();
         $this->editMode = false;
         $this->dispatch('editor-saved');

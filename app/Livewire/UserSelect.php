@@ -40,14 +40,12 @@ class UserSelect extends Component
     public function selectUser($userId): void
     {
         $user = $this->filteredUsers->firstWhere('id', $userId);
-
-        if (!$user) {
-            return;
-        }
+        if (!$user) return;
 
         $this->selectedUsers->push($user);
-        $this->search = '';
         $this->filteredUsers = collect();
+        $this->dispatch('search-updated');
+        $this->search = '';
     }
 
     public function removeUser($userId): void

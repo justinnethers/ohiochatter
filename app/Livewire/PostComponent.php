@@ -36,7 +36,7 @@ class PostComponent extends Component
 
     public function save(): void
     {
-        $this->validate();
+//        $this->validate();
         $this->post->body = $this->body;
         $this->post->save();
         $this->editMode = false;

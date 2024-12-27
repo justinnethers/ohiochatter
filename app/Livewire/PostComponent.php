@@ -23,7 +23,7 @@ class PostComponent extends Component
     {
         $this->post = $post;
         $this->body = $post->body;
-        $this->canEdit = $this->post->owner->id === \Auth::id() || \Auth::user()->is_admin;
+        $this->canEdit = $this->post->owner->id === \Auth::id() || \Auth::user() && \Auth::user()->is_admin;
     }
 
     public function toggleEditMode(): void

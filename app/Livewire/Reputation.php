@@ -17,9 +17,7 @@ class Reputation extends Component
 
     public function rep()
     {
-        $this->authCheck();
-
-        if ($this->userOwnsPost()) {
+        if (!$this->authCheck() || $this->userOwnsPost()) {
             return;
         }
 
@@ -29,9 +27,7 @@ class Reputation extends Component
 
     public function neg()
     {
-        $this->authCheck();
-
-        if ($this->userOwnsPost()) {
+        if (!$this->authCheck() || $this->userOwnsPost()) {
             return;
         }
 
@@ -42,8 +38,10 @@ class Reputation extends Component
     private function authCheck()
     {
         if (! auth()->check()) {
-            return redirect()->route('login');
+            $this->redirect(route('login'));
+            return false;
         }
+        return true;
     }
 
     private function userOwnsPost()

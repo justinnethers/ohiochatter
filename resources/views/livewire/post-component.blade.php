@@ -7,7 +7,7 @@
         <x-post.header :date="$post->created_at">
             <div class="flex gap-2 text-xs font-semibold">
                 @if ($editMode)
-                    <button wire:click="save" class="text-green-950 hover:text-white bg-green-500 hover:bg-green-700 py-1 px-2 rounded">
+                    <button wire:click.prevent="save" class="text-green-950 hover:text-white bg-green-500 hover:bg-green-700 py-1 px-2 rounded">
                         Save
                     </button>
                 @endif

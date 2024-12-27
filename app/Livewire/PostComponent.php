@@ -12,6 +12,7 @@ class PostComponent extends Component
     public Reply | Thread $post;
     public Poll | bool $poll;
     public $editMode = false;
+    public $canEdit = false;
     public $body;
 
     protected $rules = [
@@ -22,41 +23,26 @@ class PostComponent extends Component
     {
         $this->post = $post;
         $this->body = $post->body;
+        $this->canEdit = $this->post->owner->id === \Auth::id() || \Auth::user()->is_admin;
     }
 
     public function toggleEditMode(): void
     {
+        \Log::info('Toggle edit mode', ['current' => $this->editMode]);
         $this->editMode = !$this->editMode;
-        $this->dispatch('toggle-editor', [
-            'editorId' => 'editor-' . $this->post->id,
-            'content' => $this->body,
-            'isEdit' => $this->editMode
-        ]);
+        if (!$this->editMode) {
+            \Log::info('Dispatching destroy-editor');
+            $this->dispatch('destroy-editor', ['editorId' => $this->post->id]);
+        }
     }
 
     public function save(): void
     {
-        try {
-            $this->post->body = $this->body;
-            \Log::info('Saving post:', [
-                'post_id' => $this->post->id,
-                'body' => $this->body,
-                'post_type' => get_class($this->post)
-            ]);
-
-            $result = $this->post->save();
-            \Log::info('Save result:', ['success' => $result]);
-
-            $this->editMode = false;
-            $this->dispatch('editor-saved');
-            session()->flash('message', 'Post updated successfully.');
-        } catch (\Exception $e) {
-            \Log::error('Error saving post:', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            session()->flash('error', 'Failed to save post: ' . $e->getMessage());
-        }
+        $this->post->body = $this->body;
+        $this->post->save();
+        $this->editMode = false;
+        $this->dispatch('destroy-editor', ['editorId' => $this->post->id]);
+        session()->flash('message', 'Post updated successfully.');
     }
 
     public function updated($field)

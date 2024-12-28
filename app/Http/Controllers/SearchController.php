@@ -34,13 +34,8 @@ class SearchController extends Controller
 
         $results = [
             'Threads' => Thread::search($query)->paginate(5),
-//            'Posts' => Reply::search($query)
-//                ->query(function ($builder) {
-//                    return $builder->select('id', 'body', 'thread_id', 'user_id')
-//                        ->with(['owner:id,username', 'thread:id,title,slug']);
-//                })
-//                ->take(10)
-//                ->get()
+            'Posts' => Reply::search($query)->paginate(10),
+            'User' => User::search($query)->get()
         ];
 
         return view('search.show', [

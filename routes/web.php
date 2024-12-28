@@ -52,7 +52,7 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::prefix('archive')->group(function () {
-    Route::get('', [ArchiveController::class, 'index']);
+    Route::get('', [ArchiveController::class, 'index'])->name('archive.index');
     Route::get('{forum}', [ArchiveController::class, 'forum']);
     Route::get('{forum}/{thread}', [ArchiveController::class, 'thread']);
 });
@@ -87,3 +87,7 @@ Route::middleware('auth')->group(function () {
         return response()->json($response);
     });
 });
+
+Route::get('/privacy', function () {
+    return view('privacy');
+})->name('privacy');

@@ -18,11 +18,6 @@
                 <x-thread.listing :$thread :$forum />
             @endforeach
         </section>
-        <div class="flex flex-col xl:flex-row gap-4">
-            {{ $threads->links() }}
-            <div class="flex-1">
-                <x-search-form />
-            </div>
-        </div>
+        {{ $threads->links() }}
     </div>
 </x-app-layout>

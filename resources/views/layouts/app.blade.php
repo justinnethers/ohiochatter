@@ -41,6 +41,7 @@
             <main class="container mx-auto">
                 {{ $slot }}
             </main>
+            @include('layouts.footer')
         </div>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script>
@@ -54,8 +55,8 @@
 
 
         @if (isset($footer))
-        {{ $footer }}
-    @endif
+            {{ $footer }}
+        @endif
         @stack('footer')
     </body>
 </html>

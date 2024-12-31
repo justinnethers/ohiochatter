@@ -67,9 +67,17 @@ class Thread extends Model
         return 'slug';
     }
 
+//    public function path($extra = '')
+//    {
+//        return "/forums/{$this->forum->slug}/{$this->slug}" . $extra;
+//    }
+
     public function path($extra = '')
     {
-        return "/forums/{$this->forum->slug}/{$this->slug}" . $extra;
+        return route('thread.show', [
+                'forum' => $this->forum->slug,
+                'thread' => $this->slug
+            ]) . $extra;
     }
 
     public function replyCount()

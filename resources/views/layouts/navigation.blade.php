@@ -1,7 +1,13 @@
-<nav x-data="{ open: false }" class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
-    <!-- Primary Navigation Menu -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
+<nav x-data="{ open: false, scrolled: false }"
+     x-init="window.addEventListener('scroll', () => {
+         scrolled = window.pageYOffset > 60;
+         document.documentElement.style.setProperty('--nav-height', scrolled ? '3rem' : '4rem');
+     })"
+     :class="{ 'h-16': !scrolled, 'h-12': scrolled }"
+     class="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
+        <div class="flex justify-between h-full transition-all duration-300"
+             :class="{ 'scale-100': !scrolled, 'scale-90': scrolled }">
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
@@ -108,8 +114,16 @@
     </div>
 
     <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
-        <div class="pt-2 pb-3 space-y-1">
+    <div x-show="open"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 -translate-y-1"
+         x-transition:enter-end="opacity-100 translate-y-0"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100 translate-y-0"
+         x-transition:leave-end="opacity-0 -translate-y-1"
+         class="absolute w-full left-0 top-full bg-white dark:bg-gray-800 sm:hidden min-h-screen">
+
+    <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('thread.index')" :active="request()->routeIs('thread.index')">
                 {{ __('All Threads') }}
             </x-responsive-nav-link>

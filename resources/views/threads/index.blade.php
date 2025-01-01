@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between">
-            <h2 class="font-semibold text-3xl text-gray-800 dark:text-gray-200 leading-tight">
+            <h2 class="font-semibold text-gray-800 dark:text-gray-200 leading-tight">
                 All Threads
             </h2>
             <x-nav-link

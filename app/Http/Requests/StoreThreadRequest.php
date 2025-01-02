@@ -21,14 +21,19 @@ class StoreThreadRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             'title' => 'required',
             'body' => 'required',
             'forum_id' => 'required|exists:forums,id',
-            'has_poll' => 'sometimes|boolean', // sometimes instead of required
-            'poll_type' => 'required_if:has_poll,1|in:single,multiple',
-            'options' => 'required_if:has_poll,1|array|min:2',
-            'options.*' => 'string'
+            'has_poll' => 'nullable|boolean',
         ];
+
+        if ($this->has_poll) {
+            $rules['poll_type'] = 'required|in:single,multiple';
+            $rules['options'] = 'required|array|min:2';
+            $rules['options.*'] = 'required|string|max:255';
+        }
+
+        return $rules;
     }
 }

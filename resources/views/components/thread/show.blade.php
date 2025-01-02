@@ -2,6 +2,9 @@
     <x-breadcrumbs :forum="$thread->forum" />
 
     <div class="p-2 pt-0 md:p-0">
+        @if($thread->poll)
+            <livewire:poll-component :poll="$thread->poll" />
+        @endif
 
         @if (app('request')->input('page') == 1 || !app('request')->input('page'))
             <livewire:post-component :post="$thread" />

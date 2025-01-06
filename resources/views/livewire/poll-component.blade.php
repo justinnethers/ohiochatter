@@ -1,20 +1,20 @@
-<div class="bg-white rounded-lg shadow p-4 sm:p-6 mb-4 max-w-full overflow-hidden">
+<div class="bg-white dark:bg-gray-800 text-gray-500 dark:text-white rounded-lg shadow p-4 sm:p-6 mb-4 max-w-full overflow-hidden">
     <h3 class="text-lg font-semibold mb-4">Poll</h3>
 
     @if($hasVoted)
         @foreach($poll->pollOptions as $option)
             <div class="mb-4">
                 <div class="flex flex-col sm:flex-row sm:justify-between mb-1">
-                    <span class="break-words mr-2">{{ $option->label }}</span>
-                    <span class="text-sm text-gray-600">{{ $this->getPercentage($option) }}%</span>
+                    <span class="break-words text-xl mr-2">{{ $option->label }}</span>
+                    <span class="text-sm text-gray-600 dark:text-gray-300">{{ $this->getPercentage($option) }}%</span>
                 </div>
                 <div class="w-full bg-gray-200 rounded">
                     <div class="bg-blue-500 rounded h-2" style="width: {{ $this->getPercentage($option) }}%"></div>
                 </div>
-                <span class="text-xs sm:text-sm text-gray-500">{{ $option->votes->count() }} votes</span>
+                <span class="text-xs sm:text-sm text-gray-500 dark:text-gray-200">{{ $option->votes->count() }} {{ \Illuminate\Support\Str::plural('vote', $option->votes->count()) }}</span>
             </div>
         @endforeach
-        <div class="mt-4 text-sm text-gray-500">
+        <div class="mt-4 text-sm text-gray-500 dark:text-gray-200">
             Total votes: {{ $this->voteCount }}
         </div>
     @else

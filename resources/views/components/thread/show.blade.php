@@ -25,10 +25,13 @@
                 @csrf
                 <x-wysiwyg id="body" wire:model.defer="body" />
                 <div class="h-4"></div>
-                <x-primary-button>Submit Post</x-primary-button>
+                <div class="flex justify-between">
+                    <x-primary-button>Submit Post</x-primary-button>
+                    <livewire:thread-lock-toggle :thread="$thread" />
+                </div>
             </form>
 
-            <livewire:thread-lock-toggle :thread="$thread" />
+
         @endif
     </div>
 </div>

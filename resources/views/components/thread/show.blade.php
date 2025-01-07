@@ -27,6 +27,8 @@
                 <div class="h-4"></div>
                 <x-primary-button>Submit Post</x-primary-button>
             </form>
+
+            <livewire:thread-lock-toggle :thread="$thread" />
         @endif
     </div>
 </div>

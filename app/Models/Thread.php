@@ -5,7 +5,11 @@ namespace App\Models;
 use App\Reppable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Laravel\Scout\Searchable;
 
@@ -18,7 +22,7 @@ class Thread extends Model
 
     protected $guarded = [];
 
-    protected $with = ['owner', 'forum', 'poll', 'reps', 'negs'];
+    protected $with = ['owner', 'forum', 'poll'];
 
     protected static function boot()
     {
@@ -33,22 +37,22 @@ class Thread extends Model
         });
     }
 
-    public function replies()
+    public function replies(): HasMany
     {
         return $this->hasMany(Reply::class);
     }
 
-    public function owner()
+    public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function forum()
+    public function forum(): BelongsTo
     {
         return $this->belongsTo(Forum::class);
     }
 
-    public function poll()
+    public function poll(): HasOne
     {
         return $this->hasOne(Poll::class);
     }
@@ -82,7 +86,16 @@ class Thread extends Model
 
     public function replyCount()
     {
-        return $this->replies->count();
+        return Cache::rememberForever("thread-{$this->id}-reply-count", function() {
+            return $this->replies()
+                ->whereNull('deleted_at')
+                ->count();
+        });
+    }
+
+    public function lastReply()
+    {
+        return $this->hasOne(Reply::class)->latest();
     }
 
     public function addReply($reply)

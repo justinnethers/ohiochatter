@@ -31,16 +31,16 @@
         <hr class="border-gray-700 border-2 md:hidden mt-2 mb-1.5">
 
         <div class="flex items-center justify-end space-x-2 bg-main-color posted-by-when rounded shadow md:shadow-none md:p-2 md:p-0 md:m-0">
-            @if ($thread->replies->last())
+            @if ($thread->lastReply)
                 <div class="text-right">
                     <span class="md:mr-1">last post was</span>
                     <span class="md:mr-1">
-                        {{ \Carbon\Carbon::parse($thread->replies->last()->created_at)->setTimezone((auth()->check() ? auth()->user()->timezone : null))->diffForHumans() }}
+                        {{ \Carbon\Carbon::parse($thread->lastReply->created_at)->setTimezone((auth()->check() ? auth()->user()->timezone : null))->diffForHumans() }}
                         by<br class="md:hidden">
                     </span>
-                    <a href="/profiles/{{ $thread->replies->last()->owner->username }}" class="text-blue-500 hover:underline">{{ $thread->replies->last()->owner->username }}</a>
+                    <a href="/profiles/{{ $thread->lastReply->owner->username }}" class="text-blue-500 hover:underline">{{ $thread->lastReply->owner->username }}</a>
                 </div>
-                <x-avatar size="8" :avatar-path="$thread->replies->last()->owner->avatar_path" />
+                <x-avatar size="8" :avatar-path="$thread->lastReply->owner->avatar_path" />
             @else
                 <div>
                     <span class="md:mr-1">last post was</span>

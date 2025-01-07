@@ -65,9 +65,7 @@
                         <x-dropdown-link :href="route('messages.index')">
                             {{ __('Messages') }}
                             @auth
-                                @if(($unreadCount = auth()->user()->threads->filter(function($thread) {
-                                    return $thread->isUnread(auth()->id());
-                                })->count()) > 0)
+                                @if($unreadCount = Auth::user()->unreadMessagesCount())
                                     <span class="text-red-500">[{{ $unreadCount }} new]</span>
                                 @endif
                             @endauth

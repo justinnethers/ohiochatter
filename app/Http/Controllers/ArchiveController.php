@@ -15,9 +15,12 @@ class ArchiveController extends Controller
 {
     public function index()
     {
-        $threads = VbForum::where('parentid', '>', 0)->orderBy('displayorder')->get();
-//        dd($users);
-//dd();
+        $threads = VbForum::query()
+            ->where('parentid', '>', 0)
+            ->where('displayorder', '>', 0)
+            ->orderBy('displayorder')
+            ->get();
+
         return view('archive/index', compact('threads'));
     }
 

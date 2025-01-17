@@ -20,17 +20,12 @@
 
             console.log('livewire:load event fired');
 
-
-
-
-
             // Re-initialize the editor when the component is updated
             Livewire.hook('message.processed', (message, component) => {
                 if (component.fingerprint.name === @json($this->getName())) {
                     initEditor();
                 }
             });
-
         });
 
         initEditor();

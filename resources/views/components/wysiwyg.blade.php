@@ -12,6 +12,7 @@
     </x-slot>
 
     <x-slot name="footer">
+        @php $key = config('services.giphy.key') @endphp
 {{--        <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>--}}
 {{--        <script>window.jQuery || document.write('<script src="js/vendor/jquery-3.3.1.min.js"><\/script>')</script>--}}
 {{--        <script src="https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.27.3/trumbowyg.min.js"></script>--}}
@@ -42,14 +43,14 @@
                 defaultLinkTarget: '_blank',
                 plugins: {
                     giphy: {
-                        apiKey: '62PK2gWy7WRueqj7TcH96h4cGRnSYvqM'
+                        apiKey: '{{ $key }}'
                     },
                     upload: {
                         serverPath: '/upload-image?_token=' + csrfToken,
                         fileFieldName: 'image',
                         urlPropertyName: 'url',
                         error: (error) => {
-                            console.log('funking error', error)
+                            console.log('error', error)
                         }
                     }
                 }

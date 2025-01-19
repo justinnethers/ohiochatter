@@ -18,11 +18,11 @@ class ThreadController extends Controller
         $threads = Thread::query()
             ->select('threads.*')
             ->orderByRaw('GREATEST(
-        COALESCE((SELECT MAX(created_at) FROM replies
-         WHERE thread_id = threads.id AND deleted_at IS NULL), threads.created_at),
-        threads.created_at,
-        threads.updated_at
-    ) DESC')
+                COALESCE((SELECT MAX(created_at) FROM replies
+                 WHERE thread_id = threads.id AND deleted_at IS NULL), threads.created_at),
+                threads.created_at,
+                threads.updated_at
+            ) DESC')
             ->paginate(config('forum.threads_per_page'));
 
         return view('threads.index', compact('threads'));

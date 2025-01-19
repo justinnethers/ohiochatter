@@ -51,7 +51,7 @@
                     <textarea id="editor-{{ $post->id }}">{{ $body }}</textarea>
                 </div>
             @else
-                <div class="prose prose-invert prose-lg" wire:key="post-{{ $post->id }}">
+                <div class="post-body" wire:key="post-{{ $post->id }}">
                     {!! $post->body !!}
                 </div>
             @endif

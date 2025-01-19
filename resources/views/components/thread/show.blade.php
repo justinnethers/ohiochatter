@@ -8,12 +8,10 @@
 
         @if (app('request')->input('page') == 1 || !app('request')->input('page'))
             <livewire:post-component :post="$thread" />
-{{--            <x-post.post :post="$thread" :$poll :$hasVoted :$voteCount />--}}
         @endif
 
         @foreach ($replies as $post)
                 <livewire:post-component :$post />
-{{--            <x-post.post :$post :poll="false" :hasVoted="false" :voteCount="0" />--}}
         @endforeach
 
             @if (auth()->check())
@@ -42,9 +40,19 @@
             const body = $('#body');
             const currentContent = body.trumbowyg('html') || '';
 
-            // Add a unique timestamp to the class to ensure uniqueness
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = event.quote;
+
+            const blockquote = tempDiv.querySelector('blockquote');
+            if (blockquote) {
+                const nestedQuotes = blockquote.querySelectorAll('blockquote');
+                nestedQuotes.forEach(quote => quote.remove());
+            }
+
+            const cleanedQuote = tempDiv.innerHTML;
+
             const uniqueClass = 'to-focus-' + Date.now();
-            body.trumbowyg('html', currentContent + event.quote + `<br><p class='${uniqueClass}'></p>`);
+            body.trumbowyg('html', currentContent + cleanedQuote + `<br><p class='${uniqueClass}'></p>`);
 
             setTimeout(() => {
                 const editorBox = body.closest('.trumbowyg-box')[0];
@@ -56,7 +64,6 @@
                         if (editableDiv) {
                             editableDiv.focus();
 
-                            // Find the specific paragraph we just added
                             const toFocus = editableDiv.querySelector(`.${uniqueClass}`);
                             if (toFocus) {
                                 const range = document.createRange();

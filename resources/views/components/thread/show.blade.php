@@ -41,24 +41,23 @@
         Livewire.on('insertQuote', (event) => {
             const body = $('#body');
             const currentContent = body.trumbowyg('html') || '';
-            body.trumbowyg('html', currentContent + event.quote + "<br><p class='to-focus'></p>");
 
-            // Wait a tiny bit for the content to be inserted
+            // Add a unique timestamp to the class to ensure uniqueness
+            const uniqueClass = 'to-focus-' + Date.now();
+            body.trumbowyg('html', currentContent + event.quote + `<br><p class='${uniqueClass}'></p>`);
+
             setTimeout(() => {
                 const editorBox = body.closest('.trumbowyg-box')[0];
                 if (editorBox) {
-                    // First scroll smoothly
                     editorBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-                    // Then wait for scroll to complete before focusing
                     setTimeout(() => {
                         const editableDiv = editorBox.querySelector('.trumbowyg-editor');
                         if (editableDiv) {
-                            // Focus the editor
                             editableDiv.focus();
 
-                            // Move cursor to the empty paragraph we added
-                            const toFocus = editableDiv.querySelector('.to-focus');
+                            // Find the specific paragraph we just added
+                            const toFocus = editableDiv.querySelector(`.${uniqueClass}`);
                             if (toFocus) {
                                 const range = document.createRange();
                                 const sel = window.getSelection();
@@ -68,7 +67,7 @@
                                 sel.addRange(range);
                             }
                         }
-                    }, 500); // Wait for scroll to complete
+                    }, 500);
                 }
             }, 150);
         });

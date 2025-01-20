@@ -12,10 +12,8 @@ class FetchThreadDetails
     {
         $repliesPerPage = $this->getRepliesPerPage();
 
-        // Eager load thread relationships up front
         $thread->load(['reps.user', 'negs.user']);
 
-        // Load paginated replies with all needed relationships
         $replies = $thread->replies()
             ->with(['owner', 'reps.user', 'negs.user'])
             ->paginate($repliesPerPage);

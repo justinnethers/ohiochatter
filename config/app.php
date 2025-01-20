@@ -70,7 +70,9 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'America/New_York',
+
+    'date_timezone' => 'America/New_York',
 
     /*
     |--------------------------------------------------------------------------

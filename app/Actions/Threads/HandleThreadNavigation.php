@@ -14,9 +14,6 @@ class HandleThreadNavigation
             return null;
         }
 
-        auth()->user()->read($thread);
-        auth()->user()->touchActivity();
-
         if (!$request->exists('newestpost')) {
             return null;
         }
@@ -27,6 +24,9 @@ class HandleThreadNavigation
     private function handleNewestPostNavigation(Forum $forum, Thread $thread): ?string
     {
         $lastView = auth()->user()->lastViewedThreadAt($thread);
+
+        auth()->user()->read($thread);
+        auth()->user()->touchActivity();
 
         if (!$lastView) {
             return null;
@@ -39,13 +39,10 @@ class HandleThreadNavigation
             ->where('created_at', '>=', $lastView)
             ->get();
 
-        $repliesSinceLastViewCount = $repliesSinceLastView->count();
+        if ($repliesSinceLastView->count() > 0) {
+            $page = (int) (($repliesCount - $repliesSinceLastView->count()) / $repliesPerPage) + 1;
 
-        if ($repliesSinceLastViewCount > 0) {
-            $key = $repliesSinceLastView->keys()[0];
-            $page = (int) (($repliesCount - $repliesSinceLastViewCount) / $repliesPerPage) + 1;
-
-            return "/forums/{$forum->slug}/{$thread->slug}/?page={$page}#reply-{$repliesSinceLastView[$key]->id}";
+            return "/forums/{$forum->slug}/{$thread->slug}/?page={$page}#reply-{$repliesSinceLastView->first()->id}";
         }
 
         $page = (int) ($repliesCount / $repliesPerPage) + 1;

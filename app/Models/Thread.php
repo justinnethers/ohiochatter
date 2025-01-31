@@ -86,11 +86,12 @@ class Thread extends Model
 
     public function replyCount()
     {
-        return Cache::rememberForever("thread-{$this->id}-reply-count", function() {
+        // Commented out because the replyCount was not returning the correct number.
+//        return Cache::rememberForever("thread-{$this->id}-reply-count", function() {
             return $this->replies()
                 ->whereNull('deleted_at')
                 ->count();
-        });
+//        });
     }
 
     public function lastReply()

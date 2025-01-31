@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Poll;
 use App\Models\Thread;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use App\Models\Reply;
 
@@ -46,6 +47,12 @@ class PostComponent extends Component
     public function updated($field)
     {
         \Log::info('Field updated:', ['field' => $field, 'value' => $this->$field]);
+    }
+
+    #[On('post-deleted')]
+    public function handlePostDeleted()
+    {
+        $this->dispatch('remove-post', postId: $this->post->id);
     }
 
     public function render()

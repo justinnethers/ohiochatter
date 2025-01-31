@@ -36,8 +36,8 @@ class PostComponent extends Component
 
     public function save(): void
     {
-//        $this->post->body = $this->body;
-//        $this->post->save();
+        $this->post->body = $this->body;
+        $this->post->save();
         $this->editMode = false;
         $this->dispatch('destroy-editor', ['editorId' => $this->post->id]);
         session()->flash('message', 'Post updated successfully.');

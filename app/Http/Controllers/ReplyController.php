@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreReplyRequest;
-use App\Http\Requests\UpdateReplyRequest;
 use App\Models\Forum;
 use App\Models\Reply;
 use App\Models\Thread;
@@ -34,20 +33,6 @@ class ReplyController extends Controller
         $page       = (int) ceil($replyCount / $perPage);
 
         return redirect($thread->path("?page={$page}#reply-{$reply->id}"));
-    }
-
-    /**
-     * Update the specified reply in storage.
-     *
-     * @param  UpdateReplyRequest $request
-     * @param  Reply $reply
-     * @return bool
-     */
-    public function update(UpdateReplyRequest $request, Reply $reply): bool
-    {
-        return $reply->update([
-            'body' => $request->body,
-        ]);
     }
 
     /**

@@ -7,28 +7,43 @@ use App\Http\Requests\UpdateReplyRequest;
 use App\Models\Forum;
 use App\Models\Reply;
 use App\Models\Thread;
+use Illuminate\Http\RedirectResponse;
 
 class ReplyController extends Controller
 {
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created reply in storage.
+     *
+     * @param  Forum  $forum
+     * @param  Thread $thread
+     * @param  StoreReplyRequest $request
+     * @return RedirectResponse
      */
-    public function store(Forum $forum, Thread $thread, StoreReplyRequest $request)
+    public function store(Forum $forum, Thread $thread, StoreReplyRequest $request): RedirectResponse
     {
         $reply = $thread->addReply([
-            'body' => $request->body,
-            'user_id' => auth()->id()
+            'body'    => $request->body,
+            'user_id' => auth()->id(),
         ])->load('owner');
 
-        $page = (int) ($thread->replyCount() / auth()->user()->repliesPerPage()) + 1;
+        // Calculate the page number where the new reply is located.
+        // Using ceil() ensures that if the number of replies exactly fills a page,
+        // the reply still shows on the correct page.
+        $perPage    = auth()->user()->repliesPerPage();
+        $replyCount = $thread->replyCount();
+        $page       = (int) ceil($replyCount / $perPage);
 
-        return redirect($thread->path('?page='.$page. '#reply-'.$reply->id));
+        return redirect($thread->path("?page={$page}#reply-{$reply->id}"));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified reply in storage.
+     *
+     * @param  UpdateReplyRequest $request
+     * @param  Reply $reply
+     * @return bool
      */
-    public function update(UpdateReplyRequest $request, Reply $reply)
+    public function update(UpdateReplyRequest $request, Reply $reply): bool
     {
         return $reply->update([
             'body' => $request->body,
@@ -36,9 +51,12 @@ class ReplyController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified reply from storage.
+     *
+     * @param  Reply $reply
+     * @return bool
      */
-    public function destroy(Reply $reply)
+    public function destroy(Reply $reply): bool
     {
         return $reply->delete();
     }

@@ -1,20 +1,25 @@
-<footer class="bg-gray-800 text-gray-300 p-8 pb-32 mt-8 ">
-    <div class="container mx-auto px-4">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-
-            <div class="md:col-span-2 flex flex-col items-center md:items-start">
-                <div class="size-48 bg-white p-2 rounded-lg mb-4">
-                    <img src="{{ asset('images/logo.png') }}" alt="Site Logo" class="w-full h-full object-contain">
+<footer class="bg-gray-800 text-gray-300 p-4 md:p-8 pb-32 mt-8">
+    <div class="container mx-auto md:px-4">
+        <!-- lg:grid-cols-4 accommodates the empty column spacing requirement without extra markup -->
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <div class="order-last lg:order-first">
+                <div class="flex flex-col items-center lg:items-start">
+                    <div class="size-48 bg-white p-2 rounded-lg mb-4">
+                        <img src="{{ asset('images/logo.png') }}" alt="Site Logo" class="w-full h-full object-contain">
+                    </div>
+                    <p class="text-sm text-gray-400 text-center lg:text-left">
+                        &copy; {{ date('Y') }} Ohio Chatter. All rights reserved.
+                    </p>
                 </div>
-                <p class="text-sm text-gray-400 text-center md:text-left">
-                    &copy; {{ date('Y') }} Ohio Chatter. All rights reserved.
-                </p>
             </div>
 
+            <div class="hidden lg:block"></div>
 
-            <div class="gap-8 grid grid-cols-1">
+            <!-- col-span-2 creates asymmetric grid distribution for search/menu layout -->
+            <div class="lg:col-span-2 space-y-8">
                 <x-search-form />
-                <div class="grid grid-cols-1 md:grid-cols-3">
+
+                <div class="grid grid-cols-2 md:grid-cols-2 gap-8">
                     <div>
                         <h3 class="text-lg font-semibold mb-4">Forums</h3>
                         <ul class="space-y-2">
@@ -73,24 +78,21 @@
                                 </li>
                             @endauth
                             <li>
-                                <a
-                                    href="https://paypal.me/justinnethers?locale.x=en_US"
-                                    class="hover:text-orange-500 transition-colors"
-                                    target="_blank"
-                                >
+                                <a href="https://paypal.me/justinnethers?locale.x=en_US"
+                                   class="hover:text-orange-500 transition-colors"
+                                   target="_blank">
                                     Buy Me A Beer 🍺
                                 </a>
                             </li>
-                                <li>
-                                    <a href="{{ route('privacy') }}" class="hover:text-white transition-colors">
-                                        Privacy Policy
-                                    </a>
-                                </li>
+                            <li>
+                                <a href="{{ route('privacy') }}" class="hover:text-white transition-colors">
+                                    Privacy Policy
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </footer>

@@ -38,3 +38,7 @@ blockquote {
     max-width: 100%;
     height: auto !important;
 }
+
+[id^="reply-"] {
+    scroll-margin-top: 110px;
+}

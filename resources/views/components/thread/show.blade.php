@@ -40,9 +40,11 @@
             const body = $('#body');
             const currentContent = body.trumbowyg('html') || '';
 
+            // Create temporary div to clean the quote
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = event.quote;
 
+            // Clean nested blockquotes
             const blockquote = tempDiv.querySelector('blockquote');
             if (blockquote) {
                 const nestedQuotes = blockquote.querySelectorAll('blockquote');
@@ -50,10 +52,17 @@
             }
 
             const cleanedQuote = tempDiv.innerHTML;
-
             const uniqueClass = 'to-focus-' + Date.now();
-            body.trumbowyg('html', currentContent + cleanedQuote + `<br><p class='${uniqueClass}'></p>`);
 
+            // Create the new content with proper structure
+            const newContent = `${currentContent}
+            ${cleanedQuote}
+            <p class="${uniqueClass}"><br></p>`;
+
+            // Set the HTML content
+            body.trumbowyg('html', newContent);
+
+            // Handle focusing
             setTimeout(() => {
                 const editorBox = body.closest('.trumbowyg-box')[0];
                 if (editorBox) {
@@ -62,16 +71,27 @@
                     setTimeout(() => {
                         const editableDiv = editorBox.querySelector('.trumbowyg-editor');
                         if (editableDiv) {
-                            editableDiv.focus();
-
-                            const toFocus = editableDiv.querySelector(`.${uniqueClass}`);
+                            const toFocus = editableDiv.querySelector(`p.${uniqueClass}`);
                             if (toFocus) {
+                                // Ensure the paragraph has content for proper focus
+                                if (!toFocus.firstChild) {
+                                    toFocus.innerHTML = '<br>';
+                                }
+
+                                // Create and set the selection range
                                 const range = document.createRange();
                                 const sel = window.getSelection();
+
+                                // Set the range to the start of the paragraph
                                 range.setStart(toFocus, 0);
                                 range.collapse(true);
+
+                                // Apply the selection
                                 sel.removeAllRanges();
                                 sel.addRange(range);
+
+                                // Focus the editor
+                                editableDiv.focus();
                             }
                         }
                     }, 500);

@@ -17,7 +17,7 @@ class QuoteButton extends Component
 
         // Format the quote with a proper paragraph break after
         $quote = sprintf(
-            '<blockquote class="border-l-4 border-gray-300 pl-4 my-4"><strong>%s wrote:</strong><br>%s</blockquote><div><br></div>',
+            '<blockquote class="border-l-4 border-gray-300 pl-4 my-4"><strong>%s wrote:</strong><br>%s</blockquote>',
             htmlspecialchars($username),
             $content
         );

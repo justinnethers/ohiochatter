@@ -42,3 +42,19 @@ blockquote {
 [id^="reply-"] {
     scroll-margin-top: 110px;
 }
+
+.trumbowyg.trumbowyg-editor-hidden .trumbowyg-textarea {
+    @apply text-black;
+}
+
+iframe[allowfullscreen] {
+    width: 100% !important;
+    max-width: 600px;
+    height: auto;
+    margin-top: 1rem;
+    aspect-ratio: 16 / 9;
+}
+
+blockquote {
+    margin-bottom: 1rem;
+}

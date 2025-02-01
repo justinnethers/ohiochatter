@@ -15,55 +15,25 @@ use Laravel\Scout\Searchable;
 
 class Thread extends Model
 {
-    use HasFactory;
-    use Reppable;
-    use Searchable;
-    use SoftDeletes;
+    use HasFactory, Reppable, Searchable, SoftDeletes;
 
     protected $guarded = [];
 
     protected $with = ['owner', 'forum', 'poll'];
 
-    protected static function boot()
+    protected static function boot(): void
     {
         parent::boot();
 
-        static::deleting(function ($thread) {
+        // Delete all replies when a thread is deleted.
+        static::deleting(function (Thread $thread) {
             $thread->replies->each->delete();
         });
 
-        static::created(function ($thread) {
+        // Update the slug attribute after creation.
+        static::created(function (Thread $thread) {
             $thread->update(['slug' => $thread->title]);
         });
-    }
-
-    public function replies(): HasMany
-    {
-        return $this->hasMany(Reply::class);
-    }
-
-    public function owner(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'user_id');
-    }
-
-    public function forum(): BelongsTo
-    {
-        return $this->belongsTo(Forum::class);
-    }
-
-    public function poll(): HasOne
-    {
-        return $this->hasOne(Poll::class);
-    }
-
-    public function hasUpdatesFor($user)
-    {
-        $lastVisit = $user->lastVisitToThread($this);
-
-        if (! $lastVisit) return true;
-
-        return $this->updated_at > $lastVisit->last_view;
     }
 
     public function getRouteKeyName(): string
@@ -71,55 +41,113 @@ class Thread extends Model
         return 'slug';
     }
 
-//    public function path($extra = '')
-//    {
-//        return "/forums/{$this->forum->slug}/{$this->slug}" . $extra;
-//    }
-
-    public function path($extra = '')
+    public function forum(): BelongsTo
     {
-        return route('thread.show', [
-                'forum' => $this->forum->slug,
-                'thread' => $this->slug
-            ]) . $extra;
+        return $this->belongsTo(Forum::class);
     }
 
-    public function replyCount()
-    {
-        // Commented out because the replyCount was not returning the correct number.
-//        return Cache::rememberForever("thread-{$this->id}-reply-count", function() {
-            return $this->replies()
-                ->whereNull('deleted_at')
-                ->count();
-//        });
-    }
-
-    public function lastReply()
+    public function lastReply(): HasOne
     {
         return $this->hasOne(Reply::class)->latest();
     }
 
-    public function addReply($reply)
+    public function owner(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function poll(): HasOne
+    {
+        return $this->hasOne(Poll::class);
+    }
+
+    public function replies(): HasMany
+    {
+        return $this->hasMany(Reply::class);
+    }
+
+    /**
+     * Determine if the thread has updates for the given user.
+     *
+     * @param User $user
+     * @return bool
+     */
+    public function hasUpdatesFor(User $user): bool
+    {
+        $lastVisit = $user->lastViewedThreadAt($this);
+
+        if (! $lastVisit) {
+            return true;
+        }
+
+        return $this->updated_at->gt($lastVisit);
+    }
+
+    /**
+     * Get the URL path for the thread.
+     *
+     * @param string $extra
+     * @return string
+     */
+    public function path(string $extra = ''): string
+    {
+        return route('thread.show', [
+                'forum'  => $this->forum->slug,
+                'thread' => $this->slug,
+            ]) . $extra;
+    }
+
+    /**
+     * Get the number of replies for the thread.
+     *
+     * @return int
+     */
+    public function replyCount(): int
+    {
+        return $this->replies()
+            ->whereNull('deleted_at')
+            ->count();
+    }
+
+    /**
+     * Add a reply to the thread.
+     *
+     * @param  array  $reply
+     * @return Model
+     */
+    public function addReply(array $reply): Model
     {
         return $this->replies()->create($reply);
     }
 
-    public function setSlugAttribute($value)
+    /**
+     * Set the slug attribute for the thread.
+     *
+     * @param string $value
+     * @return void
+     */
+    public function setSlugAttribute(string $value): void
     {
         $slug = Str::slug($value);
 
+        // Ensure the slug is unique.
         while (static::whereSlug($slug)->exists()) {
-            $slug = "{$slug}-" . $this->id;
+            $slug = "{$slug}-{$this->id}";
         }
 
         $this->attributes['slug'] = $slug;
     }
 
-    public function toSearchableArray()
+    /**
+     * Get the array representation of the model for Laravel Scout indexing.
+     *
+     * @return array
+     */
+    public function toSearchableArray(): array
     {
         return [
             'title' => $this->title,
-            'body' => $this->body,
+            'body'  => $this->body,
         ];
     }
 }

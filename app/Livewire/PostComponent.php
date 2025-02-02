@@ -44,11 +44,6 @@ class PostComponent extends Component
         session()->flash('message', 'Post updated successfully.');
     }
 
-    public function updated($field)
-    {
-        \Log::info('Field updated:', ['field' => $field, 'value' => $this->$field]);
-    }
-
     #[On('post-deleted')]
     public function handlePostDeleted()
     {

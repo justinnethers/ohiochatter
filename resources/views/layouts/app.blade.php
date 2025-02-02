@@ -38,7 +38,6 @@
 <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
     @include('layouts.navigation')
 
-    <!-- Page Heading -->
     @if (isset($header))
         <header x-data="{ scrolled: false }"
                 x-init="window.addEventListener('scroll', () => scrolled = window.pageYOffset > 60)"
@@ -50,10 +49,10 @@
         </header>
     @endif
 
-    <!-- Page Content -->
     <main class="container mx-auto mt-24">
         {{ $slot }}
     </main>
+
     @include('layouts.footer')
 </div>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>

@@ -52,7 +52,7 @@
         </header>
     @endif
 
-    <main class="container mx-auto mt-24">
+    <main class="container max-w-7xl mx-auto mt-24">
         {{ $slot }}
     </main>
 

@@ -5,7 +5,9 @@
             <div class="order-last lg:order-first">
                 <div class="flex flex-col items-center lg:items-start">
                     <div class="size-48 bg-white p-2 rounded-lg mb-4">
-                        <img src="{{ asset('images/logo.png') }}" alt="Site Logo" class="w-full h-full object-contain">
+                        <a href="/">
+                            <img src="{{ asset('images/logo.png') }}" alt="Site Logo" class="w-full h-full object-contain">
+                        </a>
                     </div>
                     <p class="text-sm text-gray-400 text-center lg:text-left">
                         &copy; {{ date('Y') }} Ohio Chatter. All rights reserved.

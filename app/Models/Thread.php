@@ -84,7 +84,9 @@ class Thread extends Model
         Log::debug('hasUpdatesFor', [
             'updated_at' => $this->updated_at,
             'lastVisit' => $lastVisit,
-            'check' => $this->updated_at->gt($lastVisit)
+            'check' => $this->updated_at->gt($lastVisit),
+            'user' => $user->username,
+            'thread' => $this->title
         ]);
 
         return $this->updated_at->gt($lastVisit);

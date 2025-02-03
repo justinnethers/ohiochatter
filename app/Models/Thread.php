@@ -89,6 +89,8 @@ class Thread extends Model
             'thread' => $this->title
         ]);
 
+        return $this->lastReply()->created_at->gt($lastVisit);
+
         return $this->updated_at->gt($lastVisit);
     }
 

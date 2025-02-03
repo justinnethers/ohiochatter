@@ -77,15 +77,18 @@ class Thread extends Model
     {
         $lastVisit = $user->lastViewedThreadAt($this);
 
+        // if the user has never viewed the thread
         if (! $lastVisit) {
             return true;
         }
 
-        if (!$this->lastReply) {
-            $this->created_at->gt($lastVisit);
+        // if it's a new thread compare to the thread created_at date
+        if (! $this->lastReply) {
+            return $this->created_at->gt($lastVisit);
         }
 
-        if (data_get($this->lastReply, 'user_id') === auth()->id()) {
+        // if the last reply was by the logged in user
+        if ($this->lastReply->user_id === auth()->id()) {
             return false;
         }
 

@@ -14,7 +14,7 @@
     </x-slot>
 
     <div class="md:rounded-lg md:bg-gray-800 p-2 md:p-8 md:mt-4">
-        <section class="container">
+        <section>
             @foreach ($threads as $thread)
                 <x-thread.listing :$thread :$forum />
             @endforeach

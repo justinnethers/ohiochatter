@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Laravel\Scout\Searchable;
 
@@ -79,6 +80,12 @@ class Thread extends Model
         if (! $lastVisit) {
             return true;
         }
+
+        Log::debug('hasUpdatesFor', [
+            'updated_at' => $this->updated_at,
+            'lastVisit' => $lastVisit,
+            'check' => $this->updated_at->gt($lastVisit)
+        ]);
 
         return $this->updated_at->gt($lastVisit);
     }

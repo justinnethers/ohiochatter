@@ -42,7 +42,7 @@
         <header x-data="{ scrolled: false }"
                 x-init="window.addEventListener('scroll', () => scrolled = window.pageYOffset > 60)"
                 :class="{ 'py-6 top-16': !scrolled, 'py-3 top-12': scrolled }"
-                class="bg-white dark:bg-gray-800 shadow sticky z-40 transition-all duration-300 py-6 top-16">
+                class="bg-gary-800 dark:bg-gray-800 shadow sticky z-40 transition-all duration-300 py-6 top-16">
             <div :class="{ 'text-3xl': !scrolled, 'text-xl': scrolled }" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {{ $header }}
             </div>

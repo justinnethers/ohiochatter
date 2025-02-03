@@ -6,7 +6,7 @@ Alpine.start()
 
 window.addEventListener('scroll', () => {
     const nav = document.querySelector('nav');
-    const header = document.querySelector('header.bg-white');
+    const header = document.querySelector('header.bg-gray-800');
     const scrolled = window.pageYOffset > 60;
 
     nav.classList.toggle('h-12', scrolled);

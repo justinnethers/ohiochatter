@@ -81,7 +81,7 @@ class Thread extends Model
             return true;
         }
 
-        if ($this->lastReply->user_id === auth()->id()) {
+        if (data_get($this->lastReply, 'user_id') === auth()->id()) {
             return false;
         }
 

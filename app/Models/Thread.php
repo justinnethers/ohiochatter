@@ -81,17 +81,7 @@ class Thread extends Model
             return true;
         }
 
-        Log::debug('hasUpdatesFor', [
-            'updated_at' => $this->updated_at,
-            'lastVisit' => $lastVisit,
-            'check' => $this->updated_at->gt($lastVisit),
-            'user' => $user->username,
-            'thread' => $this->title
-        ]);
-
-        return $this->lastReply()->created_at->gt($lastVisit);
-
-        return $this->updated_at->gt($lastVisit);
+        return $this->lastReply->created_at->gt($lastVisit);
     }
 
     /**

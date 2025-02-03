@@ -3,3 +3,6 @@ integrations:
     dev.ohiochatter.com:
       server-id: 694784
       site-id: 2021400
+    ohiochatter.com:
+      server-id: 694784
+      site-id: 2594738

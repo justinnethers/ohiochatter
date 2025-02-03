@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="title">{{ $thread->title }}</x-slot>
     <x-slot name="header">
-        <h2 class="font-semibold text-gray-800 dark:text-gray-200 leading-tight">
+        <h2 class="font-semibold text-gray-200 dark:text-gray-200 leading-tight">
             {{ $thread->title }}
         </h2>
     </x-slot>

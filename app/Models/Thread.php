@@ -81,6 +81,10 @@ class Thread extends Model
             return true;
         }
 
+        if ($this->lastReply->user_id === auth()->id()) {
+            return false;
+        }
+
         return $this->lastReply->created_at->gt($lastVisit);
     }
 

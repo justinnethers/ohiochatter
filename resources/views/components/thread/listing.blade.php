@@ -8,7 +8,7 @@
             <span class="">&raquo;</span>
         @endif
         @if (auth()->check() && $thread->hasUpdatesFor(auth()->user()))
-            <span class="font-bold">
+            <span class="font-black">
                 @if ($thread->poll)Poll: @endif{{ $thread->title }}
             </span>
         @else

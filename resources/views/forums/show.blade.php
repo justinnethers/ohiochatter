@@ -14,11 +14,12 @@
     </x-slot>
 
     <div class="md:rounded-lg md:bg-gray-800 p-2 md:p-8 md:mt-4">
+        {{ $threads->links('pagination::tailwind', ['top' => true]) }}
         <section>
             @foreach ($threads as $thread)
                 <x-thread.listing :$thread :$forum />
             @endforeach
         </section>
-        {{ $threads->links() }}
+        {{ $threads->links('pagination::tailwind', ['top' => false]) }}
     </div>
 </x-app-layout>

@@ -64,7 +64,7 @@
                 </div>
             @endif
         </div>
-        <div class="flex justify-end p-4 space-x-4">
+        <div class="flex justify-end items-center p-4 space-x-4">
             <livewire:quote-button :post="$post" />
             <livewire:reputation :post="$post" />
         </div>

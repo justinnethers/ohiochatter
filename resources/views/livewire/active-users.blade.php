@@ -6,7 +6,7 @@
             <div class="flex items-center gap-2">
                 <div class="relative">
                     <x-avatar :avatar-path="$user->avatar_path" size="8"/>
-                    <div class="absolute bottom-0 right-0 h-3 w-3 bg-green-500 border-2 border-gray-800 rounded-full"></div>
+{{--                    <div class="absolute bottom-0 right-0 h-3 w-3 bg-green-500 border-2 border-gray-800 rounded-full"></div>--}}
                 </div>
                 <div class="flex flex-col">
                     <span class="text-white text-sm font-medium">{{ $user->username }}</span>

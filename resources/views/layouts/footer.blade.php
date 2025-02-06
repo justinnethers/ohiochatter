@@ -1,5 +1,5 @@
 <footer class="bg-gray-800 text-gray-300 p-4 md:p-8 pb-32 mt-8">
-    <div class="container mx-auto md:px-4">
+    <div class="container max-w-7xl mx-auto md:px-4">
         <!-- lg:grid-cols-4 accommodates the empty column spacing requirement without extra markup -->
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
             <div class="order-last lg:order-first">
@@ -15,7 +15,9 @@
                 </div>
             </div>
 
-            <div class="hidden lg:block"></div>
+{{--            <div class="hidden lg:block"></div>--}}
+
+            <livewire:active-users />
 
             <!-- col-span-2 creates asymmetric grid distribution for search/menu layout -->
             <div class="lg:col-span-2 space-y-8">

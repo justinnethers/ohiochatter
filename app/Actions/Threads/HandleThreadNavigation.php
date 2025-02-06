@@ -26,7 +26,6 @@ class HandleThreadNavigation
         $lastView = auth()->user()->lastViewedThreadAt($thread);
 
         auth()->user()->read($thread);
-        auth()->user()->touchActivity();
 
         if (!$lastView) {
             return null;

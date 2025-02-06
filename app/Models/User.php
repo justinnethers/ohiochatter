@@ -31,6 +31,7 @@ class User extends Authenticatable
 
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'last_activity' => 'datetime'
     ];
 
     public function replies(): HasMany

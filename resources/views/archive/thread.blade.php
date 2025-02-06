@@ -14,7 +14,7 @@
                         <div style="width: 150px;" class="w-auto">
                             <div>{{$post->username}}</div>
                             @if($post->creator && $post->creator->avatar)
-                                <img class="rounded-full size-12" src="/images/avatars/archive/{{ $post->creator->avatar->filename }}" />
+                                <img class="rounded-full size-12" src="/storage/avatars/archive/{{ $post->creator->avatar->filename }}" />
                             @endif
                         </div>
                         <div class="flex-1">

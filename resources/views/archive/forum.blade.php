@@ -12,7 +12,7 @@
                     <a href="/archive/{{ $thread->forumid }}/{{ $thread->threadid }}">
                         <h3 class="text-xl">{{ $thread->title }}</h3>
                         @if ($thread->creator && $thread->creator->avatar)
-                            <img class="rounded-full size-12" src="/images/avatars/archive/{{ $thread->creator->avatar->filename }}" />
+                            <img class="rounded-full size-12" src="/storage/avatars/archive/{{ $thread->creator->avatar->filename }}" />
                         @endif
                         @if ($thread->creator)
                         <p class="text-sm">{{ $thread->creator->username }}</p>

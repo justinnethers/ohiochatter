@@ -29,7 +29,7 @@ class ReplyController extends Controller
         // Using ceil() ensures that if the number of replies exactly fills a page,
         // the reply still shows on the correct page.
         $perPage    = auth()->user()->repliesPerPage();
-        $replyCount = $thread->replies_count;
+        $replyCount = $thread->replyCount();
         $page       = (int) ceil($replyCount / $perPage);
 
         return redirect($thread->path("?page={$page}#reply-{$reply->id}"));

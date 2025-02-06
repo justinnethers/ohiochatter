@@ -110,18 +110,6 @@ class Thread extends Model
     }
 
     /**
-     * Get the number of replies for the thread.
-     *
-     * @return int
-     */
-    public function replyCount(): int
-    {
-        return $this->replies()
-            ->whereNull('deleted_at')
-            ->count();
-    }
-
-    /**
      * Add a reply to the thread.
      *
      * @param  array  $reply

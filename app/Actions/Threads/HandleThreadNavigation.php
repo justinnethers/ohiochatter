@@ -32,7 +32,7 @@ class HandleThreadNavigation
         }
 
         $repliesPerPage = auth()->user()->repliesPerPage();
-        $repliesCount = $thread->replyCount();
+        $repliesCount = $thread->replies_count;
 
         $repliesSinceLastView = $thread->replies()
             ->where('created_at', '>=', $lastView)

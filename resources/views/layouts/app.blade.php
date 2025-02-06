@@ -24,6 +24,9 @@
         :root {
             --nav-height: 4rem;
         }
+        @view-transition {
+            navigation: auto;
+        }
     </style>
 
     @if (isset($head))

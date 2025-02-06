@@ -10,7 +10,7 @@
                         </a>
                     </div>
                     <p class="text-sm text-gray-400 text-center lg:text-left">
-                        &copy; {{ date('Y') }} Ohio Chatter. All rights reserved.
+                        &copy; {{ date('Y') }} Ohio Chatter.<br> All rights reserved.
                     </p>
                 </div>
             </div>

@@ -23,6 +23,7 @@ class ThreadController extends Controller
                 threads.created_at,
                 threads.updated_at
             ) DESC')
+            ->withCount('replies')
             ->paginate(config('forum.threads_per_page'));
 
         return view('threads.index', compact('threads'));

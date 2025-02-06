@@ -23,7 +23,6 @@ class ThreadFactory extends Factory
             'title' => $title,
             'slug' => Str::slug($title),
             'body' => fake()->paragraphs(3, true),
-            'replies_count' => 0,
             'views' => fake()->numberBetween(0, 1000),
             'locked' => false,
         ];

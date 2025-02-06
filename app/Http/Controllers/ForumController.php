@@ -21,6 +21,7 @@ class ForumController extends Controller
                 $join->on('threads.id', '=', 'replies.thread_id')
                     ->whereNull('replies.deleted_at');
             })
+            ->withCount('replies')
             ->groupBy('threads.id')
             ->orderByRaw('GREATEST(COALESCE(MAX(replies.created_at), threads.created_at), threads.updated_at) DESC')
             ->paginate(config('forum.threads_per_page'));

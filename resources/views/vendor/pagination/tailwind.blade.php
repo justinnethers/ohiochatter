@@ -1,5 +1,5 @@
 @if ($paginator->hasPages())
-    <nav role="navigation" aria-label="{{ __('Pagination Navigation') }}">
+    <nav role="navigation" aria-label="{{ __('Pagination Navigation') }}" class="py-2">
         <div class="flex justify-center items-center flex-1 sm:hidden @if(isset($top) && $top) mb-8 @else mt-8 @endif">
             <ul class="flex text-2xl md:text-sm">
                 <li class="mx-1 text-gray-600 rounded">
@@ -41,7 +41,7 @@
                     {{-- "Three Dots" Separator --}}
                 <ul>
                     @if (is_string($element))
-                        <span aria-disabled="true" class="relative inline-flex items-center px-4 py-2 -ml-px  text-gray-100 cursor-default leading-5">{{ $element }}</span>
+                        <span aria-disabled="true" class="relative inline-flex items-center px-4 -ml-px  text-gray-100 cursor-default leading-5">{{ $element }}</span>
                     @endif
 
                     {{-- Array Of Links --}}

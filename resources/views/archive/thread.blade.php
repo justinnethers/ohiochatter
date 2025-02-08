@@ -62,15 +62,6 @@
                                 {!! parseBBCode($post->pagetext) !!}
                             </div>
                         </div>
-
-                        <!-- Post Footer -->
-                        @if($post->ipaddress)
-                            <div class="bg-slate-900 px-6 py-2 text-right">
-                                <span class="text-xs text-gray-500">
-                                    Posted from: {{ $post->ipaddress }}
-                                </span>
-                            </div>
-                        @endif
                     </div>
                 @endforeach
             </div>

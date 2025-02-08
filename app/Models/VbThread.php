@@ -11,6 +11,8 @@ class VbThread extends Model
 
     protected $primaryKey = 'threadid';
 
+    protected $with = ['posts', 'forum', 'creator'];
+
     public function posts()
     {
         return $this->hasMany(VbPost::class, 'threadid', 'threadid');

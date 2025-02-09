@@ -39,12 +39,12 @@ class HandleThreadNavigation
             ->get();
 
         if ($repliesSinceLastView->count() > 0) {
-            $page = (int) (($repliesCount - $repliesSinceLastView->count()) / $repliesPerPage) + 1;
+            $page = ceil(($repliesCount - $repliesSinceLastView->count()) / $repliesPerPage);
 
             return "/forums/{$forum->slug}/{$thread->slug}/?page={$page}#reply-{$repliesSinceLastView->first()->id}";
         }
 
-        $page = (int) ($repliesCount / $repliesPerPage) + 1;
+        $page = ceil($repliesCount / $repliesPerPage);
         $lastReply = $thread->replies->last()->id ?? 0;
 
         return "/forums/{$forum->slug}/{$thread->slug}?page={$page}#reply-{$lastReply}";

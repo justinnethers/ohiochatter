@@ -4,7 +4,7 @@
     @endphp
     @if ($thread->replies_count > $repliesPerPage)
         @php
-            $pages = intval($thread->replies_count / $repliesPerPage) + 1
+            $pages = ceil($thread->replies_count / $repliesPerPage)
         @endphp
         @if ($pages > 1)
             @for ($i = 1; $i <= $pages; $i++)

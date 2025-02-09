@@ -18,6 +18,19 @@
         <section>
             @foreach ($threads as $thread)
                 <x-thread.listing :$thread :$forum />
+            @if ($forum->name === 'Politics')
+                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4406607721782655"
+                        crossorigin="anonymous"></script>
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-format="fluid"
+                     data-ad-layout-key="-fc+5g+70-cl-1m"
+                     data-ad-client="ca-pub-4406607721782655"
+                     data-ad-slot="7688497339"></ins>
+                <script>
+                    (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+                @endif
             @endforeach
         </section>
         {{ $threads->links('pagination::tailwind', ['top' => false]) }}

@@ -65,13 +65,34 @@
 <script>
     window.jQuery || document.write('<script src="/js/vendor/jquery-3.3.1.min.js"><\/script>')
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.27.3/trumbowyg.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.27.3/plugins/giphy/trumbowyg.giphy.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.27.3/plugins/table/trumbowyg.table.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.27.3/plugins/upload/trumbowyg.upload.min.js"></script>
-<script
-    src="https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.27.3/plugins/pasteembed/trumbowyg.pasteembed.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/trumbowyg@2.30.0/dist/trumbowyg.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/trumbowyg@2.30.0/dist/plugins/giphy/trumbowyg.giphy.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/trumbowyg@2.30.0/dist/plugins/table/trumbowyg.table.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/trumbowyg@2.30.0/dist/plugins/upload/trumbowyg.upload.min.js" crossorigin="anonymous"></script>
 
+<script>
+
+    !function(e){"use strict";var t={enabled:!0,endpoint:"https://noembed.com/embed?nowrap=on"};e.extend(!0,e.trumbowyg,{plugins:{pasteEmbed:{init:function(n){n.o.plugins.pasteEmbed=e.extend(!0,{},t,n.o.plugins.pasteEmbed||{}),Array.isArray(n.o.plugins.pasteEmbed.endpoints)&&(n.o.plugins.pasteEmbed.endpoint=n.o.plugins.pasteEmbed.endpoints[0]),n.o.plugins.pasteEmbed.enabled&&n.pasteHandlers.push((function(t){try{
+// Get the pasted text
+                    var a=(t.originalEvent||t).clipboardData.getData("Text");
+                    if(!a.startsWith("http"))return;
+
+// Convert x.com URLs to twitter.com before any other processing
+                    a = a.replace(/https?:\/\/(www\.)?x\.com/g, 'https://twitter.com');
+
+                    var s=n.o.plugins.pasteEmbed.endpoint;
+                    t.stopPropagation(),t.preventDefault();
+                    var i=new URL(s);
+                    i.searchParams.append("url",a.trim()),
+                        fetch(i,{method:"GET",cache:"no-cache",signal:AbortSignal.timeout(2e3)})
+                            .then((e=>e.json().then((e=>e.html))))
+                            .catch((()=>{}))
+                            .then((t=>{
+                                void 0===t&&(t=e("<a>",{href:a,text:a})[0].outerHTML),
+                                    n.execCmd("insertHTML",t)
+                            }))}catch(e){}}))}}}})}(jQuery);
+
+</script>
 
 @if (isset($footer))
     {{ $footer }}

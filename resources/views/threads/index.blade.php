@@ -5,9 +5,11 @@
             <h2 class="font-semibold text-gray-200 dark:text-gray-200 leading-tight">
                 All Threads
             </h2>
-            <x-nav-link
-                href="/threads/create"
-            >Create Thread</x-nav-link>
+            @if (auth()->check())
+                <x-nav-link
+                    href="/threads/create"
+                >Create Thread</x-nav-link>
+            @endif
         </div>
 
     </x-slot>

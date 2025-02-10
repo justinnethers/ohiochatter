@@ -58,3 +58,33 @@ iframe[allowfullscreen] {
 blockquote {
     margin-bottom: 1rem;
 }
+
+.trumbowyg-dark .trumbowyg-button-pane {
+    @apply bg-gray-700;
+    @apply border-gray-700;
+    margin: 0;
+    padding: 0;
+}
+
+.trumbowyg-dark .trumbowyg-button-pane .trumbowyg-button-group {
+    @apply bg-gray-700;
+    @apply border-none;
+}
+
+.trumbowyg-dark .trumbowyg-textarea {
+    @apply border-gray-950;
+}
+
+.trumbowyg-dark .trumbowyg-editor-box {
+    @apply bg-gray-800;
+}
+.trumbowyg-box.trumbowyg-editor-visible .trumbowyg-textarea {
+    height: 0px !important;
+}
+
+.trumbowyg-button-pane button {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    width: 50px;
+}

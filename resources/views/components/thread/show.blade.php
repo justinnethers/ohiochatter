@@ -16,7 +16,7 @@
 
             @if (auth()->check())
                 <form
-                    class="bg-gray-800 p-8 rounded-lg shadow mb-8"
+                    class="p-0 rounded-lg shadow mb-8"
                     action="{{ request()->url() }}/replies"
                     method="POST"
                 >

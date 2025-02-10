@@ -6,109 +6,112 @@
         </h2>
     </x-slot>
 
-    <form
-        class="bg-gray-800 p-8 rounded-lg shadow mb-8 mt-8"
-        action="/threads"
-        method="POST"
-    >
-        @csrf
-        @if ($errors->any())
-            <div class="mb-4 p-4 bg-red-500 text-white rounded">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-        <div class="p-2 md:p-0">
-            <div class="mb-4">
-                <x-input-label for="title">Title</x-input-label>
-                <x-text-input id="title" name="title" value="{{ old('title') }}" required />
-            </div>
-
-            <div class="mb-4">
-                <x-input-label for="forum_id">Forum</x-input-label>
-                <x-select id="forum_id" name="forum_id">
-                    @foreach ($forums as $f)
-                        @if ($f->id == $forum->id)
-                            @php ($selected = ' selected')
-                        @else
-                            @php ($selected = '')
-                        @endif
-                        @if ($f->is_restricted)
-                            @can('moderate', $f)
-                                <option value="{{ $f->id }}"{{ $selected }}>{{ $f->name }}</option>
-                            @endcan
-                        @else
-                            <option value="{{ $f->id }}"{{ $selected }}>{{ $f->name }}</option>
-                        @endif
-                    @endforeach
-                </x-select>
-            </div>
-
-            <div class="mb-4">
-                <x-wysiwyg id="body" />
-            </div>
-
-            <!-- Poll Section -->
-            <div class="mb-4">
-                <label class="inline-flex items-center text-gray-200">
-                    <input type="hidden" name="has_poll" value="0">
-                    <input type="checkbox"
-                           id="has_poll"
-                           name="has_poll"
-                           value="1"
-                           class="rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500"
-                        {{ old('has_poll') ? 'checked' : '' }}>
-                    <span class="ml-2">Add a poll to this thread</span>
-                </label>
-            </div>
-
-            <div id="poll-fields" class="mb-4" style="display: none;">
+    <div class="p-2">
+        <form
+            class="bg-gray-800 p-2 md:p-8 rounded-lg shadow mb-8 md:mt-8"
+            action="/threads"
+            method="POST"
+        >
+            @csrf
+            @if ($errors->any())
+                <div class="mb-4 p-4 bg-red-500 text-white rounded">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+            <div class="p-2 md:p-0">
                 <div class="mb-4">
-                    <x-input-label for="poll_type">Poll Type</x-input-label>
-                    <x-select id="poll_type" name="poll_type">
-                        <option value="single">Single Choice</option>
-                        <option value="multiple">Multiple Choice</option>
+                    <x-input-label for="title">Title</x-input-label>
+                    <x-text-input id="title" name="title" value="{{ old('title') }}" required />
+                </div>
+
+                <div class="mb-4">
+                    <x-input-label for="forum_id">Forum</x-input-label>
+                    <x-select id="forum_id" name="forum_id">
+                        @foreach ($forums as $f)
+                            @if ($f->id == $forum->id)
+                                @php ($selected = ' selected')
+                            @else
+                                @php ($selected = '')
+                            @endif
+                            @if ($f->is_restricted)
+                                @can('moderate', $f)
+                                    <option value="{{ $f->id }}"{{ $selected }}>{{ $f->name }}</option>
+                                @endcan
+                            @else
+                                <option value="{{ $f->id }}"{{ $selected }}>{{ $f->name }}</option>
+                            @endif
+                        @endforeach
                     </x-select>
                 </div>
 
-                <div id="poll-options" class="space-y-3">
-                    <div>
-                        <x-text-input
-                            type="text"
-                            name="options[]"
-                            placeholder="Option 1"
-                            value="{{ old('options.0') }}"
-                            class="w-full"
-                        />
-                    </div>
-                    <div>
-                        <x-text-input
-                            type="text"
-                            name="options[]"
-                            placeholder="Option 2"
-                            value="{{ old('options.1') }}"
-                            class="w-full"
-                        />
-                    </div>
+                <div class="mb-4">
+                    <x-wysiwyg id="body" />
                 </div>
 
-                <button type="button"
-                        id="add-option"
-                        class="mt-3 text-sm text-blue-400 hover:text-blue-300">
-                    + Add another option
-                </button>
-            </div>
+                <!-- Poll Section -->
+                <div class="mb-4">
+                    <label class="inline-flex items-center text-gray-200">
+                        <input type="hidden" name="has_poll" value="0">
+                        <input type="checkbox"
+                               id="has_poll"
+                               name="has_poll"
+                               value="1"
+                               class="rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500"
+                            {{ old('has_poll') ? 'checked' : '' }}>
+                        <span class="ml-2">Add a poll to this thread</span>
+                    </label>
+                </div>
 
-            <div>
-                <x-primary-button>Publish Thread</x-primary-button>
-            </div>
-        </div>
-    </form>
+                <div id="poll-fields" class="mb-4" style="display: none;">
+                    <div class="mb-4">
+                        <x-input-label for="poll_type">Poll Type</x-input-label>
+                        <x-select id="poll_type" name="poll_type">
+                            <option value="single">Single Choice</option>
+                            <option value="multiple">Multiple Choice</option>
+                        </x-select>
+                    </div>
 
-    <div class="h-8"></div>
+                    <div id="poll-options" class="space-y-3">
+                        <div>
+                            <x-text-input
+                                type="text"
+                                name="options[]"
+                                placeholder="Option 1"
+                                value="{{ old('options.0') }}"
+                                class="w-full"
+                            />
+                        </div>
+                        <div>
+                            <x-text-input
+                                type="text"
+                                name="options[]"
+                                placeholder="Option 2"
+                                value="{{ old('options.1') }}"
+                                class="w-full"
+                            />
+                        </div>
+                    </div>
+
+                    <button type="button"
+                            id="add-option"
+                            class="mt-3 text-sm text-blue-400 hover:text-blue-300">
+                        + Add another option
+                    </button>
+                </div>
+
+                <div>
+                    <x-primary-button>Publish Thread</x-primary-button>
+                </div>
+            </div>
+        </form>
+
+        <div class="h-8"></div>
+    </div>
+
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {

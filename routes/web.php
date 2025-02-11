@@ -91,3 +91,7 @@ Route::middleware('auth')->group(function () {
 Route::get('/privacy', function () {
     return view('privacy');
 })->name('privacy');
+
+Route::permanentRedirect('/forum', '/forums');
+Route::permanentRedirect('/forum/{any}', '/forums/{any}')
+    ->where('any', '.*');

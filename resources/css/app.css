@@ -59,11 +59,24 @@ blockquote {
     margin-bottom: 1rem;
 }
 
+.editor ul, .editor ol {
+    list-style: auto;
+}
+
+.trumbowyg-dark .trumbowyg-box {
+    border: none;
+}
+
+.trumbowyg-button-pane .trumbowyg-button-group::after {
+    padding: 0;
+}
+
 .trumbowyg-dark .trumbowyg-button-pane {
     @apply bg-gray-700;
-    @apply border-gray-700;
+    @apply rounded-t-lg;
     margin: 0;
     padding: 0;
+    border: none;
 }
 
 .trumbowyg-dark .trumbowyg-button-pane .trumbowyg-button-group {
@@ -72,11 +85,13 @@ blockquote {
 }
 
 .trumbowyg-dark .trumbowyg-textarea {
-    @apply border-gray-950;
+    /*@apply border-gray-950;*/
+    @apply rounded-b-lg;
 }
 
 .trumbowyg-dark .trumbowyg-editor-box {
     @apply bg-gray-800;
+    @apply rounded-b-lg;
 }
 .trumbowyg-box.trumbowyg-editor-visible .trumbowyg-textarea {
     height: 0px !important;
@@ -86,5 +101,5 @@ blockquote {
     display: flex;
     justify-content: center;
     align-content: center;
-    width: 50px;
+    width: 40px;
 }

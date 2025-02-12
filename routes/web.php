@@ -54,7 +54,7 @@ Route::middleware('auth')->group(function () {
 Route::prefix('archive')->group(function () {
     Route::get('', [ArchiveController::class, 'index'])->name('archive.index');
     Route::get('{forum}', [ArchiveController::class, 'forum']);
-    Route::get('{forum}/{thread}', [ArchiveController::class, 'thread']);
+    Route::get('{thread}', [ArchiveController::class, 'thread']);
 });
 
 Route::get('search', [SearchController::class, 'show'])->name('search.show');
@@ -91,6 +91,38 @@ Route::middleware('auth')->group(function () {
 Route::get('/privacy', function () {
     return view('privacy');
 })->name('privacy');
+
+Route::get('forum/showthread', function () {
+    // Grab the entire query string after the "?"
+    // For example, if the URL is:
+    //    https://ohiochatter.com/forum/showthread.php?48553-2017-OC-Mock-NFL-Draft-Round-1
+    // then $queryString will be:
+    //    "48553-2017-OC-Mock-NFL-Draft-Round-1"
+    $queryString = request()->getQueryString();
+
+    // If no query string is present, just redirect to some default
+    if (empty($queryString)) {
+        return redirect('/archive', 301);
+    }
+
+    // Split at the first dash to separate the thread ID from the rest
+    // parts[0] = 48553
+    // parts[1] = 2017-OC-Mock-NFL-Draft-Round-1
+    $parts = explode('-', $queryString, 2);
+
+    $threadId = $parts[0];
+    $titlePart = $parts[1] ?? '';
+
+    // Replace dashes with spaces for a more readable title
+    $title = str_replace('-', ' ', $titlePart);
+
+    // Build the target URL, for example:
+    //   /archive/48553?title=2017 OC Mock NFL Draft Round 1
+    return redirect()->to(
+        "/archive/{$threadId}?title=" . urlencode($title),
+        301
+    );
+});
 
 Route::permanentRedirect('/forum', '/forums');
 Route::permanentRedirect('/forum/{any}', '/forums/{any}')

@@ -7,7 +7,7 @@
                     {{ $thread->title }}
                 </h2>
                 <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                    <a href="/archive/{{ $thread->forum->forumid }}" class="hover:text-blue-400 transition-colors">
+                    <a href="/archive/forum/{{ $thread->forum->forumid }}" class="hover:text-blue-400 transition-colors">
                         {{ $thread->forum->title }}
                     </a>
                     <span>•</span>

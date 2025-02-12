@@ -8,6 +8,18 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4406607721782655"
+                    crossorigin="anonymous"></script>
+            <!-- OC Bottom Ad -->
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-4406607721782655"
+                 data-ad-slot="3473533118"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
             <x-archive-breadcrumbs :items="[
                 ['title' => $threads->first()?->forum->title ?? 'Forum']
             ]" />

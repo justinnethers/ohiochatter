@@ -2,14 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\VbCustomAvatar;
 use App\Models\VbForum;
 use App\Models\VbThread;
-use App\Models\VbUser;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 
 class ArchiveController extends Controller
 {
@@ -39,13 +34,13 @@ class ArchiveController extends Controller
         return view('archive/index', compact('forums'));
     }
 
-    public function forum(VbForum $forum, Request $request)
+    public function forum(VbForum $forum)
     {
         $threads = $forum->threads()->with('creator')->paginate(50);
         return view('archive/forum', compact('threads'));
     }
 
-    public function thread(VbForum $forum, VbThread $thread, Request $request)
+    public function thread(VbThread $thread)
     {
         $posts = $thread->posts()->orderBy('dateline')->paginate(25);
         return view('archive/thread', compact('posts', 'thread'));

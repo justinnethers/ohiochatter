@@ -14,7 +14,7 @@
                     <div class="bg-slate-800 shadow-lg rounded-lg overflow-hidden">
                         <!-- Forum Header -->
                         <div class="p-6">
-                            <a href="archive/{{ $forum->forumid }}" class="block">
+                            <a href="/archive/forum/{{ $forum->forumid }}" class="block">
                                 <h3 class="text-xl font-bold text-white hover:text-blue-400 transition-colors">
                                     {{ $forum->title }}
                                 </h3>
@@ -36,7 +36,7 @@
                                         {{ date('M j, Y', $forum->latest_thread_lastpost) }}
                                     </div>
 
-                                    <a href="archive/{{ $forum->forumid }}/{{ $forum->latest_thread_id }}"
+                                    <a href="archive/thread/{{ $forum->latest_thread_id }}?title={{ urlencode($forum->latest_thread_title) }}"
                                        class="block group">
                                         <h4 class="text-blue-400 group-hover:text-blue-300 font-medium line-clamp-1">
                                             {{ $forum->latest_thread_title }}

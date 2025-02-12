@@ -34,7 +34,7 @@
                                 <!-- Thread Content -->
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-center justify-between">
-                                        <a href="/archive/{{ $thread->forumid }}/{{ $thread->threadid }}"
+                                        <a href="/archive/thread/{{ $thread->threadid }}?title={{ urlencode($thread->title) }}"
                                            class="text-xl font-semibold text-white hover:text-blue-400 transition-colors truncate">
                                             {{ $thread->title }}
                                         </a>

@@ -44,6 +44,11 @@ class User extends Authenticatable
         return $this->hasMany(Search::class);
     }
 
+    public function isAdmin()
+    {
+        return $this->is_admin;
+    }
+
     public function getAvatarPathAttribute($avatar): string
     {
         if ($avatar) {

@@ -22,7 +22,7 @@
                 >
                     @csrf
                     <div>
-                        <x-wysiwyg id="body" wire:model.defer="body" />
+                        <x-wysiwyg id="body" wire:model.defer="body" :thread="$thread" />
                     </div>
                     <div class="h-4"></div>
                     <div class="flex justify-between">

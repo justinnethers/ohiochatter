@@ -23,8 +23,16 @@ class ThreadController extends Controller
                 threads.created_at,
                 threads.updated_at
             ) DESC')
+            ->with(['owner', 'lastReply.owner'])
             ->withCount('replies')
             ->paginate(config('forum.threads_per_page'));
+
+        // debugging query
+//        $threads = Thread::query()
+//            ->limit(3)
+//            ->with(['owner', 'lastReply.owner'])
+//            ->withCount('replies')
+//            ->paginate(3);
 
         return view('threads.index', compact('threads'));
     }

@@ -1,6 +1,6 @@
 @props(['thread'])
 @php
-    $forum = Cache::remember("forum_{$thread->forum->id}", 3600, fn() => $thread->forum);
+    $forum = Cache::rememberForever("forum_{$thread->forum->id}", fn() => $thread->forum);
 @endphp
 {{--    <span class="text-blue-950 bg-blue-300 text-red-950 bg-red-300 text-green-950 bg-green-300 text-orange-950 bg-orange-300"></span>--}}
 <div class="flex order-0 flex-1 md:flex-none">

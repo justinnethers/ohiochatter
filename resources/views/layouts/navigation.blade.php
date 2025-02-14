@@ -140,11 +140,11 @@
             <x-responsive-nav-link :href="route('messages.index')" :active="request()->routeIs('messages.index')">
                 {{ __('Messages') }}
                 @auth
-                    @if(($unreadCount = auth()->user()->threads->filter(function($thread) {
-                        return $thread->isUnread(auth()->id());
-                    })->count()) > 0)
-                        <span class="text-red-500">[{{ $unreadCount }} new]</span>
-                    @endif
+{{--                    @if(($unreadCount = auth()->user()->threads->filter(function($thread) {--}}
+{{--                        return $thread->isUnread(auth()->id());--}}
+{{--                    })->count()) > 0)--}}
+{{--                        <span class="text-red-500">[{{ $unreadCount }} new]</span>--}}
+{{--                    @endif--}}
                 @endauth
             </x-responsive-nav-link>
         </div>

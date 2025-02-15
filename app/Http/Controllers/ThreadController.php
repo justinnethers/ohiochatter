@@ -15,16 +15,21 @@ class ThreadController extends Controller
 {
     public function index()
     {
+//        $threads = Thread::query()
+//            ->select('threads.*')
+//            ->orderByRaw('GREATEST(
+//                COALESCE((SELECT MAX(created_at) FROM replies
+//                 WHERE thread_id = threads.id AND deleted_at IS NULL), threads.created_at),
+//                threads.created_at,
+//                threads.updated_at
+//            ) DESC')
+//            ->with(['owner', 'lastReply.owner'])
+//            ->withCount('replies')
+//            ->paginate(config('forum.threads_per_page'));
+
         $threads = Thread::query()
-            ->select('threads.*')
-            ->orderByRaw('GREATEST(
-                COALESCE((SELECT MAX(created_at) FROM replies
-                 WHERE thread_id = threads.id AND deleted_at IS NULL), threads.created_at),
-                threads.created_at,
-                threads.updated_at
-            ) DESC')
-            ->with(['owner', 'lastReply.owner'])
-            ->withCount('replies')
+            ->with(['owner', 'forum', 'poll'])
+            ->orderBy('last_activity_at', 'desc')
             ->paginate(config('forum.threads_per_page'));
 
         // debugging query

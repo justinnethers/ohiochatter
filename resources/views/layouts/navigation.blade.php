@@ -75,6 +75,12 @@
                             {{ __('Profile') }}
                         </x-dropdown-link>
 
+                        @if (Auth::user()->isAdmin())
+                            <x-dropdown-link :href="route('pulse')" target="_blank">
+                                {{ __('Pulse') }}
+                            </x-dropdown-link>
+                        @endif
+
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf

@@ -60,7 +60,7 @@
                 </div>
             @else
                 <div class="flex">
-                    <div class="post-body text-xl md:text-lg" wire:key="post-{{ $post->id }}">
+                    <div class="post-body text-xl md:text-lg flex-1" wire:key="post-{{ $post->id }}">
                         {!! $post->body !!}
                     </div>
                     @if($post instanceof \App\Models\Thread)

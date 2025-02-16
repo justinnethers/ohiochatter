@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Forum;
 use App\Models\Thread;
+use Illuminate\Support\Facades\Cache;
 
 class ForumController extends Controller
 {
@@ -13,11 +14,13 @@ class ForumController extends Controller
             return redirect('login');
         }
 
-        $threads = Thread::query()
-            ->with(['owner', 'forum', 'poll'])
-            ->where('forum_id', $forum->id)
-            ->orderBy('last_activity_at', 'desc')
-            ->paginate(config('forum.threads_per_page'));
+        $threads = Cache::remember("forum_{$forum->id}_threads", now()->addDay(), function() use ($forum) {
+            return Thread::query()
+                ->with(['owner', 'forum', 'poll'])
+                ->where('forum_id', $forum->id)
+                ->orderBy('last_activity_at', 'desc')
+                ->paginate(config('forum.threads_per_page'));
+        });
 
         return view('forums.show', compact('forum', 'threads'));
     }

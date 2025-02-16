@@ -10,15 +10,18 @@ use App\Http\Requests\UpdateThreadRequest;
 use App\Models\Forum;
 use App\Models\Thread;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ThreadController extends Controller
 {
     public function index()
     {
-        $threads = Thread::query()
-            ->with(['owner', 'forum', 'poll'])
-            ->orderBy('last_activity_at', 'desc')
-            ->paginate(config('forum.threads_per_page'));
+        $threads = Cache::remember('all_threads', now()->addDay(), function() {
+            return Thread::query()
+                ->with(['owner', 'forum', 'poll'])
+                ->orderBy('last_activity_at', 'desc')
+                ->paginate(config('forum.threads_per_page'));
+        });
 
         return view('threads.index', compact('threads'));
     }

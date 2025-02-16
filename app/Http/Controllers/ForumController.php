@@ -14,7 +14,8 @@ class ForumController extends Controller
             return redirect('login');
         }
 
-        $threads = Cache::remember("forum_{$forum->id}_threads", now()->addDay(), function() use ($forum) {
+        $page = request()->get('page', 1);
+        $threads = Cache::remember("forum_{$forum->id}_threads_page_{$page}", now()->addDay(), function() use ($forum) {
             return Thread::query()
                 ->with(['owner', 'forum', 'poll'])
                 ->where('forum_id', $forum->id)

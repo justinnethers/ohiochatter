@@ -16,7 +16,8 @@ class ThreadController extends Controller
 {
     public function index()
     {
-        $threads = Cache::remember('all_threads', now()->addDay(), function() {
+        $page = request()->get('page', 1);
+        $threads = Cache::remember("all_threads_page_{$page}", now()->addDay(), function() {
             return Thread::query()
                 ->with(['owner', 'forum', 'poll'])
                 ->orderBy('last_activity_at', 'desc')

@@ -18,12 +18,32 @@
         <div class="md:rounded-lg md:bg-gray-800 p-2 md:p-8 md:pt-4 md:mt-4">
             {{ $threads->links('pagination::tailwind', ['top' => true]) }}
             <section class="container">
+                @php
+                    $check = Auth::check() ? 10 : 5;
+                @endphp
                 @foreach ($threads as $thread)
                     <x-thread.listing :$thread />
+                    @if (($loop->index + 1) % $check === 0)
+                        <article class="bg-gray-700 p-3 md:px-4 md:pt-4 md:pb-5 text-gray-100 font-body rounded md:rounded-md mb-2 md:mb-6 shadow-lg">
+                            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4406607721782655"
+                                    crossorigin="anonymous"></script>
+                            <!-- In-listing Ad -->
+                            <ins class="adsbygoogle"
+                                 style="display:block"
+                                 data-ad-client="ca-pub-4406607721782655"
+                                 data-ad-slot="2001567130"
+                                 data-ad-format="auto"
+                                 data-full-width-responsive="true"></ins>
+                            <script>
+                                (adsbygoogle = window.adsbygoogle || []).push({});
+                            </script>
+                        </article>
+                    @endif
                 @endforeach
             </section>
             {{ $threads->links('pagination::tailwind', ['top' => false]) }}
 
+            <br>
             <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4406607721782655"
                     crossorigin="anonymous"></script>
             <ins class="adsbygoogle"

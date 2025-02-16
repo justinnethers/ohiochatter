@@ -16,6 +16,23 @@
         ></div>
     </div>
 
+    <x-slot name="head">
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script>
+            window.jQuery || document.write('<script src="/js/vendor/jquery-3.3.1.min.js"><\/script>')
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/trumbowyg@2.30.0/dist/trumbowyg.min.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/trumbowyg@2.30.0/dist/plugins/giphy/trumbowyg.giphy.min.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/trumbowyg@2.30.0/dist/plugins/table/trumbowyg.table.min.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/trumbowyg@2.30.0/dist/plugins/upload/trumbowyg.upload.min.js" crossorigin="anonymous"></script>
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.27.3/ui/trumbowyg.min.css">
+        <link rel="stylesheet"
+              href="https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.27.3/plugins/table/ui/trumbowyg.table.min.css">
+        <link rel="stylesheet"
+              href="https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.27.3/plugins/giphy/ui/trumbowyg.giphy.min.css">
+    </x-slot>
+
     <x-slot name="footer">
         <script>
             document.addEventListener('DOMContentLoaded', function() {

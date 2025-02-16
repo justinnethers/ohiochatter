@@ -11,4 +11,5 @@
     {{ $replies->onEachSide(3)->links() }}
 
     <div class="h-8"></div>
+
 </x-app-layout>

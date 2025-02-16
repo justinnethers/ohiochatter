@@ -19,7 +19,7 @@
             @foreach ($threads as $thread)
                 <x-thread.listing :$thread :$forum />
                 @if ($forum->name === 'Politics')
-                    @if ($loop->index % 10 === 0)
+                    @if (($loop->index + 1) % 10 === 0)
                         <article class="bg-gray-700 p-3 md:px-4 md:pt-4 md:pb-5 text-gray-100 font-body rounded md:rounded-md mb-2 md:mb-6 shadow-lg">
                             <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4406607721782655"
                                     crossorigin="anonymous"></script>

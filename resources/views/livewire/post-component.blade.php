@@ -63,19 +63,19 @@
                     <div class="post-body text-xl md:text-lg flex-1" wire:key="post-{{ $post->id }}">
                         {!! $post->body !!}
                     </div>
-                    @if($post instanceof \App\Models\Thread)
-                    <div class="hidden md:block">
-                        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4406607721782655"
-                                crossorigin="anonymous"></script>
-                        <!-- First Post Ad Square -->
-                        <ins class="adsbygoogle"
-                             style="display:inline-block;width:250px;height:250px"
-                             data-ad-client="ca-pub-4406607721782655"
-                             data-ad-slot="6658997449"></ins>
-                        <script>
-                            (adsbygoogle = window.adsbygoogle || []).push({});
-                        </script>
-                    </div>
+                    @if ($this->firstPostOnPage)
+                        <div class="hidden md:block">
+                            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4406607721782655"
+                                    crossorigin="anonymous"></script>
+                            <!-- First Post Ad Square -->
+                            <ins class="adsbygoogle"
+                                 style="display:inline-block;width:250px;height:250px"
+                                 data-ad-client="ca-pub-4406607721782655"
+                                 data-ad-slot="6658997449"></ins>
+                            <script>
+                                (adsbygoogle = window.adsbygoogle || []).push({});
+                            </script>
+                        </div>
                     @endif
                 </div>
             @endif

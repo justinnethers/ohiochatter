@@ -15,6 +15,7 @@ class PostComponent extends Component
     public $editMode = false;
     public $canEdit = false;
     public $body;
+    public bool $firstPostOnPage;
 
     protected $rules = [
         'body' => 'required',

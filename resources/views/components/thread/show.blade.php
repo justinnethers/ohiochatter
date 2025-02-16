@@ -9,7 +9,7 @@
         @if (app('request')->input('page') == 1 || !app('request')->input('page'))
             <div class="flex gap-2">
                 <div class="flex-1">
-                    <livewire:post-component :post="$thread" />
+                    <livewire:post-component :post="$thread" :first-post-on-page="true" />
                 </div>
 {{--                <div class="hidden md:block md:w-1/5">--}}
 {{--                    <article class="bg-gray-800 p-3 md:px-4 md:pt-4 md:pb-5 text-gray-100 font-body rounded md:rounded-md mb-2 md:mb-6 shadow-lg">--}}
@@ -29,7 +29,13 @@
         @endif
 
         @foreach ($replies as $post)
-                <livewire:post-component :$post />
+            @php
+                $firstPostOnPage =  false;
+                if (!app('request')->input('page') == 1 || app('request')->input('page')) {
+                    $firstPostOnPage = $loop->index == 0;
+                }
+            @endphp
+            <livewire:post-component :$post :first-post-on-page="$firstPostOnPage" />
         @endforeach
 
             @if (auth()->check())

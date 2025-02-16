@@ -17,12 +17,12 @@ class ThreadController extends Controller
     public function index()
     {
         $page = request()->get('page', 1);
-//        $threads = Cache::remember("all_threads_page_{$page}", now()->addDay(), function() {
-            $threads = Thread::query()
+        $threads = Cache::remember("all_threads_page_{$page}", now()->addDay(), function() {
+            return Thread::query()
                 ->with(['owner', 'forum', 'poll'])
                 ->orderBy('last_activity_at', 'desc')
                 ->paginate(config('forum.threads_per_page'));
-//        });
+        });
 
         return view('threads.index', compact('threads'));
     }

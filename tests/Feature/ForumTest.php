@@ -98,11 +98,11 @@ test('threads are ordered by their latest reply on main page', function() {
     $response = get('/threads');
     $threads = $response->viewData('threads');
 
-//    expect($threads->pluck('id')->toArray())->sequence(
-//        $oldThread->id,
-//        $newThread->id,
-//        $mediumThread->id
-//    );
+    expect($threads->pluck('id')->toArray())->sequence(
+        $oldThread->id,
+        $newThread->id,
+        $mediumThread->id
+    );
 });
 
 test('threads are ordered by their latest reply in forum view', function() {
@@ -134,11 +134,11 @@ test('threads are ordered by their latest reply in forum view', function() {
     $response = get("/forums/{$forum->slug}");
     $threads = $response->viewData('threads');
 
-//    expect($threads->pluck('id')->toArray())->sequence(
-//        $oldThread->id,
-//        $newThread->id,
-//        $mediumThread->id
-//    );
+    expect($threads->pluck('id')->toArray())->sequence(
+        $oldThread->id,
+        $newThread->id,
+        $mediumThread->id
+    );
 });
 
 test('adding a reply moves thread to top on main page', function() {
@@ -195,10 +195,10 @@ test('adding a reply moves thread to top in forum view', function() {
     $response = get("/forums/{$forum->slug}");
     $threads = $response->viewData('threads');
 
-//    expect($threads->pluck('id')->toArray())->sequence(
-//        $oldThread->id,
-//        $newThread->id
-//    );
+    expect($threads->pluck('id')->toArray())->sequence(
+        $oldThread->id,
+        $newThread->id
+    );
 });
 
 test('threads from other forums do not affect ordering', function() {

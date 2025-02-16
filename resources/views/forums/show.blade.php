@@ -18,6 +18,8 @@
         <section>
             @php
                 $check = Auth::check() ? 10 : 4;
+                $count = 0;
+                $adSlots = ['2001567130', '2900286656', '2521012709', '5660018222', '7961041643'];
             @endphp
             @foreach ($threads as $thread)
                 <x-thread.listing :$thread :$forum />
@@ -29,13 +31,14 @@
                         <ins class="adsbygoogle"
                              style="display:block"
                              data-ad-client="ca-pub-4406607721782655"
-                             data-ad-slot="2001567130"
+                             data-ad-slot="{{ $adSlots[$count] }}"
                              data-ad-format="auto"
                              data-full-width-responsive="true"></ins>
                         <script>
                             (adsbygoogle = window.adsbygoogle || []).push({});
                         </script>
                     </article>
+                    @php $count++ @endphp
                 @endif
             @endforeach
         </section>

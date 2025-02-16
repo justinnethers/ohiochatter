@@ -59,7 +59,7 @@
                     <textarea id="editor-{{ $post->id }}">{{ $body }}</textarea>
                 </div>
             @else
-                <div class="flex">
+                <div class="flex gap-2">
                     <div class="post-body text-xl md:text-lg flex-1" wire:key="post-{{ $post->id }}">
                         {!! $post->body !!}
                     </div>

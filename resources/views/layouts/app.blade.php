@@ -31,8 +31,10 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('head')
 
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4406607721782655"
+    @if (! Auth::check())
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4406607721782655"
             crossorigin="anonymous"></script>
+    @endif
 </head>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-1KYZYV7374"></script>

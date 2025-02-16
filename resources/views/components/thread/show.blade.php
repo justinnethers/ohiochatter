@@ -11,22 +11,20 @@
                 <div class="flex-1">
                     <livewire:post-component :post="$thread" />
                 </div>
-                <div class="hidden md:block md:w-1/5">
-                    <article class="bg-gray-800 p-3 md:px-4 md:pt-4 md:pb-5 text-gray-100 font-body rounded md:rounded-md mb-2 md:mb-6 shadow-lg">
-                        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4406607721782655"
-                                crossorigin="anonymous"></script>
-                        <!-- First Post Ad -->
-                        <ins class="adsbygoogle"
-                             style="display:block"
-                             data-ad-client="ca-pub-4406607721782655"
-                             data-ad-slot="2870203357"
-                             data-ad-format="auto"
-                             data-full-width-responsive="true"></ins>
-                        <script>
-                            (adsbygoogle = window.adsbygoogle || []).push({});
-                        </script>
-                    </article>
-                </div>
+{{--                <div class="hidden md:block md:w-1/5">--}}
+{{--                    <article class="bg-gray-800 p-3 md:px-4 md:pt-4 md:pb-5 text-gray-100 font-body rounded md:rounded-md mb-2 md:mb-6 shadow-lg">--}}
+{{--                        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4406607721782655"--}}
+{{--                                crossorigin="anonymous"></script>--}}
+{{--                        <!-- First Post Ad Square -->--}}
+{{--                        <ins class="adsbygoogle"--}}
+{{--                             style="display:inline-block;width:250px;height:250px"--}}
+{{--                             data-ad-client="ca-pub-4406607721782655"--}}
+{{--                             data-ad-slot="6658997449"></ins>--}}
+{{--                        <script>--}}
+{{--                            (adsbygoogle = window.adsbygoogle || []).push({});--}}
+{{--                        </script>--}}
+{{--                    </article>--}}
+{{--                </div>--}}
             </div>
         @endif
 

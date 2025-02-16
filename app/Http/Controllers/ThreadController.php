@@ -17,13 +17,30 @@ class ThreadController extends Controller
     public function index()
     {
         $page = request()->get('page', 1);
-        $threads = Cache::remember("all_threads_page_{$page}", now()->addDay(), function() {
-            return Thread::query()
+
+        if ($page == 1) {
+            $threads = Cache::remember('all_threads_base_query', now()->addDay(), function() {
+                return Thread::query()
+                    ->with(['owner', 'forum', 'poll'])
+                    ->orderBy('last_activity_at', 'desc')
+                    ->get();
+            });
+
+            // Create a fresh paginator from the cached collection
+            $threads = new \Illuminate\Pagination\LengthAwarePaginator(
+                $threads->forPage(1, config('forum.threads_per_page')),
+                $threads->count(),
+                config('forum.threads_per_page'),
+                1
+            );
+        } else {
+            $threads = Thread::query()
                 ->with(['owner', 'forum', 'poll'])
                 ->orderBy('last_activity_at', 'desc')
                 ->paginate(config('forum.threads_per_page'));
-        });
+        }
 
+        $threads->withPath(request()->url());
         return view('threads.index', compact('threads'));
     }
 

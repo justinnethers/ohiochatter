@@ -34,8 +34,9 @@ blockquote {
     @apply border-l-8 border-gray-600 px-4 md:px-8 py-4 bg-gray-700 !important;
 }
 
-.prose img {
-    max-width: 100%;
+.post-body img {
+    width: 100%;
+    max-width: 600px;
     height: auto !important;
 }
 

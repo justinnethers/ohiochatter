@@ -10,30 +10,37 @@ use App\Http\Requests\UpdateThreadRequest;
 use App\Models\Forum;
 use App\Models\Thread;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ThreadController extends Controller
 {
     public function index()
     {
-        $threads = Thread::query()
-            ->select('threads.*')
-            ->orderByRaw('GREATEST(
-                COALESCE((SELECT MAX(created_at) FROM replies
-                 WHERE thread_id = threads.id AND deleted_at IS NULL), threads.created_at),
-                threads.created_at,
-                threads.updated_at
-            ) DESC')
-            ->with(['owner', 'lastReply.owner'])
-            ->withCount('replies')
-            ->paginate(config('forum.threads_per_page'));
+        $page = request()->get('page', 1);
 
-        // debugging query
-//        $threads = Thread::query()
-//            ->limit(3)
-//            ->with(['owner', 'lastReply.owner'])
-//            ->withCount('replies')
-//            ->paginate(3);
+        if ($page == 1) {
+            $threads = Cache::remember('all_threads_base_query', now()->addDay(), function() {
+                return Thread::query()
+                    ->with(['owner', 'forum', 'poll'])
+                    ->orderBy('last_activity_at', 'desc')
+                    ->get();
+            });
 
+            // Create a fresh paginator from the cached collection
+            $threads = new \Illuminate\Pagination\LengthAwarePaginator(
+                $threads->forPage(1, config('forum.threads_per_page')),
+                $threads->count(),
+                config('forum.threads_per_page'),
+                1
+            );
+        } else {
+            $threads = Thread::query()
+                ->with(['owner', 'forum', 'poll'])
+                ->orderBy('last_activity_at', 'desc')
+                ->paginate(config('forum.threads_per_page'));
+        }
+
+        $threads->withPath(request()->url());
         return view('threads.index', compact('threads'));
     }
 

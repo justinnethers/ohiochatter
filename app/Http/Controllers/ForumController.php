@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Forum;
 use App\Models\Thread;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ForumController extends Controller
 {
@@ -14,17 +14,14 @@ class ForumController extends Controller
             return redirect('login');
         }
 
-        $threads = Thread::with(['owner', 'forum', 'poll'])
-            ->where('forum_id', $forum->id)
-            ->select('threads.*')
-            ->leftJoin('replies', function($join) {
-                $join->on('threads.id', '=', 'replies.thread_id')
-                    ->whereNull('replies.deleted_at');
-            })
-            ->withCount('replies')
-            ->groupBy('threads.id')
-            ->orderByRaw('GREATEST(COALESCE(MAX(replies.created_at), threads.created_at), threads.updated_at) DESC')
-            ->paginate(config('forum.threads_per_page'));
+//        $page = request()->get('page', 1);
+//        $threads = Cache::remember("forum_{$forum->id}_threads_page_{$page}", now()->addDay(), function() use ($forum) {
+            $threads = Thread::query()
+                ->with(['owner', 'forum', 'poll'])
+                ->where('forum_id', $forum->id)
+                ->orderBy('last_activity_at', 'desc')
+                ->paginate(config('forum.threads_per_page'));
+//        });
 
         return view('forums.show', compact('forum', 'threads'));
     }

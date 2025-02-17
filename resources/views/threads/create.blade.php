@@ -8,7 +8,7 @@
 
     <div class="p-2">
         <form
-            class="bg-gray-800 p-2 md:p-8 rounded-lg shadow mb-8 md:mt-8"
+            class="px-0 md:px-8"
             action="/threads"
             method="POST"
         >

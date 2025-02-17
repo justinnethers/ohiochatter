@@ -16,6 +16,7 @@
         "laravel/scout": "^10.10",
         "laravel/tinker": "^2.8",
         "livewire/livewire": "^3.5",
+        "predis/predis": "^2.3",
         "s9e/text-formatter": "^2.18",
         "symfony/http-client": "^7.2",
         "symfony/mailgun-mailer": "^7.1"

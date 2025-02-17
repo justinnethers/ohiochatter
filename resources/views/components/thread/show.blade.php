@@ -31,8 +31,10 @@
         @foreach ($replies as $post)
             @php
                 $firstPostOnPage =  false;
-                if (!app('request')->input('page') == 1 || app('request')->input('page')) {
-                    $firstPostOnPage = $loop->index == 0;
+                if (app('request')->input('page') == 1 || !app('request')->input('page')) {
+                    $firstPostOnPage = false;
+                } else {
+                    $firstPostOnPage = $loop->index === 0;
                 }
             @endphp
             <livewire:post-component :$post :first-post-on-page="$firstPostOnPage" />

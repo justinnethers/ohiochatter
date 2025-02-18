@@ -21,7 +21,7 @@ class Region extends Model
         return $this->hasManyThrough(City::class, County::class);
     }
 
-    public function contents()
+    public function content()
     {
         return $this->morphMany(Content::class, 'locatable');
     }

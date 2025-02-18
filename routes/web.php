@@ -1,8 +1,12 @@
 <?php
 
 use App\Http\Controllers\ArchiveController;
+use App\Http\Controllers\CityController;
+use App\Http\Controllers\ContentController;
+use App\Http\Controllers\CountyController;
 use App\Http\Controllers\ForumController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RegionController;
 use App\Http\Controllers\ReplyController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ThreadController;
@@ -21,6 +25,51 @@ Route::get('forums', function () {
 
 Route::get('forums/{forum}', [ForumController::class, 'show'])->name('forum.show');
 Route::get('forums/{forum}/{thread}', [ThreadController::class, 'show'])->name('thread.show');
+
+Route::prefix('ohio')->group(function () {
+    // Location Routes
+    Route::get('/', [RegionController::class, 'index'])->name('ohio.index');
+
+    // Guide Routes
+    Route::prefix('guide')->group(function () {
+        // Main Guide Pages
+        Route::get('/', [ContentController::class, 'index'])->name('guide.index');
+        Route::get('/categories', [ContentController::class, 'categories'])->name('guide.categories');
+        Route::get('/category/{category:slug}', [ContentController::class, 'category'])->name('guide.category');
+
+
+        // Individual Guide Pages
+        Route::get('/article/{content}', [ContentController::class, 'show'])->name('guide.show');
+
+        // Region-based Guides
+        Route::get('/{region}', [ContentController::class, 'region'])->name('guide.region');
+        Route::get('/{region}/category/{category:slug}', [ContentController::class, 'regionCategory'])
+            ->name('guide.region.category');
+
+        // County-based Guides
+        Route::get('/{region}/{county}', [ContentController::class, 'county'])->name('guide.county');
+        Route::get('/{region}/{county}/category/{category:slug}', [ContentController::class, 'countyCategory'])
+            ->name('guide.county.category');
+
+        // City-based Guides
+        Route::get('/{region}/{county}/{city}', [ContentController::class, 'city'])->name('guide.city');
+        Route::get('/{region}/{county}/{city}/category/{category:slug}', [ContentController::class, 'cityCategory'])
+            ->name('guide.city.category');
+    });
+
+    Route::get('/{region}', [RegionController::class, 'show'])->name('region.show');
+    Route::get('/{region}/{county}', [CountyController::class, 'show'])->name('county.show');
+    Route::get('/{region}/{county}/{city}', [CityController::class, 'show'])->name('city.show');
+
+
+    // Alternative "Best of" Routes (These could redirect to the guide routes)
+    Route::get('/{region}/best/{category:slug}', [ContentController::class, 'regionCategory'])
+        ->name('region.best');
+    Route::get('/{region}/{county}/best/{category:slug}', [ContentController::class, 'countyCategory'])
+        ->name('county.best');
+    Route::get('/{region}/{county}/{city}/best/{category:slug}', [ContentController::class, 'cityCategory'])
+        ->name('city.best');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('threads/create', [ThreadController::class, 'create']);
@@ -44,6 +93,8 @@ Route::middleware('auth')->group(function () {
 Route::get('dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('profile/{user}', [ProfileController::class, 'show'])->name('profile.show');
 
 Route::middleware('auth')->group(function () {
     Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');

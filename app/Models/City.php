@@ -16,7 +16,7 @@ class City extends Model
         return $this->belongsTo(County::class);
     }
 
-    public function contents()
+    public function content()
     {
         return $this->morphMany(Content::class, 'locatable');
     }

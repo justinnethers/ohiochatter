@@ -7,13 +7,13 @@
         </h2>
     </x-slot>
 
-    <x-slot name="headerAction">
-        @auth
-            <a href="{{ route('guide.create') }}" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-400 hover:text-gray-300 hover:border-gray-700 transition duration-150 ease-in-out">
-                Create Guide
-            </a>
-        @endauth
-    </x-slot>
+{{--    <x-slot name="headerAction">--}}
+{{--        @auth--}}
+{{--            <a href="{{ route('guide.create') }}" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-400 hover:text-gray-300 hover:border-gray-700 transition duration-150 ease-in-out">--}}
+{{--                Create Guide--}}
+{{--            </a>--}}
+{{--        @endauth--}}
+{{--    </x-slot>--}}
 
     <div>
         @if($categories->isNotEmpty())

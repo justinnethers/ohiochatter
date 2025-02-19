@@ -2,14 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Content\FetchLocationContent;
 use App\Models\Content;
 use App\Models\ContentCategory;
 use App\Models\Region;
 use App\Models\County;
 use App\Models\City;
+use Illuminate\Http\Request;
 
 class ContentController extends Controller
 {
+    /**
+     * Display a listing of all content
+     *
+     * @return \Illuminate\View\View
+     */
     public function index()
     {
         $featuredContent = Content::with(['contentCategory', 'contentType', 'author', 'locatable'])
@@ -19,13 +26,23 @@ class ContentController extends Controller
             ->take(6)
             ->get();
 
+        $recentContent = Content::with(['contentCategory', 'contentType', 'author', 'locatable'])
+            ->published()
+            ->latest('published_at')
+            ->paginate(10);
+
         $categories = ContentCategory::withCount(['content' => function ($query) {
             $query->published();
         }])->get();
 
-        return view('ohio.guide.index', compact('featuredContent', 'categories'));
+        return view('ohio.guide.index', compact('featuredContent', 'recentContent', 'categories'));
     }
 
+    /**
+     * Display a listing of all categories
+     *
+     * @return \Illuminate\View\View
+     */
     public function categories()
     {
         $categories = ContentCategory::withCount(['content' => function ($query) {
@@ -35,6 +52,12 @@ class ContentController extends Controller
         return view('ohio.guide.categories', compact('categories'));
     }
 
+    /**
+     * Display a specific category
+     *
+     * @param ContentCategory $category
+     * @return \Illuminate\View\View
+     */
     public function category(ContentCategory $category)
     {
         $content = Content::where('content_category_id', $category->id)
@@ -46,10 +69,16 @@ class ContentController extends Controller
         return view('ohio.guide.category', compact('category', 'content'));
     }
 
+    /**
+     * Display a specific content item
+     *
+     * @param Content $content
+     * @return \Illuminate\View\View
+     */
     public function show(Content $content)
     {
         if (!$content->published_at) {
-            abort(404);
+//            abort(404);
         }
 
         $relatedContent = $content->relatedContent()
@@ -60,111 +89,140 @@ class ContentController extends Controller
         return view('ohio.guide.show', compact('content', 'relatedContent'));
     }
 
-    public function region(Region $region)
+    /**
+     * Display content for a specific region
+     *
+     * @param Region $region
+     * @param FetchLocationContent $contentFetcher
+     * @return \Illuminate\View\View
+     */
+    public function region(Region $region, FetchLocationContent $contentFetcher)
     {
-        $content = Content::where('locatable_type', Region::class)
-            ->where('locatable_id', $region->id)
-            ->with(['contentCategory', 'contentType', 'author'])
-            ->published()
-            ->latest('published_at')
-            ->paginate(12);
+        $contentData = $contentFetcher->allContentForRegion($region);
 
-        $categories = ContentCategory::whereHas('content', function ($query) use ($region) {
-            $query->where('locatable_type', Region::class)
-                ->where('locatable_id', $region->id)
-                ->published();
-        })->get();
-
-        return view('ohio.guide.region', compact('region', 'content', 'categories'));
+        return view('ohio.guide.region', [
+            'region' => $region,
+            'content' => $contentData['content'],
+            'categories' => $contentData['categories']
+        ]);
     }
 
-    public function regionCategory(Region $region, ContentCategory $category)
+    /**
+     * Display content for a specific category in a region
+     *
+     * @param Region $region
+     * @param ContentCategory $category
+     * @param FetchLocationContent $contentFetcher
+     * @return \Illuminate\View\View
+     */
+    public function regionCategory(Region $region, ContentCategory $category, FetchLocationContent $contentFetcher)
     {
-        $content = Content::where('locatable_type', Region::class)
-            ->where('locatable_id', $region->id)
-            ->where('content_category_id', $category->id)
-            ->with(['contentType', 'author'])
-            ->published()
-            ->latest('published_at')
-            ->paginate(12);
+        $content = $contentFetcher->contentForLocationCategory(
+            Region::class,
+            $region->id,
+            $category->id
+        );
 
         return view('ohio.guide.region-category', compact('region', 'category', 'content'));
     }
 
-    public function county(Region $region, County $county)
+    /**
+     * Display content for a specific county
+     *
+     * @param Region $region
+     * @param County $county
+     * @param FetchLocationContent $contentFetcher
+     * @return \Illuminate\View\View
+     */
+    public function county(Region $region, County $county, FetchLocationContent $contentFetcher)
     {
         if ($county->region_id !== $region->id) {
             abort(404);
         }
 
-        $content = Content::where('locatable_type', County::class)
-            ->where('locatable_id', $county->id)
-            ->with(['contentCategory', 'contentType', 'author'])
-            ->published()
-            ->latest('published_at')
-            ->paginate(12);
+        $contentData = $contentFetcher->allContentForCounty($county);
+        $countyContentData = $contentFetcher->forCounty($county);
 
-        $categories = ContentCategory::whereHas('content', function ($query) use ($county) {
-            $query->where('locatable_type', County::class)
-                ->where('locatable_id', $county->id)
-                ->published();
-        })->get();
-
-        return view('ohio.guide.county', compact('region', 'county', 'content', 'categories'));
+        return view('ohio.guide.county', [
+            'region' => $region,
+            'county' => $county,
+            'content' => $contentData['content'],
+            'categories' => $contentData['categories'],
+            'cityContent' => $countyContentData['childContent']
+        ]);
     }
 
-    public function countyCategory(Region $region, County $county, ContentCategory $category)
+    /**
+     * Display content for a specific category in a county
+     *
+     * @param Region $region
+     * @param County $county
+     * @param ContentCategory $category
+     * @param FetchLocationContent $contentFetcher
+     * @return \Illuminate\View\View
+     */
+    public function countyCategory(Region $region, County $county, ContentCategory $category, FetchLocationContent $contentFetcher)
     {
         if ($county->region_id !== $region->id) {
             abort(404);
         }
 
-        $content = Content::where('locatable_type', County::class)
-            ->where('locatable_id', $county->id)
-            ->where('content_category_id', $category->id)
-            ->with(['contentType', 'author'])
-            ->published()
-            ->latest('published_at')
-            ->paginate(12);
+        $content = $contentFetcher->contentForLocationCategory(
+            County::class,
+            $county->id,
+            $category->id
+        );
 
         return view('ohio.guide.county-category', compact('region', 'county', 'category', 'content'));
     }
 
-    public function city(Region $region, County $county, City $city)
+    /**
+     * Display content for a specific city
+     *
+     * @param Region $region
+     * @param County $county
+     * @param City $city
+     * @param FetchLocationContent $contentFetcher
+     * @return \Illuminate\View\View
+     */
+    public function city(Region $region, County $county, City $city, FetchLocationContent $contentFetcher)
     {
         if ($county->region_id !== $region->id || $city->county_id !== $county->id) {
             abort(404);
         }
 
-        $content = Content::where('locatable_type', City::class)
-            ->where('locatable_id', $city->id)
-            ->with(['contentCategory', 'contentType', 'author'])
-            ->published()
-            ->latest('published_at')
-            ->paginate(12);
+        $contentData = $contentFetcher->allContentForCity($city);
 
-        $categories = ContentCategory::whereHas('content', function ($query) use ($city) {
-            $query->where('locatable_type', City::class)
-                ->where('locatable_id', $city->id)
-                ->published();
-        })->get();
-
-        return view('ohio.guide.city', compact('region', 'county', 'city', 'content', 'categories'));
+        return view('ohio.guide.city', [
+            'region' => $region,
+            'county' => $county,
+            'city' => $city,
+            'content' => $contentData['content'],
+            'categories' => $contentData['categories']
+        ]);
     }
 
-    public function cityCategory(Region $region, County $county, City $city, ContentCategory $category)
+    /**
+     * Display content for a specific category in a city
+     *
+     * @param Region $region
+     * @param County $county
+     * @param City $city
+     * @param ContentCategory $category
+     * @param FetchLocationContent $contentFetcher
+     * @return \Illuminate\View\View
+     */
+    public function cityCategory(Region $region, County $county, City $city, ContentCategory $category, FetchLocationContent $contentFetcher)
     {
         if ($county->region_id !== $region->id || $city->county_id !== $county->id) {
             abort(404);
         }
 
-        $content = Content::where('locatable_type', City::class)
-            ->where('locatable_id', $city->id)
-            ->where('content_category_id', $category->id)
-            ->with(['contentType', 'author'])
-            ->published()
-            ->latest('published_at')
-            ->paginate(12);
+        $content = $contentFetcher->contentForLocationCategory(
+            City::class,
+            $city->id,
+            $category->id
+        );
 
         return view('ohio.guide.city-category', compact('region', 'county', 'city', 'category', 'content'));
     }

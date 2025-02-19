@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Content\FetchLocationContent;
 use App\Models\ContentCategory;
 use App\Models\Region;
 use App\Models\Content;
@@ -17,39 +18,21 @@ class RegionController extends Controller
         return view('ohio.regions.index', compact('regions'));
     }
 
-    public function show(Region $region)
+    public function show(Region $region, FetchLocationContent $contentFetcher)
     {
-        $featuredContent = Content::where('locatable_type', Region::class)
-            ->where('locatable_id', $region->id)
-            ->with(['contentCategory', 'contentType'])
-            ->featured()
-            ->published()
-            ->latest('published_at')
-            ->take(6)
-            ->get();
-
-        // Get content from counties in this region
-        $countyIds = $region->counties->pluck('id');
-        $countyContent = Content::where('locatable_type', County::class)
-            ->whereIn('locatable_id', $countyIds)
-            ->with(['contentCategory', 'contentType', 'locatable'])
-            ->published()
-            ->latest('published_at')
-            ->take(6)
-            ->get();
-
-        // Get categories for the region
-        $categories = ContentCategory::whereHas('content', function ($query) use ($region) {
-            $query->where('locatable_type', Region::class)
-                ->where('locatable_id', $region->id)
-                ->published();
-        })->get();
+        $contentData = $contentFetcher->forRegion($region);
 
         $counties = $region->counties()
             ->withCount('content')
             ->orderBy('name')
             ->get();
 
-        return view('ohio.regions.show', compact('region', 'counties', 'featuredContent', 'countyContent', 'categories'));
+        return view('ohio.regions.show', [
+            'region' => $region,
+            'counties' => $counties,
+            'featuredContent' => $contentData['featuredContent'],
+            'countyContent' => $contentData['childContent'],
+            'categories' => $contentData['categories']
+        ]);
     }
 }

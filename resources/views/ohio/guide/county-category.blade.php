@@ -1,9 +1,9 @@
-{{-- resources/views/ohio/guide/region-category.blade.php --}}
+{{-- resources/views/ohio/guide/county-category.blade.php --}}
 <x-app-layout>
-    <x-slot name="title">{{ $category->name }} in {{ $region->name }}</x-slot>
+    <x-slot name="title">{{ $category->name }} in {{ $county->name }}</x-slot>
     <x-slot name="header">
         <h2 class="font-semibold text-3xl text-gray-200 dark:text-gray-200 leading-tight">
-            {{ $category->name }} in {{ $region->name }}
+            {{ $category->name }} in {{ $county->name }}
         </h2>
     </x-slot>
 
@@ -11,10 +11,12 @@
         <div class="flex items-center gap-2 text-sm text-gray-400 mb-4">
             <a href="{{ route('guide.region', $region) }}" class="hover:text-white">{{ $region->name }}</a>
             <span>&raquo;</span>
+            <a href="{{ route('guide.county', ['region' => $region, 'county' => $county]) }}" class="hover:text-white">{{ $county->name }} County</a>
+            <span>&raquo;</span>
             <span class="font-medium text-white">{{ $category->name }}</span>
         </div>
 
-        <h1 class="text-3xl font-bold mb-4">{{ $category->name }} in {{ $region->name }}</h1>
+        <h1 class="text-3xl font-bold mb-4">{{ $category->name }} in {{ $county->name }} County</h1>
         <p class="text-xl text-gray-300">{{ $category->description }}</p>
     </div>
 

@@ -38,6 +38,16 @@
                     <p class="text-gray-400">No guides available for this region yet.</p>
                 </div>
             @endif
+
+            {{-- County Content --}}
+            @if(isset($countyContent) && $countyContent->isNotEmpty())
+                <section class="mt-8">
+                    <h2 class="text-2xl font-bold text-gray-200 mb-4">Latest From {{ $region->name }} Counties</h2>
+                    @foreach($countyContent as $item)
+                        <x-guide.card :content="$item" />
+                    @endforeach
+                </section>
+            @endif
         </div>
     </div>
 </x-app-layout>

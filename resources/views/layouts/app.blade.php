@@ -1,4 +1,4 @@
-{{-- resources/views/components/layouts/app.blade.php --}}
+{{-- resources/views/layouts/app.blade.php --}}
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>

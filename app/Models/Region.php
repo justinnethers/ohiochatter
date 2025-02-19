@@ -26,6 +26,18 @@ class Region extends Model
         return $this->morphMany(Content::class, 'locatable');
     }
 
+    public function categories()
+    {
+        return $this->hasManyThrough(
+            ContentCategory::class,
+            Content::class,
+            'locatable_id',  // Foreign key on Content table
+            'id',            // Foreign key on ContentCategory table
+            'id',            // Local key on Region table
+            'content_category_id'   // Local key on Content table
+        )->where('locatable_type', Region::class)->distinct();
+    }
+
     public function getRouteKeyName()
     {
         return 'slug';

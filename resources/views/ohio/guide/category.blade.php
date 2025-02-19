@@ -1,3 +1,4 @@
+{{-- resources/views/ohio/guide/category.blade.php --}}
 <x-app-layout>
     <x-slot name="title">{{ $category->name }}</x-slot>
     <x-slot name="header">

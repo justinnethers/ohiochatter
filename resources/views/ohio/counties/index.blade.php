@@ -1,3 +1,4 @@
+{{-- resources/views/ohio/counties/index.blade.php --}}
 <x-app-layout>
     <x-slot name="title">Ohio Counties</x-slot>
     <x-slot name="header">

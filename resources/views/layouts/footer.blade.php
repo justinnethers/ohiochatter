@@ -1,3 +1,4 @@
+{{-- resources/views/components/layouts/app.blade.php --}}
 <footer class="bg-gray-800 text-gray-300 p-4 md:p-8 pb-32 mt-8">
     <div class="container max-w-7xl mx-auto md:px-4">
         <!-- lg:grid-cols-4 accommodates the empty column spacing requirement without extra markup -->

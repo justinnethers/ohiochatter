@@ -1,3 +1,4 @@
+{{-- resources/views/ohio/guide/region-category.blade.php --}}
 <x-app-layout>
 <x-slot name="title">{{ $category->name }} in {{ $region->name }}</x-slot>
 

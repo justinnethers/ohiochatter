@@ -1,3 +1,4 @@
+{{-- resources/views/ohio/guide/city-category.blade.php --}}
 <x-app-layout>
     <x-slot name="title">{{ $category->name }} in {{ $city->name }}</x-slot>
     <x-slot name="header">

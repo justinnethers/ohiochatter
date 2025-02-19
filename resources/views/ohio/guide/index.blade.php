@@ -1,3 +1,4 @@
+{{-- resources/views/ohio/guide/index.blade.php --}}
 <x-app-layout>
     <x-slot name="title">Ohio Guide</x-slot>
 

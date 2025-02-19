@@ -1,3 +1,4 @@
+{{-- resources/views/components/layouts/navigation.blade.php --}}
 <nav x-data="{ open: false, scrolled: false }"
      x-init="window.addEventListener('scroll', () => {
          scrolled = window.pageYOffset > 60;

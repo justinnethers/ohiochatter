@@ -1,3 +1,4 @@
+{{-- resources/views/ohio/cities/index.blade.php --}}
 <x-app-layout>
     <x-slot name="title">Ohio Cities</x-slot>
     <x-slot name="header">

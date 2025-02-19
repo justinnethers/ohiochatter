@@ -1,3 +1,4 @@
+{{-- resources/views/ohio/cities/show.blade.php --}}
 <x-app-layout>
     <x-slot name="title">{{ $city->name }}</x-slot>
     <x-slot name="header">

@@ -1,3 +1,4 @@
+{{-- resources/views/ohio/guide/region.blade.php --}}
 <x-app-layout>
     <x-slot name="title">{{ $region->name }} Guides</x-slot>
     <x-slot name="header">

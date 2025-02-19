@@ -1,3 +1,4 @@
+{{-- resources/views/ohio/regions/index.blade.php --}}
 <x-app-layout>
     <x-slot name="title">Ohio Regions</x-slot>
     <x-slot name="header">

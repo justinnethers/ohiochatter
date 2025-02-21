@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('threads', function (Blueprint $table) {
+            $table->string('keywords')->nullable();
             $table->string('meta_title')->nullable();
             $table->string('meta_description')->nullable();
-            $table->string('meta_keywords')->nullable();
             $table->timestamp('meta_generated_at')->nullable();
             $table->boolean('regenerate_meta')->default(true);
         });
@@ -26,9 +26,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('threads', function (Blueprint $table) {
+            $table->dropColumn('keywords');
             $table->dropColumn('meta_title');
             $table->dropColumn('meta_description');
-            $table->dropColumn('meta_keywords');
             $table->dropColumn('meta_generated_at');
             $table->dropColumn('regenerate_meta');
         });

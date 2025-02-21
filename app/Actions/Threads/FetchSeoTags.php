@@ -48,7 +48,7 @@ class FetchSeoTags
                 'regenerate_meta' => false,
                 'meta_title' => $decoded->meta_title,
                 'meta_description' => $decoded->meta_description,
-                'meta_keywords' => $decoded->meta_keywords,
+                'keywords' => $decoded->meta_keywords,
                 'meta_generated_at' => Carbon::now()
             ]);
         } catch (\Exception $exception) {

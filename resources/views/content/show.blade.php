@@ -28,7 +28,7 @@
                 <h2 class="text-2xl font-bold text-gray-900 mb-6">Related Guides</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     @foreach($relatedContent as $related)
-                        <x-content.card :content="$related" />
+                        <x-guide.card :content="$related" />
                     @endforeach
                 </div>
             </section>

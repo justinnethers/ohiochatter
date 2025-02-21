@@ -47,6 +47,11 @@ class Thread extends Model
         return $this->belongsTo(Forum::class);
     }
 
+    public function firstReply()
+    {
+        return $this->hasOne(Reply::class)->first();
+    }
+
     public function lastReply(): HasOne
     {
         return $this->hasOne(Reply::class)->latest();

@@ -3,8 +3,7 @@
 namespace App\Actions\Threads;
 
 use App\Models\Thread;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\App;
 
 class FetchThreadDetails
 {
@@ -26,6 +25,10 @@ class FetchThreadDetails
 //                    ->where('thread_id', $thread->id)
 //                    ->first();
 //            }) : null;
+
+        if ($thread->regenerate_meta) {
+            app(FetchSeoTags::class)($thread);
+        }
 
         return [
             'forum' => $thread->forum,

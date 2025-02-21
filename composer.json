@@ -19,6 +19,7 @@
         "openai-php/laravel": "^0.10.1",
         "predis/predis": "^2.3",
         "s9e/text-formatter": "^2.18",
+        "spatie/laravel-sitemap": "^7.3",
         "symfony/http-client": "^7.2",
         "symfony/mailgun-mailer": "^7.1"
     },

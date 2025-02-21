@@ -9,12 +9,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Laravel\Scout\Searchable;
+use Spatie\Sitemap\Contracts\Sitemapable;
+use Spatie\Sitemap\Tags\Url;
 
-class Thread extends Model
+class Thread extends Model implements Sitemapable
 {
     use HasFactory, Reppable, Searchable, SoftDeletes;
 
@@ -166,5 +167,13 @@ class Thread extends Model
             'title' => $this->title,
             'body'  => $this->body,
         ];
+    }
+
+    public function toSitemapTag(): string | array|\Spatie\Sitemap\Tags\Url
+    {
+        return Url::create(route('thread.show', ['thread' => $this, 'forum' => $this->forum]))
+            ->setLastModificationDate(Carbon::create($this->updated_at))
+            ->setChangeFrequency(Url::CHANGE_FREQUENCY_YEARLY)
+            ->setPriority(0.1);
     }
 }

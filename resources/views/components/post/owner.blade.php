@@ -29,5 +29,11 @@
     <div>
         <h3 class="text-2xl text-gray-200 font-bold leading-tight">{{ $owner->username }}</h3>
         <h4>{{ $owner->usertitle }}</h4>
+        <div class="text-xs">
+            <span class="font-bold italic">
+                {{ number_format($owner->posts_count) }}
+            </span>
+            posts
+        </div>
     </div>
 </section>

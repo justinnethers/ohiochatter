@@ -9,7 +9,7 @@
     <div class="text-center">
         <div>
             <span class="font-bold italic">
-                {{ number_format($owner->post_count + $owner->posts_old) }}
+                {{ number_format($owner->posts_count) }}
             </span>
             posts
         </div>

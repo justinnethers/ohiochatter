@@ -49,6 +49,11 @@ class User extends Authenticatable
         return $this->is_admin;
     }
 
+    public function getPostsCountAttribute()
+    {
+        return $this->replies()->count() + $this->posts_old;
+    }
+
     public function getAvatarPathAttribute($avatar): string
     {
         if ($avatar) {

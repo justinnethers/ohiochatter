@@ -182,7 +182,7 @@ Route::permanentRedirect('/forum/{any}', '/forums/{any}')
 
 
 // Main game routes
-Route::get('/buckeye', [BuckEyeGameController::class, 'index'])
+Route::get('/buckEYE', [BuckEyeGameController::class, 'index'])
     ->name('buckeye.index');
 
 // Guest play route (no authentication required)
@@ -194,3 +194,5 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/buckeye/stats', [BuckEyeGameController::class, 'stats'])
         ->name('buckeye.stats');
 });
+
+Route::redirect('buckeye', 'buckEYE');

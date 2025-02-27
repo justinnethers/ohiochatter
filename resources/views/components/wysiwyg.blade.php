@@ -77,10 +77,10 @@
                 });
 
                 // Load saved content on initialization
-                const savedContent = localStorage.getItem(storageKey);
-                if (savedContent) {
-                    editor.trumbowyg('html', savedContent);
-                }
+                // const savedContent = localStorage.getItem(storageKey);
+                // if (savedContent) {
+                //     editor.trumbowyg('html', savedContent);
+                // }
 
                 // Set up auto-save functionality
                 editor.on('tbwchange', function() {
@@ -107,11 +107,11 @@
                     form.appendChild(submitFlag);
 
                     // Handle form submission
-                    form.addEventListener('submit', function(e) {
-                        console.log('Form submission detected');
-                        localStorage.removeItem(storageKey);
-                        console.log('Local storage cleared for key:', storageKey);
-                    });
+                    // form.addEventListener('submit', function(e) {
+                    //     console.log('Form submission detected');
+                    //     localStorage.removeItem(storageKey);
+                    //     console.log('Local storage cleared for key:', storageKey);
+                    // });
                 } else {
                     console.warn('Form element not found for editor');
                 }

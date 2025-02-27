@@ -134,4 +134,60 @@ class User extends Authenticatable
             'username' => $this->username,
         ];
     }
+
+    /**
+     * Get game progress records for the user
+     *
+     * @return HasMany
+     */
+    public function gameProgress(): HasMany
+    {
+        return $this->hasMany(UserGameProgress::class);
+    }
+
+    /**
+     * Get the user's game statistics
+     *
+     * @return HasOne
+     */
+    public function gameStats(): HasOne
+    {
+        return $this->hasOne(UserGameStats::class);
+    }
+
+    /**
+     * Check if the user has played today's puzzle
+     *
+     * @return bool
+     */
+    public function hasPlayedToday(): bool
+    {
+        $todaysPuzzle = Puzzle::getTodaysPuzzle();
+
+        if (!$todaysPuzzle) {
+            return false;
+        }
+
+        return $this->gameProgress()
+            ->where('puzzle_id', $todaysPuzzle->id)
+            ->exists();
+    }
+
+    /**
+     * Get user's progress for today's puzzle
+     *
+     * @return UserGameProgress|null
+     */
+    public function getTodaysProgress()
+    {
+        $todaysPuzzle = Puzzle::getTodaysPuzzle();
+
+        if (!$todaysPuzzle) {
+            return null;
+        }
+
+        return $this->gameProgress()
+            ->where('puzzle_id', $todaysPuzzle->id)
+            ->first();
+    }
 }

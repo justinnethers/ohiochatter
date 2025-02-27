@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ArchiveController;
+use App\Http\Controllers\BuckEyeGameController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\ContentController;
 use App\Http\Controllers\CountyController;
@@ -178,3 +179,18 @@ Route::get('forum/showthread', function () {
 Route::permanentRedirect('/forum', '/forums');
 Route::permanentRedirect('/forum/{any}', '/forums/{any}')
     ->where('any', '.*');
+
+
+// Main game routes
+Route::get('/buckeye', [BuckEyeGameController::class, 'index'])
+    ->name('buckeye.index');
+
+// Guest play route (no authentication required)
+Route::get('/buckeye/play', [BuckEyeGameController::class, 'guestPlay'])
+    ->name('buckeye.guest');
+
+// Stats page (authenticated users only)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/buckeye/stats', [BuckEyeGameController::class, 'stats'])
+        ->name('buckeye.stats');
+});

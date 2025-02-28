@@ -6,6 +6,7 @@ use App\Models\Puzzle;
 use App\Models\UserGameStats;
 use App\Services\PuzzleService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class BuckEyeGameController extends Controller
@@ -43,24 +44,58 @@ class BuckEyeGameController extends Controller
      */
     public function stats()
     {
+        $user = Auth::user();
+
         // This method is for authenticated users only
-        $userStats = UserGameStats::getOrCreateForUser(Auth::id());
+        $userStats = UserGameStats::getOrCreateForUser($user->id);
 
-        // Get recent puzzles to show history
-        $recentPuzzles = Puzzle::orderBy('publish_date', 'desc')
-            ->take(10)
-            ->get();
+        // Get today's puzzle id if it exists
+        $todaysPuzzle = Puzzle::where('publish_date', Carbon::today()->toDateString())->first();
+        $todaysPuzzleId = $todaysPuzzle ? $todaysPuzzle->id : null;
 
-        // Get user progress for these puzzles
-        $puzzleProgress = [];
-        foreach ($recentPuzzles as $puzzle) {
-            $progress = Auth::user()->gameProgress()
-                ->where('puzzle_id', $puzzle->id)
+        // Check if user has completed today's puzzle
+        $todayCompleted = false;
+        if ($todaysPuzzleId) {
+            $todayProgress = $user->gameProgress()
+                ->where('puzzle_id', $todaysPuzzleId)
+                ->where('completed_at', '!=', null)
                 ->first();
 
-            $puzzleProgress[$puzzle->id] = $progress;
+            $todayCompleted = (bool) $todayProgress;
         }
 
-        return view('buckeye.stats', compact('userStats', 'recentPuzzles', 'puzzleProgress'));
+        // Build query for recent puzzles
+        $puzzleQuery = Puzzle::query();
+
+        if ($todayCompleted) {
+            // Include today and past if today is completed
+            $puzzleQuery->where('publish_date', '<=', Carbon::today()->toDateString());
+        } else {
+            // Only include past puzzles if today isn't completed
+            $puzzleQuery->where('publish_date', '<', Carbon::today()->toDateString());
+        }
+
+        // Get the 5 most recent puzzles that match our criteria
+        $recentPuzzles = $puzzleQuery->orderBy('publish_date', 'desc')
+            ->take(5)
+            ->get();
+
+        // Get only the progress for puzzles that have been played
+        $puzzleIds = $recentPuzzles->pluck('id')->toArray();
+        $progress = $user->gameProgress()
+            ->whereIn('puzzle_id', $puzzleIds)
+            ->get()
+            ->keyBy('puzzle_id');
+
+        // Filter to only include puzzles that have been played
+        $playedPuzzles = $recentPuzzles->filter(function($puzzle) use ($progress) {
+            return isset($progress[$puzzle->id]);
+        });
+
+        return view('buckeye.stats', [
+            'userStats' => $userStats,
+            'recentPuzzles' => $playedPuzzles,
+            'puzzleProgress' => $progress
+        ]);
     }
 }

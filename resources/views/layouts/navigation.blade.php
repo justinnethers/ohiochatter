@@ -31,9 +31,11 @@
                         {{ __('Sports') }}
                     </x-nav-link>
 
-                    <x-nav-link href="/forums/politics" :active="request()->is('forums/politics')">
-                        {{ __('Politics') }}
-                    </x-nav-link>
+                    @if (Auth::check())
+                        <x-nav-link href="{{ route('buckeye.index') }}" :active="request()->is('buckEYE')">
+                            {{ __('BuckEYE Game') }}
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
@@ -141,9 +143,12 @@
                 {{ __('Sports') }}
             </x-responsive-nav-link>
 
-            <x-responsive-nav-link href="/forums/politics" :active="request()->is('forums/politics')">
-                {{ __('Politics') }}
-            </x-responsive-nav-link>
+            @if (Auth::check())
+                <x-responsive-nav-link href="{{ route('buckeye.index') }}" :active="request()->is('buckEYE')">
+                    {{ __('BuckEYE Game') }}
+                </x-responsive-nav-link>
+            @endif
+
             <x-responsive-nav-link :href="route('messages.index')" :active="request()->routeIs('messages.index')">
                 {{ __('Messages') }}
                 @auth

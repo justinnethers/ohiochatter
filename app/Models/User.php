@@ -170,6 +170,7 @@ class User extends Authenticatable
 
         return $this->gameProgress()
             ->where('puzzle_id', $todaysPuzzle->id)
+            ->whereNotNull('completed_at')
             ->exists();
     }
 

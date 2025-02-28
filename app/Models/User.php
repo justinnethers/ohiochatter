@@ -51,7 +51,7 @@ class User extends Authenticatable
 
     public function getPostsCountAttribute()
     {
-        return $this->replies()->count() + $this->posts_old;
+        return $this->replies->count() + $this->posts_old;
     }
 
     public function getAvatarPathAttribute($avatar): string

@@ -99,7 +99,13 @@ class BuckEyeGame extends Component
                 $this->previousGuesses = $progress->previous_guesses ?: [];
                 $this->remainingGuesses = PuzzleService::MAX_GUESSES - $progress->attempts;
                 $this->pixelationLevel = PuzzleService::PIXELATION_LEVELS - $progress->attempts;
-                if ($this->pixelationLevel < 0) $this->pixelationLevel = 0;
+
+                // Make sure we show clear image if the game was won
+                if ($progress->solved) {
+                    $this->pixelationLevel = 0;
+                } elseif ($this->pixelationLevel < 0) {
+                    $this->pixelationLevel = 0;
+                }
 
                 $this->gameComplete = (bool) $progress->completed_at;
                 $this->gameWon = $progress->solved;
@@ -146,6 +152,11 @@ class BuckEyeGame extends Component
         $this->gameComplete = $result['game_complete'];
         $this->gameWon = $result['game_won'];
 
+        // Always set pixelation to 0 (clear) if the game is won
+        if ($this->gameWon) {
+            $this->pixelationLevel = 0;
+        }
+
         // Update the image URL
         $this->imageUrl = $puzzleService->getPixelatedImage($this->puzzle, $this->pixelationLevel);
 
@@ -159,12 +170,17 @@ class BuckEyeGame extends Component
         // Refresh user stats if game is complete
         if ($this->gameComplete && Auth::check()) {
             $this->userStats = UserGameStats::getOrCreateForUser(Auth::id());
+
+            // Emit an event to update the user stats component
+            $this->dispatch('gameCompleted', [
+                'won' => $this->gameWon,
+                'guesses' => count($this->previousGuesses)
+            ]);
         }
 
         $this->currentGuess = '';
         $this->dispatch('clearCurrentGuess');
     }
-
 
     public function render()
     {

@@ -32,8 +32,11 @@
                     </x-nav-link>
 
                     @if (Auth::check())
-                        <x-nav-link href="{{ route('buckeye.index') }}" :active="request()->is('buckEYE')">
+                        <x-nav-link href="{{ route('buckeye.index') }}" :active="request()->is('buckEYE')" class="relative">
                             {{ __('BuckEYE Game') }}
+                            @if(!Auth::user()->hasPlayedToday())
+                                <span class="absolute top-2 -right-5 rounded-lg bg-red-500 px-1 text-white text-[0.6rem]">New!</span>
+                            @endif
                         </x-nav-link>
                     @endif
                 </div>
@@ -42,61 +45,61 @@
             <!-- Settings Dropdown -->
             @if (Auth::check())
                 <div class="hidden sm:flex sm:items-center sm:ml-6">
-                <x-dropdown align="right" width="48">
-                    <x-slot name="trigger">
-                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-400 dark:text-gray-400 bg-gray-800 dark:bg-gray-800 hover:text-gray-300 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150 hover:bg-gray-900 hover:shadow-lg">
-                            <div class="mr-2">{{ Auth::user()->username }}</div>
+                    <x-dropdown align="right" width="48">
+                        <x-slot name="trigger">
+                            <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-400 dark:text-gray-400 bg-gray-800 dark:bg-gray-800 hover:text-gray-300 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150 hover:bg-gray-900 hover:shadow-lg">
+                                <div class="mr-2">{{ Auth::user()->username }}</div>
 
-                            <div class="relative">
-                                <x-avatar size="6" :avatar-path="Auth::user()->avatar_path" />
+                                <div class="relative">
+                                    <x-avatar size="6" :avatar-path="Auth::user()->avatar_path" />
+                                    @auth
+                                        @if($count = Auth::user()->newThreadsCount() > 0)
+                                            <span class="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-red-500"></span>
+                                        @endif
+                                    @endauth
+                                </div>
+
+                                <div class="ml-1">
+                                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                            </button>
+                        </x-slot>
+
+                        <x-slot name="content">
+                            <x-dropdown-link :href="route('messages.index')">
+                                {{ __('Messages') }}
                                 @auth
-                                    @if($count = Auth::user()->newThreadsCount() > 0)
-                                        <span class="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-red-500"></span>
+                                    @if($unreadCount = Auth::user()->unreadMessagesCount())
+                                        <span class="text-red-500">[{{ $unreadCount }} new]</span>
                                     @endif
                                 @endauth
-                            </div>
-
-                            <div class="ml-1">
-                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                        </button>
-                    </x-slot>
-
-                    <x-slot name="content">
-                        <x-dropdown-link :href="route('messages.index')">
-                            {{ __('Messages') }}
-                            @auth
-                                @if($unreadCount = Auth::user()->unreadMessagesCount())
-                                    <span class="text-red-500">[{{ $unreadCount }} new]</span>
-                                @endif
-                            @endauth
-                        </x-dropdown-link>
-
-                        <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Profile') }}
-                        </x-dropdown-link>
-
-                        @if (Auth::user()->isAdmin())
-                            <x-dropdown-link :href="route('pulse')" target="_blank">
-                                {{ __('Pulse') }}
                             </x-dropdown-link>
-                        @endif
 
-                        <!-- Authentication -->
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
+                            <x-dropdown-link :href="route('profile.edit')">
+                                {{ __('Profile') }}
+                            </x-dropdown-link>
 
-                            <x-dropdown-link :href="route('logout')"
-                                    onclick="event.preventDefault();
+                            @if (Auth::user()->isAdmin())
+                                <x-dropdown-link :href="route('pulse')" target="_blank">
+                                    {{ __('Pulse') }}
+                                </x-dropdown-link>
+                            @endif
+
+                            <!-- Authentication -->
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+
+                                <x-dropdown-link :href="route('logout')"
+                                                 onclick="event.preventDefault();
                                                 this.closest('form').submit();">
-                                {{ __('Log Out') }}
-                            </x-dropdown-link>
-                        </form>
-                    </x-slot>
-                </x-dropdown>
-            </div>
+                                    {{ __('Log Out') }}
+                                </x-dropdown-link>
+                            </form>
+                        </x-slot>
+                    </x-dropdown>
+                </div>
             @else
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                     <x-nav-link href="{{ route('register') }}" :active="request()->routeIs('register')">
@@ -130,7 +133,7 @@
          x-transition:leave-end="opacity-0 -translate-y-1"
          class="absolute w-full left-0 top-full bg-white dark:bg-gray-800 sm:hidden min-h-screen">
 
-    <div class="pt-2 pb-3 space-y-1">
+        <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('thread.index')" :active="request()->routeIs('thread.index')">
                 {{ __('All Threads') }}
             </x-responsive-nav-link>
@@ -144,47 +147,50 @@
             </x-responsive-nav-link>
 
             @if (Auth::check())
-                <x-responsive-nav-link href="{{ route('buckeye.index') }}" :active="request()->is('buckEYE')">
+                <x-responsive-nav-link href="{{ route('buckeye.index') }}" :active="request()->is('buckEYE')" class="relative">
                     {{ __('BuckEYE Game') }}
+                    @if(!Auth::user()->hasPlayedToday())
+                        <span class="absolute top-2 right-5 rounded-lg bg-red-500 px-1 text-white text-[0.6rem]">New!</span>
+                    @endif
                 </x-responsive-nav-link>
             @endif
 
             <x-responsive-nav-link :href="route('messages.index')" :active="request()->routeIs('messages.index')">
                 {{ __('Messages') }}
                 @auth
-{{--                    @if(($unreadCount = auth()->user()->threads->filter(function($thread) {--}}
-{{--                        return $thread->isUnread(auth()->id());--}}
-{{--                    })->count()) > 0)--}}
-{{--                        <span class="text-red-500">[{{ $unreadCount }} new]</span>--}}
-{{--                    @endif--}}
+                    {{--                    @if(($unreadCount = auth()->user()->threads->filter(function($thread) {--}}
+                    {{--                        return $thread->isUnread(auth()->id());--}}
+                    {{--                    })->count()) > 0)--}}
+                    {{--                        <span class="text-red-500">[{{ $unreadCount }} new]</span>--}}
+                    {{--                    @endif--}}
                 @endauth
             </x-responsive-nav-link>
         </div>
 
         <!-- Responsive Settings Options -->
         @if (Auth::check())
-        <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
-            <div class="px-4">
-                <div class="font-medium text-base text-gray-800 dark:text-gray-200">{{ Auth::user()->username }}</div>
-            </div>
+            <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
+                <div class="px-4">
+                    <div class="font-medium text-base text-gray-800 dark:text-gray-200">{{ Auth::user()->username }}</div>
+                </div>
 
-            <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('profile.edit')">
-                    {{ __('Profile') }}
-                </x-responsive-nav-link>
-
-                <!-- Authentication -->
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-
-                    <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault();
-                                        this.closest('form').submit();">
-                        {{ __('Log Out') }}
+                <div class="mt-3 space-y-1">
+                    <x-responsive-nav-link :href="route('profile.edit')">
+                        {{ __('Profile') }}
                     </x-responsive-nav-link>
-                </form>
+
+                    <!-- Authentication -->
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+
+                        <x-responsive-nav-link :href="route('logout')"
+                                               onclick="event.preventDefault();
+                                        this.closest('form').submit();">
+                            {{ __('Log Out') }}
+                        </x-responsive-nav-link>
+                    </form>
+                </div>
             </div>
-        </div>
         @endif
     </div>
 </nav>

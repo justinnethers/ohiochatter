@@ -40,6 +40,15 @@ blockquote {
     height: auto !important;
 }
 
+.post-body a {
+    word-break: break-word;
+    text-decoration: underline;
+}
+
+.post-body a:hover {
+    @apply text-blue-400;
+}
+
 [id^="reply-"] {
     scroll-margin-top: 110px;
 }

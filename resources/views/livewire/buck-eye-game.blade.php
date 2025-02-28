@@ -72,30 +72,6 @@
                     The answer was: <span class="font-bold">{{ $puzzle->answer }}</span>
                 </p>
 
-                @if (Auth::check() && $userStats)
-                    <div class="mt-4 pt-4 border-t border-gray-300">
-                        <h4 class="font-semibold mb-2">Your Stats:</h4>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <div class="text-center">
-                                <p class="text-2xl font-bold">{{ $userStats->games_played }}</p>
-                                <p class="text-sm text-gray-600">Played</p>
-                            </div>
-                            <div class="text-center">
-                                <p class="text-2xl font-bold">{{ $userStats->games_won }}</p>
-                                <p class="text-sm text-gray-600">Won</p>
-                            </div>
-                            <div class="text-center">
-                                <p class="text-2xl font-bold">{{ $userStats->current_streak }}</p>
-                                <p class="text-sm text-gray-600">Current Streak</p>
-                            </div>
-                            <div class="text-center">
-                                <p class="text-2xl font-bold">{{ $userStats->max_streak }}</p>
-                                <p class="text-sm text-gray-600">Max Streak</p>
-                            </div>
-                        </div>
-                    </div>
-                @endif
-
                 <div class="mt-4 text-center">
                     <p class="text-sm text-gray-600">Come back tomorrow for a new puzzle!</p>
                 </div>

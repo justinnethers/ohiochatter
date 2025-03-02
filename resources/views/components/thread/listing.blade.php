@@ -22,8 +22,8 @@
             @if ($thread->owner)
                 <x-avatar size="6" :avatar-path="$thread->owner->avatar_path" />
                 <span>
-                    started {{ \Carbon\Carbon::parse($thread->created_at)->setTimezone((auth()->check() ? auth()->user()->timezone : null))->diffForHumans() }}
-                    by <a href="/profiles/{{ $thread->owner->username }}" class="text-blue-500 hover:underline">{{ $thread->owner->username }}</a>
+                    {{ \Carbon\Carbon::parse($thread->created_at)->setTimezone((auth()->check() ? auth()->user()->timezone : null))->diffForHumans() }}
+                     <a href="/profiles/{{ $thread->owner->username }}" class="text-blue-500 hover:underline">{{ $thread->owner->username }}</a>
                 </span>
             @endif
         </div>
@@ -31,17 +31,17 @@
         <div class="flex items-center justify-end space-x-2 bg-main-color posted-by-when rounded shadow md:shadow-none py-1.5 md:p-2 md:p-0 md:m-0">
             @if ($thread->lastReply)
                 <div class="text-right">
-                    <span class="md:mr-1">last post </span>
+{{--                    <span class="md:mr-1">last post </span>--}}
                     <span class="md:mr-1">
                         {{ \Carbon\Carbon::parse($thread->lastReply->created_at)->setTimezone((auth()->check() ? auth()->user()->timezone : null))->diffForHumans() }}
-                        by
+{{--                        by--}}
                     </span>
                     <a href="/profiles/{{ $thread->lastReply->owner->username }}" class="text-blue-500 hover:underline">{{ $thread->lastReply->owner->username }}</a>
                 </div>
                 <x-avatar size="6" :avatar-path="$thread->lastReply->owner->avatar_path" />
             @else
                 <div>
-                    <span class="md:mr-1">last post </span>
+{{--                    <span class="md:mr-1">last post </span>--}}
                     <a href="/profiles/{{ $thread->owner->username }}">{{ $thread->owner->username }}</a>
                     <span>{{ \Carbon\Carbon::parse($thread->created_at)->setTimezone((auth()->check() ? auth()->user()->timezone : null))->diffForHumans() }}</span>
                 </div>

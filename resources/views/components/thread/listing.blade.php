@@ -22,7 +22,7 @@
 
     <div
         class="md:flex text-base justify-between rounded md:rounded-md my-2 bg-gray-800 shadow divide-y divide-gray-700">
-        <div class="flex items-center space-x-2 py-1.5 px-0.5">
+        <div class="flex items-center space-x-2 py-1.5 px-1">
             @if ($thread->owner)
                 <x-avatar size="6" :avatar-path="$thread->owner->avatar_path"/>
                 <span>

@@ -43,7 +43,7 @@ class User extends Authenticatable implements FilamentUser
 
     public function getPostsCountAttribute()
     {
-        return $this->replies->count() + $this->posts_old;
+        return $this->post_count + $this->posts_old;
     }
 
     public function getAvatarPathAttribute($avatar): string

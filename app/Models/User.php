@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Cmgmyr\Messenger\Traits\Messagable;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -13,7 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\HasApiTokens;
 use Laravel\Scout\Searchable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
     use HasApiTokens, HasFactory, Notifiable, Messagable, Searchable;
 
@@ -34,19 +36,9 @@ class User extends Authenticatable
         'last_activity' => 'datetime'
     ];
 
-    public function replies(): HasMany
-    {
-        return $this->hasMany(Reply::class);
-    }
-
     public function searches(): HasMany
     {
         return $this->hasMany(Search::class);
-    }
-
-    public function isAdmin()
-    {
-        return $this->is_admin;
     }
 
     public function getPostsCountAttribute()
@@ -76,6 +68,11 @@ class User extends Authenticatable
         );
     }
 
+    public function replies(): HasMany
+    {
+        return $this->hasMany(Reply::class);
+    }
+
     /**
      * Mark when the user has read the given thread.
      */
@@ -89,6 +86,15 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the last time the user viewed the given thread.
+     */
+    public function lastViewedThreadAt(Thread $thread): ?Carbon
+    {
+        $record = $this->threadViewRecord($thread);
+        return $record ? new Carbon($record->last_view) : null;
+    }
+
+    /**
      * Retrieve the thread view record for the user.
      */
     public function threadViewRecord(Thread $thread): ?object
@@ -97,15 +103,6 @@ class User extends Authenticatable
             ->where('user_id', $this->id)
             ->where('thread_id', $thread->id)
             ->first();
-    }
-
-    /**
-     * Get the last time the user viewed the given thread.
-     */
-    public function lastViewedThreadAt(Thread $thread): ?Carbon
-    {
-        $record = $this->threadViewRecord($thread);
-        return $record ? new Carbon($record->last_view) : null;
     }
 
     /**
@@ -133,16 +130,6 @@ class User extends Authenticatable
         return [
             'username' => $this->username,
         ];
-    }
-
-    /**
-     * Get game progress records for the user
-     *
-     * @return HasMany
-     */
-    public function gameProgress(): HasMany
-    {
-        return $this->hasMany(UserGameProgress::class);
     }
 
     /**
@@ -175,6 +162,16 @@ class User extends Authenticatable
     }
 
     /**
+     * Get game progress records for the user
+     *
+     * @return HasMany
+     */
+    public function gameProgress(): HasMany
+    {
+        return $this->hasMany(UserGameProgress::class);
+    }
+
+    /**
      * Get user's progress for today's puzzle
      *
      * @return UserGameProgress|null
@@ -190,5 +187,15 @@ class User extends Authenticatable
         return $this->gameProgress()
             ->where('puzzle_id', $todaysPuzzle->id)
             ->first();
+    }
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return $this->isAdmin();
+    }
+
+    public function isAdmin()
+    {
+        return $this->is_admin;
     }
 }

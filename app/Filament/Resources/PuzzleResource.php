@@ -55,7 +55,8 @@ class PuzzleResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('publish_date', 'DESC');
     }
 
     public static function getPages(): array

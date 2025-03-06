@@ -53,11 +53,11 @@ blockquote {
     @apply text-blue-400;
 }
 
-.post-body ul, .editor ul {
+.post-body ul, .trumbowyg-editor ul {
     @apply list-disc list-inside;
 }
 
-.post-body ol, .editor ol {
+.post-body ol, .trumbowyg-editor ol {
     @apply list-decimal list-inside;
 }
 

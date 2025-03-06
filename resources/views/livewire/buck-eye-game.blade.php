@@ -1,7 +1,7 @@
 <!-- resources/views/livewire/buck-eye-game-component.blade.php -->
 <div class="max-w-4xl mx-auto p-4">
     <div class="mb-6 text-center text-gray-100">
-        <h1 class="text-4xl font-bold 00 mb-2">BuckEYE</h1>
+        <h1 class="text-2xl font-bold 00 mb-2">BuckEYE</h1>
         <p class="text-600">Guess the Ohio-related answer!</p>
     </div>
 
@@ -13,7 +13,8 @@
         <!-- Word Count Indicator -->
         <div class="mb-4 text-center text-gray-100">
             <p class="text-lg font-semibold">
-                Today's answer has <span class="text-red-600">{{ $wordCount }}</span> {{ Str::plural('word', $wordCount) }}
+                Today's answer has <span
+                    class="text-red-600">{{ $wordCount }}</span> {{ Str::plural('word', $wordCount) }}
             </p>
         </div>
 

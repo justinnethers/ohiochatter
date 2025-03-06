@@ -42,6 +42,77 @@
                 src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4406607721782655"
                 crossorigin="anonymous"></script>
     @endif
+
+    {{-- Add this to app.blade.php's <head> section --}}
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.store('scroll', {
+                scrolled: false,
+                transitioning: false,
+                lastScrollY: 0,
+                scrollDirection: null,
+                transitionTimer: null,
+
+                init() {
+                    // Initialize based on current scroll position
+                    this.scrolled = window.pageYOffset > 65;
+                    this.lastScrollY = window.pageYOffset;
+                    document.documentElement.style.setProperty('--nav-height', this.scrolled ? '3rem' : '4rem');
+
+                    const handleScroll = () => {
+                        // Determine scroll direction
+                        const currentScrollY = window.pageYOffset;
+                        this.scrollDirection = currentScrollY > this.lastScrollY ? 'down' : 'up';
+                        this.lastScrollY = currentScrollY;
+
+                        // If we're in a transition already, don't process further
+                        if (this.transitioning) {
+                            return;
+                        }
+
+                        // Handle different state changes with increased thresholds
+                        if (!this.scrolled && this.scrollDirection === 'down' && currentScrollY > 70) {
+                            this.setScrolledState(true);
+                        } else if (this.scrolled && this.scrollDirection === 'up' && currentScrollY < 50) {
+                            this.setScrolledState(false);
+                        }
+                    };
+
+                    // Debounced scroll listener with high performance
+                    let ticking = false;
+                    window.addEventListener('scroll', () => {
+                        if (!ticking) {
+                            window.requestAnimationFrame(() => {
+                                handleScroll();
+                                ticking = false;
+                            });
+                            ticking = true;
+                        }
+                    }, {passive: true});
+                },
+
+                // Method to change state with mandatory cooldown period
+                setScrolledState(newState) {
+                    // Only change if it's different
+                    if (this.scrolled !== newState) {
+                        this.scrolled = newState;
+                        this.transitioning = true;
+                        document.documentElement.style.setProperty('--nav-height', newState ? '3rem' : '4rem');
+
+                        // Clear any existing timer
+                        if (this.transitionTimer) {
+                            clearTimeout(this.transitionTimer);
+                        }
+
+                        // Set a cooldown period to prevent rapid toggling
+                        this.transitionTimer = setTimeout(() => {
+                            this.transitioning = false;
+                        }, 500); // 500ms cooldown before allowing another state change
+                    }
+                }
+            });
+        });
+    </script>
 </head>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-1KYZYV7374"></script>
@@ -61,11 +132,11 @@
     @include('layouts.navigation')
 
     @if (isset($header))
-        <header x-data="{ scrolled: false }"
-                x-init="window.addEventListener('scroll', () => scrolled = window.pageYOffset > 60)"
-                :class="{ 'py-4 top-16': !scrolled, 'py-2 top-10 shadow-gray-700/50': scrolled }"
+        <header x-data="{}"
+                x-bind:class="{ 'py-4 top-16': !$store.scroll.scrolled, 'py-2 top-10 shadow-gray-700/50': $store.scroll.scrolled }"
                 class="bg-gray-800 dark:bg-gray-800 shadow-xl sticky z-40 transition-all duration-300">
-            <div :class="{ 'text-xl': !scrolled, 'text-lg': scrolled }" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div x-bind:class="{ 'text-xl': !$store.scroll.scrolled, 'text-lg': $store.scroll.scrolled }"
+                 class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {{ $header }}
             </div>
         </header>

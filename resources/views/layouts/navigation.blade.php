@@ -1,14 +1,9 @@
-{{-- resources/views/layouts/navigation.blade.php --}}
-<nav x-data="{ open: false, scrolled: false }"
-     x-init="window.addEventListener('scroll', () => {
-         scrolled = window.pageYOffset > 60;
-         document.documentElement.style.setProperty('--nav-height', scrolled ? '3rem' : '4rem');
-     })"
-     :class="{ 'h-16': !scrolled, 'h-10': scrolled }"
+<nav x-data="{ open: false }"
+     x-init="$store.scroll.init()"
+     :class="{ 'h-16': !$store.scroll.scrolled, 'h-10': $store.scroll.scrolled }"
      class="fixed top-0 left-0 right-0 z-50 bg-gray-800 dark:bg-gray-800 border-b border-gray-700 dark:border-gray-700 transition-all duration-300">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
-        <div class="flex justify-between h-full transition-all duration-300"
-             :class="{ 'scale-100': !scrolled, 'scale-100': scrolled }">
+        <div class="flex justify-between h-full transition-all duration-300">
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
@@ -37,7 +32,7 @@
                             {{ __('BuckEYE Game') }}
                             @if(!Auth::user()->hasPlayedToday())
                                 <span
-                                    class="absolute top-2 -right-5 rounded-lg bg-red-500 px-1 text-white text-[0.6rem]">New!</span>
+                                    class="absolute top-3 -right-3 rounded-lg bg-red-500 p-0.5 leading-tight text-white text-[0.5rem]">New!</span>
                             @endif
                         </x-nav-link>
                     @endif
@@ -50,7 +45,9 @@
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
                             <button
-                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-400 dark:text-gray-400 bg-gray-800 dark:bg-gray-800 hover:text-gray-300 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150 hover:bg-gray-900 hover:shadow-lg">
+                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-400 dark:text-gray-400 bg-gray-800 dark:bg-gray-800 hover:text-gray-300 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150 hover:bg-gray-900 hover:shadow-lg"
+                                :class="{ 'py-2': !$store.scroll.scrolled, 'py-1': $store.scroll.scrolled }"
+                            >
                                 <div class="mr-2">{{ Auth::user()->username }}</div>
 
                                 <div class="relative">
@@ -133,6 +130,7 @@
             </div>
         </div>
     </div>
+
 
     <!-- Responsive Navigation Menu -->
     <div x-show="open"

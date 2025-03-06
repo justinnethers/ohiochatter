@@ -1,6 +1,6 @@
 <!-- resources/views/livewire/buck-eye-game-component.blade.php -->
-<div class="max-w-4xl mx-auto">
-    <div class="mb-6 text-center text-gray-100">
+<div class="max-w-4xl mx-auto space-y-4">
+    <div class="text-center text-gray-100">
         <h1 class="text-2xl font-bold 00 mb-2">BuckEYE</h1>
         <p class="text-600">Guess the Ohio-related answer!</p>
     </div>
@@ -32,7 +32,7 @@
         @endif
 
         <!-- Pixelated Image -->
-        <div class="mb-6 flex justify-center">
+        <div class="flex justify-center">
             <div class="w-full max-w-md overflow-hidden rounded-lg shadow-lg">
                 <img
                     src="{{ $imageUrl }}"
@@ -45,7 +45,7 @@
         </div>
 
         <!-- Game Information -->
-        <div class="mb-6 text-center">
+        <div class="text-center">
             <p class="text-gray-100">
                 <span class="font-semibold">Remaining guesses:</span> {{ $remainingGuesses }}
             </p>
@@ -53,7 +53,7 @@
 
         <!-- Previous Guesses -->
         @if (count($previousGuesses) > 0)
-            <div class="mb-6 text-gray-100">
+            <div class="text-gray-100">
                 <h3 class="text-lg font-semibold mb-2">Your guesses:</h3>
                 <div class="flex flex-wrap gap-2">
                     @foreach ($previousGuesses as $guess)
@@ -65,7 +65,7 @@
 
         <!-- Game Complete State -->
         @if ($gameComplete)
-            <div class="mb-6 p-2 space-y-2 rounded-lg {{ $gameWon ? 'bg-green-100' : 'bg-red-100' }}">
+            <div class="p-2 space-y-2 rounded-lg {{ $gameWon ? 'bg-green-100' : 'bg-red-100' }}">
                 <h3 class="text-xl font-bold {{ $gameWon ? 'text-green-800' : 'text-red-800' }}">
                     {{ $gameWon ? 'Congratulations!' : 'Better luck tomorrow!' }}
                 </h3>

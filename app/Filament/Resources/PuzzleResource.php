@@ -3,7 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PuzzleResource\Pages;
-use App\Filament\Resources\PuzzleResource\RelationManagers;
+use App\Filament\Resources\PuzzleResource\RelationManagers\UserProgressRelationManager;
 use App\Models\Puzzle;
 use App\Models\UserGameProgress;
 use Filament\Forms\Components\FileUpload;
@@ -20,6 +20,8 @@ class PuzzleResource extends Resource
     protected static ?string $model = Puzzle::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-puzzle-piece';
+
+    protected static ?string $recordTitleAttribute = 'answer';
 
     public static function form(Form $form): Form
     {
@@ -61,6 +63,7 @@ class PuzzleResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -72,10 +75,20 @@ class PuzzleResource extends Resource
             ->defaultSort('publish_date', 'DESC');
     }
 
+    public static function getRelations(): array
+    {
+        return [
+            UserProgressRelationManager::class,
+        ];
+    }
+
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManagePuzzles::route('/'),
+            'index' => Pages\ListPuzzles::route('/'),
+            'create' => Pages\CreatePuzzle::route('/create'),
+            'view' => Pages\ViewPuzzle::route('/{record}'),
+            'edit' => Pages\EditPuzzle::route('/{record}/edit'),
         ];
     }
 }

@@ -89,6 +89,9 @@
                                 <x-dropdown-link :href="route('pulse')" target="_blank">
                                     {{ __('Pulse') }}
                                 </x-dropdown-link>
+                                <x-dropdown-link href="/admin" target="_blank">
+                                    {{ __('Admin') }}
+                                </x-dropdown-link>
                             @endif
 
                             <!-- Authentication -->

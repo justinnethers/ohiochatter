@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\PuzzleResource\Pages;
 use App\Filament\Resources\PuzzleResource\RelationManagers;
 use App\Models\Puzzle;
+use App\Models\UserGameProgress;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -12,6 +13,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class PuzzleResource extends Resource
 {
@@ -41,8 +43,19 @@ class PuzzleResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('answer')
                     ->description(fn(Puzzle $puzzle): string => $puzzle->hint, 'limit: 5'),
-                Tables\Columns\TextColumn::make('publish_date')->date()
-
+                Tables\Columns\TextColumn::make('publish_date')->date(),
+                Tables\Columns\TextColumn::make('players_count')
+                    ->label('Players')
+                    ->getStateUsing(function (Puzzle $puzzle): int {
+                        return UserGameProgress::where('puzzle_id', $puzzle->id)->count();
+                    })
+                    ->badge()
+                    ->color('success')
+                    ->sortable(query: function (Builder $query, string $direction): Builder {
+                        return $query
+                            ->withCount('userProgress as players_count')
+                            ->orderBy('players_count', $direction);
+                    })
             ])
             ->filters([
                 //

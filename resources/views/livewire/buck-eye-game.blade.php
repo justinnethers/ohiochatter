@@ -1,5 +1,5 @@
 <!-- resources/views/livewire/buck-eye-game-component.blade.php -->
-<div class="max-w-4xl mx-auto p-4">
+<div class="max-w-4xl mx-auto">
     <div class="mb-6 text-center text-gray-100">
         <h1 class="text-2xl font-bold 00 mb-2">BuckEYE</h1>
         <p class="text-600">Guess the Ohio-related answer!</p>
@@ -65,7 +65,7 @@
 
         <!-- Game Complete State -->
         @if ($gameComplete)
-            <div class="mb-6 p-4 rounded-lg {{ $gameWon ? 'bg-green-100' : 'bg-red-100' }}">
+            <div class="mb-6 p-2 px-4 rounded-lg {{ $gameWon ? 'bg-green-100' : 'bg-red-100' }}">
                 <h3 class="text-xl font-bold mb-2 {{ $gameWon ? 'text-green-800' : 'text-red-800' }}">
                     {{ $gameWon ? 'Congratulations!' : 'Better luck tomorrow!' }}
                 </h3>

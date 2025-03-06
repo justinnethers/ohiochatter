@@ -22,9 +22,9 @@
                         <div class="bg-red-600 text-white p-2 px-4 rounded-t-md">
                             <h2 class="text-lg font-semibold">Overall Performance</h2>
                         </div>
-                        <div class="p-4 bg-gray-700 rounded-b-md">
-                            <div class="bg-gray-800 p-4 rounded-md">
-                                <div class="grid grid-cols-2 gap-4">
+                        <div class="p-2 bg-gray-700 rounded-b-md">
+                            <div class="bg-gray-800 p-2 rounded-md">
+                                <div class="grid grid-cols-2 gap-2">
                                     <div class="text-center p-3 bg-gray-700 rounded-lg">
                                         <div class="text-3xl font-bold">{{ $userStats->games_played }}</div>
                                         <div class="text-sm text-gray-400">Games Played</div>
@@ -40,9 +40,9 @@
                                         </div>
                                         <div class="text-sm text-gray-400">Win Rate</div>
                                     </div>
-                                    <div class="text-center p-3 bg-green-900 rounded-lg">
+                                    <div class="text-center p-3 bg-green-500 text-green-950 rounded-lg">
                                         <div class="text-3xl font-bold">{{ $userStats->max_streak }}</div>
-                                        <div class="text-sm text-gray-300">Best Streak</div>
+                                        <div class="text-sm">Best Streak</div>
                                     </div>
                                 </div>
 
@@ -69,8 +69,8 @@
                         <div class="bg-blue-600 text-white p-2 px-4 rounded-t-md">
                             <h2 class="text-lg font-semibold">Guess Distribution</h2>
                         </div>
-                        <div class="p-4 bg-gray-700 rounded-b-md">
-                            <div class="bg-gray-800 p-4 rounded-md">
+                        <div class="p-2 bg-gray-700 rounded-b-md">
+                            <div class="bg-gray-800 p-2 rounded-md">
                                 @if($userStats->guess_distribution && count($userStats->guess_distribution) > 0)
                                     <div class="space-y-3">
                                         @foreach(range(1, 5) as $guessNumber)
@@ -80,11 +80,11 @@
                                                 $percentage = $totalWins > 0 ? ($count / $totalWins) * 100 : 0;
                                             @endphp
                                             <div class="flex items-center">
-                                                <div class="w-6 text-gray-300 font-medium">{{ $guessNumber }}</div>
+                                                <div class="w-4 text-gray-300">{{ $guessNumber }}</div>
                                                 <div class="flex-1 ml-2">
                                                     <div
-                                                        class="bg-blue-600 text-white px-3 py-2 rounded-sm"
-                                                        style="width: {{ max(10, $percentage) }}%"
+                                                        class="bg-green-500 text-green-950 text-right px-2 py-1 text-sm font-bold rounded-sm"
+                                                        style="width: {{ max(5, $percentage) }}%"
                                                     >
                                                         {{ $count }}
                                                     </div>
@@ -136,11 +136,11 @@
                         <div class="bg-purple-600 text-white p-2 px-4 rounded-t-md">
                             <h2 class="text-lg font-semibold">Achievements</h2>
                         </div>
-                        <div class="p-4 bg-gray-700 rounded-b-md">
-                            <div class="bg-gray-800 p-4 rounded-md">
-                                <div class="grid grid-cols-2 gap-4">
+                        <div class="p-2 bg-gray-700 rounded-b-md">
+                            <div class="bg-gray-800 p-2 rounded-md">
+                                <div class="grid grid-cols-2 gap-2">
                                     <div
-                                        class="bg-gray-700 rounded-lg p-4 text-center {{ isset($userStats->guess_distribution[1]) && $userStats->guess_distribution[1] > 0 ? 'opacity-100' : 'opacity-40' }}">
+                                        class="bg-gray-700 rounded-lg p-2 text-center {{ isset($userStats->guess_distribution[1]) && $userStats->guess_distribution[1] > 0 ? 'opacity-100' : 'opacity-40' }}">
                                         <div
                                             class="w-12 h-12 bg-gray-600 rounded-full mx-auto mb-3 flex items-center justify-center">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-300"
@@ -154,7 +154,7 @@
                                     </div>
 
                                     <div
-                                        class="bg-gray-700 rounded-lg p-4 text-center {{ $userStats->current_streak >= 3 ? 'opacity-100' : 'opacity-40' }}">
+                                        class="bg-gray-700 rounded-lg p-2 text-center {{ $userStats->current_streak >= 3 ? 'opacity-100' : 'opacity-40' }}">
                                         <div
                                             class="w-12 h-12 bg-gray-600 rounded-full mx-auto mb-3 flex items-center justify-center">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-300"
@@ -168,7 +168,7 @@
                                     </div>
 
                                     <div
-                                        class="bg-gray-700 rounded-lg p-4 text-center {{ $userStats->max_streak >= 7 ? 'opacity-100' : 'opacity-40' }}">
+                                        class="bg-gray-700 rounded-lg p-2 text-center {{ $userStats->max_streak >= 10 ? 'opacity-100' : 'opacity-40' }}">
                                         <div
                                             class="w-12 h-12 bg-gray-600 rounded-full mx-auto mb-3 flex items-center justify-center">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-300"
@@ -182,7 +182,7 @@
                                     </div>
 
                                     <div
-                                        class="bg-gray-700 rounded-lg p-4 text-center {{ $userStats->games_won >= 100 ? 'opacity-100' : 'opacity-40' }}">
+                                        class="bg-gray-700 rounded-lg p-2 text-center {{ $userStats->games_won >= 100 ? 'opacity-100' : 'opacity-40' }}">
                                         <div
                                             class="w-12 h-12 bg-gray-600 rounded-full mx-auto mb-3 flex items-center justify-center">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-300"
@@ -192,7 +192,7 @@
                                             </svg>
                                         </div>
                                         <h3 class="font-medium">Ohio Expert</h3>
-                                        <p class="text-xs text-gray-400 mt-1">Win 5 games</p>
+                                        <p class="text-xs text-gray-400 mt-1">Win 100 games</p>
                                     </div>
                                 </div>
                             </div>
@@ -205,8 +205,8 @@
                     <div class="bg-green-600 text-white p-2 px-4 rounded-t-md">
                         <h2 class="text-lg font-semibold">Past Puzzles</h2>
                     </div>
-                    <div class="p-4 bg-gray-700 rounded-b-md">
-                        <div class="bg-gray-800 p-4 rounded-md">
+                    <div class="p-2 bg-gray-700 rounded-b-md">
+                        <div class="bg-gray-800 p-2 rounded-md">
                             @php
                                 // Filter out future puzzles and unplayed puzzles
                                 $pastPuzzles = $recentPuzzles->filter(function($puzzle) use ($puzzleProgress) {
@@ -232,7 +232,7 @@
                                         @endphp
 
                                         @if($progress)
-                                            <div class="bg-gray-700 rounded-md p-4">
+                                            <div class="bg-gray-700 rounded-md p-2">
                                                 <div class="flex flex-col md:flex-row">
                                                     <!-- Puzzle Image -->
                                                     <div class="w-full md:w-1/4 mb-4 md:mb-0 md:mr-4">
@@ -258,17 +258,30 @@
                                                                 <h3 class="text-xl font-bold">{{ $puzzle->answer }}</h3>
                                                                 <p class="text-gray-400 text-sm">{{ $puzzle->publish_date->format('F j, Y') }}</p>
                                                             </div>
-                                                            <div>
+                                                            <div class="hidden md:block">
                                                                 @if($progress->solved)
                                                                     <span
                                                                         class="px-2 py-1 bg-green-700 text-green-100 text-xs rounded-full">
-                                                                        Solved ({{ $progress->guesses_taken }} guesses)
+                                                                        Solved ({{ $progress->guesses_taken }} {{ Str::plural('guess', $progress->guesses_taken) }})
                                                                     </span>
                                                                 @else
                                                                     <span
                                                                         class="px-2 py-1 bg-red-700 text-red-100 text-xs rounded-full">Failed</span>
                                                                 @endif
                                                             </div>
+                                                        </div>
+
+
+                                                        <div class="md:hidden">
+                                                            @if($progress->solved)
+                                                                <span
+                                                                    class="px-2 py-1 bg-green-700 text-green-100 text-xs rounded-full">
+                                                                        Solved ({{ $progress->guesses_taken }} {{ Str::plural('guess', $progress->guesses_taken) }})
+                                                                    </span>
+                                                            @else
+                                                                <span
+                                                                    class="px-2 py-1 bg-red-700 text-red-100 text-xs rounded-full">Failed</span>
+                                                            @endif
                                                         </div>
 
                                                         @if($progress->previous_guesses && count($progress->previous_guesses) > 0)

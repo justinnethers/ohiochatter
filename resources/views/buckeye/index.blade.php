@@ -14,20 +14,17 @@
             @endif
         </div>
     </x-slot>
-    
+
     <div class="container mx-auto space-y-4 px-2 md:p-0">
         <article>
             <div class="bg-red-600 text-white p-2 px-4 rounded-t-md">
                 <div class="flex items-center justify-between">
-                    <h1 class="text-2xl font-bold">Today's Puzzle</h1>
-                    <div class="text-sm">
-                        {{ now()->format('l, F j, Y') }}
-                    </div>
+                    <h1 class="text-lg font-semibold">{{ now()->format('l, F j, Y') }}</h1>
                 </div>
             </div>
 
-            <div class="p-4 bg-gray-700 rounded-b-md">
-                <div class="bg-gray-800 p-4 rounded-md">
+            <div class="p-2 bg-gray-700 rounded-b-md">
+                <div class="bg-gray-800 p-2 rounded-md">
                     <livewire:buck-eye-game/>
                 </div>
             </div>
@@ -35,12 +32,12 @@
 
         @auth
             <article>
-                <div class="bg-gray-600 text-white p-2 px-4 rounded-t-md">
+                <div class="bg-green-800 text-white p-2 px-4 rounded-t-md">
                     <h2 class="text-lg font-semibold">Your Stats</h2>
                 </div>
 
-                <div class="p-4 bg-gray-700 text-gray-200 rounded-b-md">
-                    <div class="bg-gray-800 p-4 rounded-md">
+                <div class="p-2 bg-gray-700 text-gray-200 rounded-b-md">
+                    <div class="bg-gray-800 p-2 rounded-md">
                         <livewire:buck-eye-user-stats/>
                     </div>
                 </div>
@@ -136,8 +133,8 @@
                 <h2 class="text-lg font-semibold">How to Play</h2>
             </div>
 
-            <div class="p-4 bg-gray-700 rounded-b-md">
-                <div class="bg-gray-800 p-4 rounded-md">
+            <div class="p-2 bg-gray-700 rounded-b-md">
+                <div class="bg-gray-800 p-2 rounded-md">
                     <div class="prose prose-invert max-w-none">
                         <p>BuckEYE is a daily puzzle game that tests your knowledge of all things Ohio!</p>
 

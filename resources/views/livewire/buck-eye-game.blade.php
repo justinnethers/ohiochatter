@@ -14,7 +14,7 @@
         <div class="mb-4 text-center text-gray-100">
             <p class="text-lg font-semibold">
                 Today's answer has <span
-                    class="text-red-600">{{ $wordCount }}</span> {{ Str::plural('word', $wordCount) }}
+                    class="text-red-500">{{ $wordCount }}</span> {{ Str::plural('word', $wordCount) }}
             </p>
         </div>
 
@@ -57,7 +57,7 @@
                 <h3 class="text-lg font-semibold mb-2">Your guesses:</h3>
                 <div class="flex flex-wrap gap-2">
                     @foreach ($previousGuesses as $guess)
-                        <span class="px-3 py-1 bg-gray-200 rounded-full text-gray-800">{{ $guess }}</span>
+                        <span class="px-2 py-0.5 bg-gray-200 rounded-full text-gray-800">{{ $guess }}</span>
                     @endforeach
                 </div>
             </div>
@@ -65,22 +65,19 @@
 
         <!-- Game Complete State -->
         @if ($gameComplete)
-            <div class="mb-6 p-2 px-4 rounded-lg {{ $gameWon ? 'bg-green-100' : 'bg-red-100' }}">
-                <h3 class="text-xl font-bold mb-2 {{ $gameWon ? 'text-green-800' : 'text-red-800' }}">
+            <div class="mb-6 p-2 space-y-2 rounded-lg {{ $gameWon ? 'bg-green-100' : 'bg-red-100' }}">
+                <h3 class="text-xl font-bold {{ $gameWon ? 'text-green-800' : 'text-red-800' }}">
                     {{ $gameWon ? 'Congratulations!' : 'Better luck tomorrow!' }}
                 </h3>
                 <p class="text-gray-800">
-                    The answer was: <span class="font-bold">{{ $puzzle->answer }}</span>
+                    The answer was <span class="font-bold">{{ $puzzle->answer }}</span>
                 </p>
-
-                <div class="mt-4 text-center">
-                    <p class="text-sm text-gray-600">Come back tomorrow for a new puzzle!</p>
-                </div>
+                <p class="text-sm text-gray-600">Come back tomorrow for a new puzzle!</p>
             </div>
         @else
             <!-- Guess Input Form -->
             <form wire:submit.prevent="submitGuess" class="mb-6">
-                <div class="flex gap-2">
+                <div class="flex flex-col md:flex-row gap-2">
                     <input
                         wire:key="current-guess-input"
                         type="text"
@@ -91,10 +88,10 @@
                     >
                     <button
                         type="submit"
-                        class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                         {{ $gameComplete ? 'disabled' : '' }}
                     >
-                        Guess
+                        Submit Guess
                     </button>
                 </div>
                 @error('currentGuess')

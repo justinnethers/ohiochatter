@@ -1,13 +1,16 @@
 <!-- resources/views/livewire/buck-eye-user-stats.blade.php -->
 <div>
     @if($userStats)
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-6">
             <div class="text-center p-3 bg-gray-700 rounded-lg">
                 <div class="text-3xl font-bold">{{ $userStats->games_played }}</div>
                 <div class="text-xs text-gray-400">Played</div>
             </div>
             <div class="text-center p-3 bg-gray-700 rounded-lg">
-                <div class="text-3xl font-bold">{{ $userStats->games_played ? round(($userStats->games_won / $userStats->games_played) * 100) : 0 }}%</div>
+                <div
+                    class="text-3xl font-bold">{{ $userStats->games_played ? round(($userStats->games_won / $userStats->games_played) * 100) : 0 }}
+                    %
+                </div>
                 <div class="text-xs text-gray-400">Win Rate</div>
             </div>
             <div class="text-center p-3 bg-gray-700 rounded-lg">
@@ -34,7 +37,7 @@
                             <div class="w-4 text-gray-300">{{ $guessNumber }}</div>
                             <div class="flex-1 ml-2">
                                 <div
-                                    class="bg-blue-600 text-white text-right px-2 py-1 text-xs"
+                                    class="bg-green-500 text-green-950 text-right px-2 py-1 text-sm font-bold rounded-sm"
                                     style="width: {{ max(5, $percentage) }}%"
                                 >
                                     {{ $count }}

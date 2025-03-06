@@ -2,10 +2,10 @@
 
 namespace App\Livewire;
 
-use App\Models\Puzzle;
 use App\Models\UserGameStats;
 use App\Services\PuzzleService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Livewire\Component;
 
 class BuckEyeGame extends Component
@@ -107,11 +107,32 @@ class BuckEyeGame extends Component
                     $this->pixelationLevel = 0;
                 }
 
-                $this->gameComplete = (bool) $progress->completed_at;
+                $this->gameComplete = (bool)$progress->completed_at;
                 $this->gameWon = $progress->solved;
 
                 // Load user stats
                 $this->userStats = UserGameStats::getOrCreateForUser(Auth::id());
+            }
+        } else {
+            // For guests, load from session
+            $sessionKey = 'guest_game_' . $this->puzzle->publish_date;
+            $guestData = Session::get($sessionKey);
+
+            if ($guestData) {
+                $this->previousGuesses = $guestData['previousGuesses'] ?? [];
+                $this->remainingGuesses = $guestData['remainingGuesses'] ?? 5;
+                $this->pixelationLevel = $guestData['pixelationLevel'] ?? 5;
+                $this->gameComplete = $guestData['gameComplete'] ?? false;
+                $this->gameWon = $guestData['gameWon'] ?? false;
+
+                // Set appropriate messages if the game is complete
+                if ($this->gameComplete) {
+                    if ($this->gameWon) {
+                        $this->successMessage = "Congratulations! You guessed correctly!";
+                    } else {
+                        $this->errorMessage = "Sorry, you're out of guesses. The answer was: " . $this->puzzle->answer;
+                    }
+                }
             }
         }
 
@@ -132,51 +153,76 @@ class BuckEyeGame extends Component
         // Store the guess and then clear the input
         $currentGuess = $this->currentGuess;
 
-        // Process the guess using our stored value
-        $result = $puzzleService->processGuess(Auth::user(), $currentGuess);
-
-        // Update component state based on result
-        if ($result['status'] === 'error') {
-            $this->errorMessage = $result['message'];
-            return;
-        }
-
         // Clear any existing messages
         $this->errorMessage = null;
         $this->successMessage = null;
 
-        // Update game state
-        $this->previousGuesses[] = $currentGuess;
-        $this->remainingGuesses = $result['remaining_guesses'];
-        $this->pixelationLevel = $result['pixelation_level'];
-        $this->gameComplete = $result['game_complete'];
-        $this->gameWon = $result['game_won'];
+        if (Auth::check()) {
+            // For authenticated users - existing code
+            $result = $puzzleService->processGuess(Auth::user(), $currentGuess);
 
-        // Always set pixelation to 0 (clear) if the game is won
-        if ($this->gameWon) {
-            $this->pixelationLevel = 0;
+            if ($result['status'] === 'error') {
+                $this->errorMessage = $result['message'];
+                return;
+            }
+
+            $this->previousGuesses[] = $currentGuess;
+            $this->remainingGuesses = $result['remaining_guesses'];
+            $this->pixelationLevel = $result['pixelation_level'];
+            $this->gameComplete = $result['game_complete'];
+            $this->gameWon = $result['game_won'];
+
+            if ($this->gameWon) {
+                $this->pixelationLevel = 0;
+            }
+
+            if ($result['status'] === 'correct') {
+                $this->successMessage = $result['message'];
+            } else {
+                $this->errorMessage = $result['message'];
+            }
+
+            if ($this->gameComplete && Auth::check()) {
+                $this->userStats = UserGameStats::getOrCreateForUser(Auth::id());
+                $this->dispatch('gameCompleted', [
+                    'won' => $this->gameWon,
+                    'guesses' => count($this->previousGuesses)
+                ]);
+            }
+        } else {
+            // For guest users
+            $isCorrect = strtolower(trim($currentGuess)) === strtolower(trim($this->puzzle->answer));
+            $this->previousGuesses[] = $currentGuess;
+            $this->remainingGuesses--;
+            $this->pixelationLevel = max(0, PuzzleService::PIXELATION_LEVELS - count($this->previousGuesses));
+
+            if ($isCorrect) {
+                $this->gameComplete = true;
+                $this->gameWon = true;
+                $this->pixelationLevel = 0;
+                $this->successMessage = "Congratulations! You guessed correctly!";
+            } else if ($this->remainingGuesses <= 0) {
+                $this->gameComplete = true;
+                $this->gameWon = false;
+                $this->pixelationLevel = 0;
+                $this->errorMessage = "Sorry, you're out of guesses. The answer was: " . $this->puzzle->answer;
+            } else {
+                $this->errorMessage = "Sorry, that's not correct. Try again!";
+            }
+
+            // Save to session
+            $sessionKey = 'guest_game_' . $this->puzzle->publish_date;
+            Session::put($sessionKey, [
+                'previousGuesses' => $this->previousGuesses,
+                'remainingGuesses' => $this->remainingGuesses,
+                'pixelationLevel' => $this->pixelationLevel,
+                'gameComplete' => $this->gameComplete,
+                'gameWon' => $this->gameWon
+            ]);
         }
 
         // Update the image URL
         $this->imageUrl = $puzzleService->getPixelatedImage($this->puzzle, $this->pixelationLevel);
-
-        // Set appropriate message
-        if ($result['status'] === 'correct') {
-            $this->successMessage = $result['message'];
-        } else {
-            $this->errorMessage = $result['message'];
-        }
-
-        // Refresh user stats if game is complete
-        if ($this->gameComplete && Auth::check()) {
-            $this->userStats = UserGameStats::getOrCreateForUser(Auth::id());
-
-            // Emit an event to update the user stats component
-            $this->dispatch('gameCompleted', [
-                'won' => $this->gameWon,
-                'guesses' => count($this->previousGuesses)
-            ]);
-        }
 
         $this->currentGuess = '';
         $this->dispatch('clearCurrentGuess');

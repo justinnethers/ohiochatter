@@ -14,7 +14,7 @@
         <div class="mb-4 text-center text-gray-100">
             <p class="text-lg font-semibold">
                 Today's answer has <span
-                    class="text-red-500">{{ $wordCount }}</span> {{ Str::plural('word', $wordCount) }}
+                    class="text-red-500 text-2xl">{{ $wordCount }}</span> {{ Str::plural('word', $wordCount) }}
             </p>
         </div>
 

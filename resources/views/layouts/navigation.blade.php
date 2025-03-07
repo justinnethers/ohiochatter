@@ -158,18 +158,42 @@
                 {{ __('Sports') }}
             </x-responsive-nav-link>
 
+            <x-responsive-nav-link href="/forums/politics" :active="request()->is('forums/politics')">
+                {{ __('Politics') }}
+            </x-responsive-nav-link>
+
             @if (Auth::check())
-                <x-responsive-nav-link href="{{ route('buckeye.index') }}" :active="request()->is('buckEYE')"
-                                       class="relative">
+                <x-responsive-nav-link
+                    href="{{ route('buckeye.index') }}"
+                    :active="request()->is('buckEYE')"
+                    class="relative"
+                >
                     {{ __('BuckEYE Game') }}
                     @if(!Auth::user()->hasPlayedToday())
                         <span
-                            class="absolute top-2 right-5 rounded-lg bg-red-500 px-1 text-white text-[0.6rem]">New!</span>
+                            class="absolute top-2 right-5 rounded-lg bg-red-500 px-1 text-white text-[0.6rem]"
+                        >New!</span>
                     @endif
                 </x-responsive-nav-link>
+
+                @if (Auth::user()->isAdmin())
+                    <x-responsive-nav-link
+                        href="/admin"
+                        target="_blank"
+                    >Admin
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link
+                        href="/pulse"
+                        target="_blank"
+                    >Pulse
+                    </x-responsive-nav-link>
+                @endif
             @endif
 
-            <x-responsive-nav-link :href="route('messages.index')" :active="request()->routeIs('messages.index')">
+            <x-responsive-nav-link
+                :href="route('messages.index')"
+                :active="request()->routeIs('messages.index')"
+            >
                 {{ __('Messages') }}
                 @auth
                     {{--                    @if(($unreadCount = auth()->user()->threads->filter(function($thread) {--}}
@@ -205,6 +229,15 @@
                         </x-responsive-nav-link>
                     </form>
                 </div>
+            </div>
+        @else
+            <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                <x-responsive-nav-link href="{{ route('register') }}" :active="request()->routeIs('register')">
+                    {{ __('Register') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link href="{{ route('login') }}" :active="request()->routeIs('login')">
+                    {{ __('Login') }}
+                </x-responsive-nav-link>
             </div>
         @endif
     </div>

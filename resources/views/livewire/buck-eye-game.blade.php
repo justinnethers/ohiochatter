@@ -1,8 +1,9 @@
 <!-- resources/views/livewire/buck-eye-game-component.blade.php -->
 <div class="max-w-4xl mx-auto space-y-4">
     <div class="text-center text-gray-100">
-        <h1 class="text-2xl font-bold 00 mb-2">BuckEYE</h1>
-        <p class="text-600">Guess the Ohio-related answer!</p>
+        <h1 class="text-2xl font-bold 00 mb-2">BuckEYE - Test Your Knowledge of All Things Ohio</h1>
+        <p class="text-600">Each day's puzzle is related to Ohio in some way. How well do you know the Buckeye
+            State?</p>
     </div>
 
     @if (!$puzzle)
@@ -65,7 +66,7 @@
 
         <!-- Game Complete State -->
         @if ($gameComplete)
-            <div class="p-2 space-y-2 rounded-lg {{ $gameWon ? 'bg-green-100' : 'bg-red-100' }}">
+            <div class="p-2 md:p-4 space-y-2 rounded-lg {{ $gameWon ? 'bg-green-100' : 'bg-red-100' }}">
                 <h3 class="text-xl font-bold {{ $gameWon ? 'text-green-800' : 'text-red-800' }}">
                     {{ $gameWon ? 'Congratulations!' : 'Better luck tomorrow!' }}
                 </h3>
@@ -86,13 +87,12 @@
                         placeholder="Enter your guess..."
                         {{ $gameComplete ? 'disabled' : '' }}
                     >
-                    <button
-                        type="submit"
+                    <x-primary-button
                         class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-                        {{ $gameComplete ? 'disabled' : '' }}
+
                     >
-                        Submit Guess
-                    </button>
+                        {{ __('Submit Guess') }}
+                    </x-primary-button>
                 </div>
                 @error('currentGuess')
                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -101,10 +101,16 @@
         @endif
 
         <!-- Hint -->
-        @if (!$gameComplete && $puzzle->hint && $remainingGuesses <= 3)
+        @if (!$gameComplete && $puzzle->category && $remainingGuesses <= 3 || $gameComplete)
             <div class="mt-6 p-4 bg-blue-100 rounded-lg">
-                <h4 class="font-semibold mb-1">Hint:</h4>
-                <p>{{ $puzzle->hint }}</p>
+                <h4 class="font-semibold mb-1">Hints</h4>
+                <p>{{ Str::title($puzzle->category) }}</p>
+                @if ($puzzle->hint && $remainingGuesses <= 2 || $gameComplete)
+                    <p>{{ $puzzle->hint }}</p>
+                @endif
+                @if ($puzzle->hint_2 && $remainingGuesses <= 1 || $gameComplete)
+                    <p>{{ $puzzle->hint_2 }}</p>
+                @endif
             </div>
         @endif
     @endif

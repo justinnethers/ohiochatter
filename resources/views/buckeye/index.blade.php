@@ -24,7 +24,7 @@
             </div>
 
             <div class="p-2 bg-gray-700 rounded-b-md">
-                <div class="bg-gray-800 p-2 rounded-md">
+                <div class="bg-gray-800 p-2 md:p-4 rounded-md">
                     <livewire:buck-eye-game/>
                 </div>
             </div>

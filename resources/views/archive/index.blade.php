@@ -1,14 +1,15 @@
 <x-app-layout>
     <x-slot name="title">Archive</x-slot>
     <x-slot name="header">
-        <h2 class="font-semibold text-3xl text-gray-800 dark:text-gray-200 leading-tight">
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
             Forum Archive
         </h2>
     </x-slot>
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4406607721782655"
+            <script async
+                    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4406607721782655"
                     crossorigin="anonymous"></script>
             <!-- OC Bottom Ad -->
             <ins class="adsbygoogle"
@@ -20,7 +21,7 @@
             <script>
                 (adsbygoogle = window.adsbygoogle || []).push({});
             </script>
-            <x-archive-breadcrumbs :items="[]" />
+            <x-archive-breadcrumbs :items="[]"/>
             <div class="grid grid-cols-1 gap-6">
                 @foreach($forums as $forum)
                     <div class="bg-slate-800 shadow-lg rounded-lg overflow-hidden">
@@ -43,7 +44,7 @@
                                     <div class="flex items-center text-sm text-gray-400">
                                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                         </svg>
                                         {{ date('M j, Y', $forum->latest_thread_lastpost) }}
                                     </div>

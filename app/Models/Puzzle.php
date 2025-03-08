@@ -15,15 +15,7 @@ class Puzzle extends Model
      *
      * @var array
      */
-    protected $fillable = [
-        'publish_date',
-        'answer',
-        'word_count',
-        'image_path',
-        'category',
-        'difficulty',
-        'hint',
-    ];
+    protected $guarded = [];
 
     /**
      * The attributes that should be cast.

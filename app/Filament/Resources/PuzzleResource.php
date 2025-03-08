@@ -30,7 +30,11 @@ class PuzzleResource extends Resource
         return $form
             ->schema([
                 TextInput::make('answer')->required()->columnSpan(2),
-                DatePicker::make('publish_date')->unique()->required()->columnSpan(2),
+
+                DatePicker::make('publish_date')
+                    ->required()
+                    ->unique(ignorable: fn($record) => $record)
+                    ->columnSpan(2),
 
                 FileUpload::make('image_path')
                     ->directory('puzzles')
@@ -40,7 +44,6 @@ class PuzzleResource extends Resource
                     ->live()
                     ->columnSpan(2),
 
-                // Pass the entire record to the view for proper image loading
                 View::make('filament.forms.components.pixelated-image-preview')
                     ->visible(fn($get) => filled($get('image_path')))
                     ->columnSpan(2),

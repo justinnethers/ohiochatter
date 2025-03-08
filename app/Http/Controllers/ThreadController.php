@@ -17,13 +17,22 @@ class ThreadController extends Controller
     public function index()
     {
         $page = request()->get('page', 1);
+        $isAuthenticated = auth()->check();
+        $cacheKey = $isAuthenticated ? 'all_threads_base_query' : 'all_threads_base_query_guest';
 
         if ($page == 1) {
-            $threads = Cache::remember('all_threads_base_query', now()->addDay(), function() {
-                return Thread::query()
+            $threads = Cache::remember($cacheKey, now()->addDay(), function () use ($isAuthenticated) {
+                $query = Thread::query()
                     ->with(['owner', 'forum', 'poll'])
-                    ->orderBy('last_activity_at', 'desc')
-                    ->get();
+                    ->orderBy('last_activity_at', 'desc');
+
+                if (!$isAuthenticated) {
+                    $query->whereHas('forum', function ($q) {
+                        $q->where('name', '!=', 'Politics');
+                    });
+                }
+
+                return $query->get();
             });
 
             // Create a fresh paginator from the cached collection
@@ -34,10 +43,18 @@ class ThreadController extends Controller
                 1
             );
         } else {
-            $threads = Thread::query()
+            $query = Thread::query()
                 ->with(['owner', 'forum', 'poll'])
-                ->orderBy('last_activity_at', 'desc')
-                ->paginate(config('forum.threads_per_page'));
+                ->orderBy('last_activity_at', 'desc');
+
+            // Exclude forum_id = 3 for unauthenticated users
+            if (!$isAuthenticated) {
+                $query->whereHas('forum', function ($q) {
+                    $q->where('name', '!=', 'Politics');
+                });
+            }
+
+            $threads = $query->paginate(config('forum.threads_per_page'));
         }
 
         $threads->withPath(request()->url());
@@ -65,17 +82,18 @@ class ThreadController extends Controller
     }
 
     public function show(
-        Request $request,
-        Forum $forum,
-        Thread $thread,
-        FetchThreadDetails $detailsFetcher,
+        Request                $request,
+        Forum                  $forum,
+        Thread                 $thread,
+        FetchThreadDetails     $detailsFetcher,
         HandleThreadNavigation $navigationHandler
-    ) {
+    )
+    {
         if ($forum->slug !== $thread->forum->slug) {
             abort(404);
         }
 
-        if (!auth()->check() && $forum->is_restricted) {
+        if (!auth()->check() && ($forum->is_restricted || $forum->id == 3)) {
             return redirect('login');
         }
 

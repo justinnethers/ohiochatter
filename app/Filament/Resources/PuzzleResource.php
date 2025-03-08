@@ -6,9 +6,11 @@ use App\Filament\Resources\PuzzleResource\Pages;
 use App\Filament\Resources\PuzzleResource\RelationManagers\UserProgressRelationManager;
 use App\Models\Puzzle;
 use App\Models\UserGameProgress;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\View;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -27,15 +29,26 @@ class PuzzleResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('answer')->required(),
-                TextInput::make('publish_date')->unique()->required(),
+                TextInput::make('answer')->required()->columnSpan(2),
+                DatePicker::make('publish_date')->unique()->required()->columnSpan(2),
+
                 FileUpload::make('image_path')
                     ->directory('puzzles')
                     ->image()
                     ->imageEditor()
-                    ->required(),
+                    ->required()
+                    ->live()
+                    ->columnSpan(2),
+
+                // Pass the entire record to the view for proper image loading
+                View::make('filament.forms.components.pixelated-image-preview')
+                    ->visible(fn($get) => filled($get('image_path')))
+                    ->columnSpan(2),
+
                 TextInput::make('word_count')->required(),
-                Textarea::make('hint')->required()
+                TextInput::make('category')->required(),
+                Textarea::make('hint')->required(),
+                Textarea::make('hint_2')->required()
             ]);
     }
 

@@ -39,7 +39,7 @@
                     src="{{ $imageUrl }}"
                     alt="Pixelated Ohio Item"
                     class="w-full"
-                    style="filter: blur({{ max(0, $pixelationLevel * 4) }}px); image-rendering: pixelated;"
+                    style="filter: blur({{ max(0, $pixelationLevel * 6) }}px); image-rendering: pixelated;"
                     wire:key="image-{{ $pixelationLevel }}"
                 >
             </div>

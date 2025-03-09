@@ -10,18 +10,21 @@ class HandleThreadNavigation
 {
     public function execute(Request $request, Forum $forum, Thread $thread): ?string
     {
-        if (!auth()->check()) {
-            return null;
-        }
-
+        // If the request doesn't have the newestpost parameter, return null
         if (!$request->exists('newestpost')) {
             return null;
         }
 
-        return $this->handleNewestPostNavigation($forum, $thread);
+        // If user is logged in, handle navigation with their view history
+        if (auth()->check()) {
+            return $this->handleNewestPostNavigationForLoggedInUser($forum, $thread);
+        }
+
+        // If user is not logged in, take them to the last post
+        return $this->handleLastPostNavigation($forum, $thread);
     }
 
-    private function handleNewestPostNavigation(Forum $forum, Thread $thread): ?string
+    private function handleNewestPostNavigationForLoggedInUser(Forum $forum, Thread $thread): ?string
     {
         $lastView = auth()->user()->lastViewedThreadAt($thread);
 
@@ -43,6 +46,19 @@ class HandleThreadNavigation
 
             return "/forums/{$forum->slug}/{$thread->slug}/?page={$page}#reply-{$repliesSinceLastView->first()->id}";
         }
+
+        $page = ceil($repliesCount / $repliesPerPage);
+        $lastReply = $thread->replies->last()->id ?? 0;
+
+        return "/forums/{$forum->slug}/{$thread->slug}?page={$page}#reply-{$lastReply}";
+    }
+
+    private function handleLastPostNavigation(Forum $forum, Thread $thread): string
+    {
+        // For non-logged in users, use a default value for replies per page
+        // You might want to adjust this to match your application's default setting
+        $repliesPerPage = config('forum.replies_per_page', 15);
+        $repliesCount = $thread->replyCount();
 
         $page = ceil($repliesCount / $repliesPerPage);
         $lastReply = $thread->replies->last()->id ?? 0;

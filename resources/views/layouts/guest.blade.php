@@ -18,6 +18,21 @@
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
+@if(app()->isProduction())
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1KYZYV7374"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+
+        gtag('config', 'G-1KYZYV7374');
+    </script>
+@endif
 <body class="font-sans text-gray-900 antialiased">
 <div class="min-h-screen bg-gray-900 dark:bg-gray-900">
     <!-- We'll remove the scroll transition completely from guest layout -->

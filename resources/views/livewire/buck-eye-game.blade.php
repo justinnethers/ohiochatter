@@ -19,18 +19,20 @@
             </p>
         </div>
 
-        <!-- Game Status Messages -->
-        @if ($errorMessage)
-            <div class="bg-red-100 p-4 rounded-lg mb-4">
-                <p class="text-red-800">{{ $errorMessage }}</p>
-            </div>
-        @endif
+        <div class="status-message">
+            <!-- Game Status Messages -->
+            @if ($errorMessage)
+                <div class="bg-red-100 p-4 rounded-lg mb-4">
+                    <p class="text-red-800">{{ $errorMessage }}</p>
+                </div>
+            @endif
 
-        @if ($successMessage)
-            <div class="bg-green-100 p-4 rounded-lg mb-4">
-                <p class="text-green-800">{{ $successMessage }}</p>
-            </div>
-        @endif
+            @if ($successMessage)
+                <div class="bg-green-100 p-4 rounded-lg mb-4">
+                    <p class="text-green-800">{{ $successMessage }}</p>
+                </div>
+            @endif
+        </div>
 
         <!-- Updated Pixelated Image Section with Overlay Protection -->
         <div class="flex justify-center">
@@ -122,12 +124,33 @@
     @endif
 </div>
 
-
 <script>
-    window.addEventListener('clearCurrentGuess', () => {
-        const input = document.querySelector('input[wire\\:model="currentGuess"]');
-        if (input) {
-            input.value = '';
-        }
+    // Clear current guess when directed by Livewire
+    document.addEventListener('livewire:init', () => {
+        Livewire.on('clearCurrentGuess', () => {
+            const input = document.querySelector('input[wire\\:model="currentGuess"]');
+            if (input) {
+                input.value = '';
+            }
+
+            const statusMessage = document.querySelector('.status-message');
+
+            if (statusMessage) {
+                setTimeout(() => {
+                    statusMessage.scrollIntoView({behavior: 'smooth', block: 'center'});
+                }, 100);
+            }
+        });
+
+        // Auto-scroll to the status message when a guess is processed
+        Livewire.on('guessProcessed', () => {
+            const statusMessage = document.querySelector('.status-message');
+
+            if (statusMessage) {
+                setTimeout(() => {
+                    statusMessage.scrollIntoView({behavior: 'smooth', block: 'center'});
+                }, 100);
+            }
+        });
     });
 </script>

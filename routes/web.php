@@ -195,9 +195,9 @@ Route::middleware(['auth'])->group(function () {
         ->name('buckeye.stats');
 });
 
-Route::get('/buckEYE/social-image/{date}', [BuckEyeGameController::class, 'socialImage'])
-    ->name('buckeye.social-image')
-    ->middleware('cache.headers:public;max_age=86400;etag'); // Optional caching middleware
+// In your routes/web.php file
+Route::get('/buckEYE/social-image/{date}.jpg', [BuckEyeGameController::class, 'socialImage'])
+    ->name('buckeye.social-image');
 
 Route::redirect('buckeye', '/buckEYE');
 Route::redirect('buckeye/stats', '/buckEYE/stats');

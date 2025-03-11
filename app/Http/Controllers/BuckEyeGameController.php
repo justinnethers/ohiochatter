@@ -105,6 +105,14 @@ class BuckEyeGameController extends Controller
             // Find the puzzle for the given date
             $puzzle = Puzzle::where('publish_date', $date)->firstOrFail();
 
+            // Check if we already have a cached version of this social image
+            $socialImagePath = 'social/' . $date . '.jpg';
+
+            // If file exists, serve it directly
+            if (Storage::disk('public')->exists($socialImagePath)) {
+                return response()->file(Storage::disk('public')->path($socialImagePath));
+            }
+
             // Get the original image path
             $originalPath = Storage::disk('public')->path($puzzle->image_path);
 
@@ -132,7 +140,7 @@ class BuckEyeGameController extends Controller
 
             // Create a blurred version using a more efficient approach
             // Scale down significantly first to reduce processing time
-            $scaleFactor = 0.17; // Scale to 10% for processing
+            $scaleFactor = 0.03;
             $smallWidth = max(1, floor($width * $scaleFactor));
             $smallHeight = max(1, floor($height * $scaleFactor));
 
@@ -140,9 +148,9 @@ class BuckEyeGameController extends Controller
             $small = imagecreatetruecolor($smallWidth, $smallHeight);
             imagecopyresampled($small, $source, 0, 0, 0, 0, $smallWidth, $smallHeight, $width, $height);
 
-            // Apply a simple box blur to the small image (much faster)
+            // Apply a simple box blur to the small image
             $blurredSmall = imagecreatetruecolor($smallWidth, $smallHeight);
-            $blurRadius = 10; // A small radius is sufficient on the downsampled image
+            $blurRadius = 10;
 
             // Simple box blur
             for ($y = 0; $y < $smallHeight; $y++) {
@@ -174,10 +182,12 @@ class BuckEyeGameController extends Controller
             $blurred = imagecreatetruecolor($width, $height);
             imagecopyresampled($blurred, $blurredSmall, 0, 0, 0, 0, $width, $height, $smallWidth, $smallHeight);
 
-            // Output image
-            ob_start();
-            imagejpeg($blurred, null, 90);
-            $imageData = ob_get_clean();
+            // Make sure the directory exists
+            Storage::disk('public')->makeDirectory(dirname($socialImagePath), 0755, true, true);
+
+            // Save the image to a file
+            $savePath = Storage::disk('public')->path($socialImagePath);
+            imagejpeg($blurred, $savePath, 90);
 
             // Clean up
             imagedestroy($source);
@@ -185,10 +195,8 @@ class BuckEyeGameController extends Controller
             imagedestroy($blurredSmall);
             imagedestroy($blurred);
 
-            // Return response
-            return response($imageData)
-                ->header('Content-Type', 'image/jpeg')
-                ->header('Cache-Control', 'public, max-age=86400');
+            // Return the saved file
+            return response()->file($savePath);
 
         } catch (\Exception $e) {
             \Log::error('Social image error: ' . $e->getMessage());

@@ -10,7 +10,7 @@
             <meta property="og:type" content="website">
             <meta property="og:url" content="{{ url('/buckEYE') }}">
             <meta property="og:image"
-                  content="{{ route('buckeye.social-image', ['date' => $puzzle->publish_date->format('Y-m-d')]) }}">
+                  content="{{ url('/buckEYE/social-image/' . $puzzle->publish_date->format('Y-m-d') . '.jpg') }}">
             <meta property="og:image:width" content="1200">
             <meta property="og:image:height" content="630">
 
@@ -19,14 +19,14 @@
             <meta name="twitter:description"
                   content="Test your knowledge of all things Ohio with today's BuckEYE puzzle!">
             <meta name="twitter:image"
-                  content="{{ route('buckeye.social-image', ['date' => $puzzle->publish_date->format('Y-m-d')]) }}">
+                  content="{{ url('/buckEYE/social-image/' . $puzzle->publish_date->format('Y-m-d') . '.jpg') }}">
             <meta name="twitter:image:alt" content="Blurred image of today's Ohio puzzle">
 
             <meta property="og:site_name" content="OhioChatter">
             <meta property="og:locale" content="en_US">
         @endif
     </x-slot>
-
+    
     <x-slot name="header">
         <div class="flex justify-between">
             <h2 class="font-semibold text-gray-200 dark:text-gray-200 leading-tight">

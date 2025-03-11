@@ -32,15 +32,21 @@
             </div>
         @endif
 
-        <!-- Pixelated Image -->
+        <!-- Updated Pixelated Image Section with Overlay Protection -->
         <div class="flex justify-center">
-            <div class="w-full max-w-md overflow-hidden rounded-lg shadow-lg">
+            <div class="w-full max-w-md overflow-hidden rounded-lg shadow-lg relative">
+                <!-- Transparent overlay div to prevent image selection -->
+                <div class="absolute inset-0 w-full h-full z-10"
+                     style="pointer-events: auto; user-select: none; -webkit-user-select: none;"
+                     oncontextmenu="return false;">
+                </div>
                 <img
                     src="{{ $imageUrl }}"
                     alt="Pixelated Ohio Item"
-                    class="w-full"
-                    style="filter: blur({{ max(0, $pixelationLevel * 6) }}px); image-rendering: pixelated;"
+                    class="w-full select-none pointer-events-none"
+                    style="filter: blur({{ max(0, $pixelationLevel * 6) }}px); image-rendering: pixelated; -webkit-user-select: none; user-select: none;"
                     wire:key="image-{{ $pixelationLevel }}"
+                    draggable="false"
                 >
             </div>
         </div>

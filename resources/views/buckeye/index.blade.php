@@ -13,6 +13,17 @@
                   content="{{ route('buckeye.social-image', ['date' => $puzzle->publish_date->format('Y-m-d')]) }}">
             <meta property="og:image:width" content="1200">
             <meta property="og:image:height" content="630">
+
+            <meta name="twitter:card" content="summary_large_image">
+            <meta name="twitter:title" content="BuckEYE - Daily Ohio Puzzle Game">
+            <meta name="twitter:description"
+                  content="Test your knowledge of all things Ohio with today's BuckEYE puzzle!">
+            <meta name="twitter:image"
+                  content="{{ route('buckeye.social-image', ['date' => $puzzle->publish_date->format('Y-m-d')]) }}">
+            <meta name="twitter:image:alt" content="Blurred image of today's Ohio puzzle">
+
+            <meta property="og:site_name" content="OhioChatter">
+            <meta property="og:locale" content="en_US">
         @endif
     </x-slot>
 

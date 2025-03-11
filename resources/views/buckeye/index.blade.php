@@ -1,6 +1,21 @@
 <!-- resources/views/buckeye/index.blade.php -->
 <x-app-layout>
     <x-slot name="title">BuckEYE - Daily Ohio Puzzle Game</x-slot>
+
+    <x-slot name="head">
+        @if(isset($puzzle) && $puzzle)
+            <meta property="og:title" content="BuckEYE - Daily Ohio Puzzle Game">
+            <meta property="og:description"
+                  content="Test your knowledge of all things Ohio with today's BuckEYE puzzle!">
+            <meta property="og:type" content="website">
+            <meta property="og:url" content="{{ url('/buckEYE') }}">
+            <meta property="og:image"
+                  content="{{ route('buckeye.social-image', ['date' => $puzzle->publish_date->format('Y-m-d')]) }}">
+            <meta property="og:image:width" content="1200">
+            <meta property="og:image:height" content="630">
+        @endif
+    </x-slot>
+
     <x-slot name="header">
         <div class="flex justify-between">
             <h2 class="font-semibold text-gray-200 dark:text-gray-200 leading-tight">

@@ -84,7 +84,7 @@ Route::middleware('auth')->group(function () {
 
         $response = [
             'success' => true,
-            'url' => url('/storage').'/'.$path
+            'url' => url('/storage') . '/' . $path
         ];
 
         return response()->json($response);
@@ -115,7 +115,7 @@ Route::get('search', [SearchController::class, 'show'])->name('search.show');
 //Route::post('search', [\App\Http\Controllers\SearchController::class, 'show'])->name('search.show');
 //Route::get('search?search={search}', [\App\Http\Controllers\SearchController::class, 'show'])->name('search.index');
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
 
 Route::middleware('auth')->group(function () {
     Route::get('messages', [MessageController::class, 'index'])->name('messages.index');
@@ -133,7 +133,7 @@ Route::middleware('auth')->group(function () {
 
         $response = [
             'success' => true,
-            'url' => url('/storage').'/'.$path
+            'url' => url('/storage') . '/' . $path
         ];
 
         return response()->json($response);
@@ -194,6 +194,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/buckEYE/stats', [BuckEyeGameController::class, 'stats'])
         ->name('buckeye.stats');
 });
+
+Route::get('/buckEYE/social-image/{date}', [BuckEyeGameController::class, 'socialImage'])
+    ->name('buckeye.social-image')
+    ->middleware('cache.headers:public;max_age=86400;etag'); // Optional caching middleware
 
 Route::redirect('buckeye', '/buckEYE');
 Route::redirect('buckeye/stats', '/buckEYE/stats');

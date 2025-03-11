@@ -131,17 +131,13 @@
             if (input) {
                 input.value = '';
             }
-        });
-
-        // Auto-scroll to the status message when a guess is processed
-        Livewire.on('guessProcessed', () => {
             const statusMessage = document.querySelector('.status-message');
 
             if (statusMessage) {
                 setTimeout(() => {
                     // Scroll with offset for header
                     window.scrollTo({
-                        top: statusMessage.getBoundingClientRect().top + window.pageYOffset - 110,
+                        top: statusMessage.getBoundingClientRect().top + window.pageYOffset - 100,
                         behavior: 'smooth'
                     });
                 }, 100);

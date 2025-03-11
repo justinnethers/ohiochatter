@@ -125,20 +125,11 @@
 </div>
 
 <script>
-    // Clear current guess when directed by Livewire
     document.addEventListener('livewire:init', () => {
         Livewire.on('clearCurrentGuess', () => {
             const input = document.querySelector('input[wire\\:model="currentGuess"]');
             if (input) {
                 input.value = '';
-            }
-
-            const statusMessage = document.querySelector('.status-message');
-
-            if (statusMessage) {
-                setTimeout(() => {
-                    statusMessage.scrollIntoView({behavior: 'smooth', block: 'center'});
-                }, 100);
             }
         });
 
@@ -148,7 +139,11 @@
 
             if (statusMessage) {
                 setTimeout(() => {
-                    statusMessage.scrollIntoView({behavior: 'smooth', block: 'center'});
+                    // Scroll with offset for header
+                    window.scrollTo({
+                        top: statusMessage.getBoundingClientRect().top + window.pageYOffset - 110,
+                        behavior: 'smooth'
+                    });
                 }, 100);
             }
         });

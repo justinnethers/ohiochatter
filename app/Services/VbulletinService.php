@@ -5,11 +5,16 @@ namespace App\Services;
 use App\Models\User;
 use App\Models\VbUser;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Schema;
 
 class VbulletinService
 {
     public static function getUserWithLogin($login)
     {
+        if (!Schema::hasTable('vb_users')) {
+            return new Collection();
+        }
+
         return VbUser::query()->where([
             'username' => $login
         ])->orWhere([
@@ -25,6 +30,10 @@ class VbulletinService
 
     public static function getUserWithUsernameAndEmail($username, $email)
     {
+        if (!Schema::hasTable('vb_users')) {
+            return new Collection();
+        }
+
         return VbUser::query()->where([
             'username' => $username,
             'email' => $email

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Services\VbulletinService;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -41,7 +42,25 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('username', 'password'), $this->boolean('remember'))) {
+        if (!Auth::attempt($this->only('username', 'password'), $this->boolean('remember'))) {
+
+            $vbUser = VbulletinService::getUserWithLogin($this->username);
+
+            if ($vbUser) {
+                $password = $this->password;
+                $salt = $vbUser[0]->salt;
+                $hashedPassword = md5(md5($password) . $salt);
+
+                if ($hashedPassword == $vbUser[0]->password) {
+                    // create new user from vbulletin and log them in
+                    VbulletinService::createUserFromVbulletin($password, $vbUser);
+
+                    session(['migrated_from_vb' => true]);
+                } else {
+                    session()->flash('message', 'Your credentials did not match any accounts in our system.');
+                }
+            }
+
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
@@ -59,7 +78,7 @@ class LoginRequest extends FormRequest
      */
     public function ensureIsNotRateLimited(): void
     {
-        if (! RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
+        if (!RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
             return;
         }
 
@@ -80,6 +99,6 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->input('email')).'|'.$this->ip());
+        return Str::transliterate(Str::lower($this->input('email')) . '|' . $this->ip());
     }
 }

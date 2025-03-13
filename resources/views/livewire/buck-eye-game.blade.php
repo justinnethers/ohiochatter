@@ -100,6 +100,64 @@
                 </p>
                 <p class="text-sm text-gray-600">Come back tomorrow for a new puzzle!</p>
             </div>
+            <!-- Puzzle Statistics for completed games -->
+            @if($showPuzzleStats && $puzzleStats)
+                <div class="mt-4 p-4 bg-blue-50 text-blue-900 rounded-lg space-y-4">
+                    <h3 class="text-lg font-bold">Today's Puzzle Stats</h3>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="bg-white p-3 rounded-lg shadow text-center">
+                            <div class="text-xl md:text-2xl font-bold">{{ $puzzleStats['totalPlayers'] }}</div>
+                            <div class="text-xs text-gray-600">Players</div>
+                        </div>
+
+                        <div class="bg-white p-3 rounded-lg shadow text-center">
+                            <div class="text-xl md:text-2xl font-bold">{{ $puzzleStats['completionRate'] }}%</div>
+                            <div class="text-xs text-gray-600">Solved</div>
+                        </div>
+
+                        <div class="bg-white p-3 rounded-lg shadow text-center">
+                            <div class="text-xl md:text-2xl font-bold">{{ $puzzleStats['averageGuesses'] }}</div>
+                            <div class="text-xs text-gray-600">Avg Guesses</div>
+                        </div>
+
+                        <div class="bg-white p-3 rounded-lg shadow text-center">
+                            <div class="text-xl md:text-2xl font-bold">{{ $puzzleStats['solvedCount'] }}</div>
+                            <div class="text-xs text-gray-600">Successes</div>
+                        </div>
+                    </div>
+
+                    @if(count($puzzleStats['guessDistribution']) > 0)
+                        <div>
+                            <h4 class="font-semibold mb-2">Guess Distribution</h4>
+                            <div class="space-y-2">
+                                @php
+                                    $maxCount = max($puzzleStats['guessDistribution']);
+                                @endphp
+
+                                @foreach(range(1, 5) as $guessNumber)
+                                    @php
+                                        $count = $puzzleStats['guessDistribution'][$guessNumber] ?? 0;
+                                        $percentage = $maxCount > 0 ? ($count / $maxCount) * 100 : 0;
+                                        $isCurrentGuessCount = $gameWon && count($previousGuesses) == $guessNumber;
+                                    @endphp
+                                    <div class="flex items-center">
+                                        <div class="w-4 text-gray-700">{{ $guessNumber }}</div>
+                                        <div class="flex-1 ml-2">
+                                            <div
+                                                class="text-right px-2 py-1 text-sm font-medium rounded-sm {{ $isCurrentGuessCount ? 'bg-green-600 text-white' : 'bg-blue-100 text-blue-900' }}"
+                                                style="width: {{ max(5, $percentage) }}%"
+                                            >
+                                                {{ $count }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            @endif
         @else
             <!-- Guess Input Form -->
             <form wire:submit.prevent="submitGuess" class="mb-6">

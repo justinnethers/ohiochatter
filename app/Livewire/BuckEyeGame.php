@@ -70,6 +70,17 @@ class BuckEyeGame extends Component
      */
     public $successMessage;
 
+
+    /**
+     * Stats for the current puzzle
+     */
+    public $puzzleStats = null;
+
+    /**
+     * Whether to show puzzle stats (only after completing the game)
+     */
+    public $showPuzzleStats = false;
+
     /**
      * Rules for validation
      */
@@ -110,6 +121,12 @@ class BuckEyeGame extends Component
                 $this->gameComplete = (bool)$progress->completed_at;
                 $this->gameWon = $progress->solved;
 
+                // Load stats if the game is already complete
+                if ($this->gameComplete) {
+                    $this->loadPuzzleStats();
+                    $this->showPuzzleStats = true;
+                }
+
                 // Load user stats
                 $this->userStats = UserGameStats::getOrCreateForUser(Auth::id());
             }
@@ -125,6 +142,12 @@ class BuckEyeGame extends Component
                 $this->gameComplete = $guestData['gameComplete'] ?? false;
                 $this->gameWon = $guestData['gameWon'] ?? false;
 
+                // Load stats if the game is already complete
+                if ($this->gameComplete) {
+                    $this->loadPuzzleStats();
+                    $this->showPuzzleStats = true;
+                }
+
                 // Set appropriate messages if the game is complete
                 if ($this->gameComplete) {
                     if ($this->gameWon) {
@@ -138,6 +161,54 @@ class BuckEyeGame extends Component
 
         // Get the image
         $this->imageUrl = $puzzleService->getPixelatedImage($this->puzzle, $this->pixelationLevel);
+    }
+
+    /**
+     * Load statistics for the current puzzle
+     */
+    public function loadPuzzleStats()
+    {
+        if (!$this->puzzle) {
+            return;
+        }
+
+        // Get total players
+        $totalPlayers = \App\Models\UserGameProgress::where('puzzle_id', $this->puzzle->id)->count();
+
+        // Get solved count
+        $solvedCount = \App\Models\UserGameProgress::where('puzzle_id', $this->puzzle->id)
+            ->where('solved', true)
+            ->count();
+
+        // Calculate completion rate
+        $completionRate = $totalPlayers > 0
+            ? round(($solvedCount / $totalPlayers) * 100)
+            : 0;
+
+        // Get average guesses for solved puzzles
+        $averageGuesses = \App\Models\UserGameProgress::where('puzzle_id', $this->puzzle->id)
+            ->where('solved', true)
+            ->avg('guesses_taken');
+
+        $averageGuesses = $averageGuesses ? round($averageGuesses, 1) : 'N/A';
+
+        // Get distribution of guesses
+        $guessDistribution = \App\Models\UserGameProgress::where('puzzle_id', $this->puzzle->id)
+            ->where('solved', true)
+            ->groupBy('guesses_taken')
+            ->select('guesses_taken', \Illuminate\Support\Facades\DB::raw('count(*) as count'))
+            ->orderBy('guesses_taken')
+            ->pluck('count', 'guesses_taken')
+            ->toArray();
+
+        // Store stats in the property
+        $this->puzzleStats = [
+            'totalPlayers' => $totalPlayers,
+            'solvedCount' => $solvedCount,
+            'completionRate' => $completionRate,
+            'averageGuesses' => $averageGuesses,
+            'guessDistribution' => $guessDistribution
+        ];
     }
 
     public function submitGuess(PuzzleService $puzzleService)
@@ -184,6 +255,9 @@ class BuckEyeGame extends Component
 
             if ($this->gameComplete && Auth::check()) {
                 $this->userStats = UserGameStats::getOrCreateForUser(Auth::id());
+                // Load puzzle stats for the completed game
+                $this->loadPuzzleStats();
+                $this->showPuzzleStats = true;
                 $this->dispatch('gameCompleted', [
                     'won' => $this->gameWon,
                     'guesses' => count($this->previousGuesses)
@@ -201,11 +275,17 @@ class BuckEyeGame extends Component
                 $this->gameWon = true;
                 $this->pixelationLevel = 0;
                 $this->successMessage = "Congratulations! You guessed correctly!";
+                // Load stats for the completed game
+                $this->loadPuzzleStats();
+                $this->showPuzzleStats = true;
             } else if ($this->remainingGuesses <= 0) {
                 $this->gameComplete = true;
                 $this->gameWon = false;
                 $this->pixelationLevel = 0;
                 $this->errorMessage = "Sorry, you're out of guesses. The answer was: " . $this->puzzle->answer;
+                // Load stats for the completed game
+                $this->loadPuzzleStats();
+                $this->showPuzzleStats = true;
             } else {
                 $this->errorMessage = "Sorry, that's not correct. Try again!";
             }
@@ -217,7 +297,8 @@ class BuckEyeGame extends Component
                 'remainingGuesses' => $this->remainingGuesses,
                 'pixelationLevel' => $this->pixelationLevel,
                 'gameComplete' => $this->gameComplete,
-                'gameWon' => $this->gameWon
+                'gameWon' => $this->gameWon,
+                'showPuzzleStats' => $this->showPuzzleStats
             ]);
         }
 

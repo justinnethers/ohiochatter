@@ -36,31 +36,48 @@
 
         <!-- Updated Pixelated Image Section with Overlay Protection -->
         <div class="flex justify-center">
-            <div class="w-full max-w-md overflow-hidden rounded-lg shadow-lg relative">
+            <div>
                 <!-- Transparent overlay div to prevent image selection -->
-                <div class="absolute inset-0 w-full h-full z-10"
-                     style="pointer-events: auto; user-select: none; -webkit-user-select: none;"
-                     oncontextmenu="return false;">
+                <div class="w-full max-w-md overflow-hidden rounded-lg shadow-lg relative">
+                    <div class="absolute inset-0 w-full h-full z-10"
+                         style="pointer-events: auto; user-select: none; -webkit-user-select: none;"
+                         oncontextmenu="return false;">
+                    </div>
+                    <img
+                        src="{{ $imageUrl }}"
+                        alt="Pixelated Ohio Item"
+                        class="w-full select-none pointer-events-none"
+                        style="filter: blur({{ max(0, $pixelationLevel * 6) }}px); image-rendering: pixelated; -webkit-user-select: none; user-select: none;"
+                        wire:key="image-{{ $pixelationLevel }}"
+                        draggable="false"
+                    >
                 </div>
-                <img
-                    src="{{ $imageUrl }}"
-                    alt="Pixelated Ohio Item"
-                    class="w-full select-none pointer-events-none"
-                    style="filter: blur({{ max(0, $pixelationLevel * 6) }}px); image-rendering: pixelated; -webkit-user-select: none; user-select: none;"
-                    wire:key="image-{{ $pixelationLevel }}"
-                    draggable="false"
-                >
+                @if($gameComplete && ($puzzle->image_attribution || $puzzle->link))
+                    <div class="mt-2 text-center">
+                        @if($puzzle->image_attribution)
+                            <div class="text-sm text-gray-200 mb-1">
+                                <span class="font-semibold">Image:</span> {!! $puzzle->image_attribution !!}
+                            </div>
+                        @endif
+                        @if($puzzle->link)
+                            <div class="text-sm">
+                                <a href="{{ $puzzle->link }}" target="_blank"
+                                   class="text-blue-600 hover:text-blue-800 underline">
+                                    Learn more about {{ $puzzle->answer }}
+                                </a>
+                            </div>
+                        @endif
+                    </div>
+                @endif
             </div>
         </div>
 
-        <!-- Game Information -->
         <div class="text-center">
             <p class="text-gray-100">
                 <span class="font-semibold">Remaining guesses:</span> {{ $remainingGuesses }}
             </p>
         </div>
 
-        <!-- Previous Guesses -->
         @if (count($previousGuesses) > 0)
             <div class="text-gray-100">
                 <h3 class="text-lg font-semibold mb-2">Your guesses:</h3>
@@ -82,24 +99,6 @@
                     The answer was <span class="font-bold">{{ $puzzle->answer }}</span>
                 </p>
                 <p class="text-sm text-gray-600">Come back tomorrow for a new puzzle!</p>
-
-                @if($puzzle->image_attribution || $puzzle->link)
-                    <div class="mt-4 pt-2 border-t border-gray-300">
-                        @if($puzzle->image_attribution)
-                            <div class="text-sm text-gray-600 mb-1">
-                                <span class="font-semibold">Image:</span> {!! $puzzle->image_attribution !!}
-                            </div>
-                        @endif
-                        @if($puzzle->link)
-                            <div class="text-sm">
-                                <a href="{{ $puzzle->link }}" target="_blank"
-                                   class="text-blue-600 hover:text-blue-800 underline">
-                                    Learn more about {{ $puzzle->answer }}
-                                </a>
-                            </div>
-                        @endif
-                    </div>
-                @endif
             </div>
         @else
             <!-- Guess Input Form -->

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Models\AnonymousGameProgress;
 use App\Models\Puzzle;
 use App\Models\UserGameProgress;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
@@ -28,13 +29,27 @@ class TodaysPuzzleStatsWidget extends BaseWidget
             ];
         }
 
-        // Get total players
-        $totalPlayers = UserGameProgress::where('puzzle_id', $todaysPuzzle->id)->count();
+        // Get total registered players
+        $totalRegPlayers = UserGameProgress::where('puzzle_id', $todaysPuzzle->id)->count();
 
-        // Get solved count
-        $solvedCount = UserGameProgress::where('puzzle_id', $todaysPuzzle->id)
+        // Get total anonymous players
+        $totalAnonPlayers = AnonymousGameProgress::where('puzzle_id', $todaysPuzzle->id)->count();
+
+        // Total players
+        $totalPlayers = $totalRegPlayers + $totalAnonPlayers;
+
+        // Get solved count for registered users
+        $solvedRegCount = UserGameProgress::where('puzzle_id', $todaysPuzzle->id)
             ->where('solved', true)
             ->count();
+
+        // Get solved count for anonymous users
+        $solvedAnonCount = AnonymousGameProgress::where('puzzle_id', $todaysPuzzle->id)
+            ->where('solved', true)
+            ->count();
+
+        // Total solved count
+        $solvedCount = $solvedRegCount + $solvedAnonCount;
 
         // Calculate completion rate
         $completionRate = $totalPlayers > 0
@@ -42,14 +57,37 @@ class TodaysPuzzleStatsWidget extends BaseWidget
             : 0;
 
         // Get average guesses for solved puzzles
-        $averageGuesses = UserGameProgress::where('puzzle_id', $todaysPuzzle->id)
+        $avgRegGuesses = UserGameProgress::where('puzzle_id', $todaysPuzzle->id)
             ->where('solved', true)
             ->avg('guesses_taken');
 
-        $averageGuesses = $averageGuesses ? round($averageGuesses, 1) : 'N/A';
+        $avgAnonGuesses = AnonymousGameProgress::where('puzzle_id', $todaysPuzzle->id)
+            ->where('solved', true)
+            ->avg('guesses_taken');
 
-        // Get distribution of guesses
-        $guessDistribution = UserGameProgress::where('puzzle_id', $todaysPuzzle->id)
+        // Calculate combined average
+        $averageGuesses = 'N/A';
+        if ($solvedRegCount > 0 || $solvedAnonCount > 0) {
+            $totalGuesses = 0;
+            $totalSolved = 0;
+
+            if ($solvedRegCount > 0 && $avgRegGuesses) {
+                $totalGuesses += $avgRegGuesses * $solvedRegCount;
+                $totalSolved += $solvedRegCount;
+            }
+
+            if ($solvedAnonCount > 0 && $avgAnonGuesses) {
+                $totalGuesses += $avgAnonGuesses * $solvedAnonCount;
+                $totalSolved += $solvedAnonCount;
+            }
+
+            if ($totalSolved > 0) {
+                $averageGuesses = round($totalGuesses / $totalSolved, 1);
+            }
+        }
+
+        // Get distribution of guesses for registered users
+        $regDistribution = UserGameProgress::where('puzzle_id', $todaysPuzzle->id)
             ->where('solved', true)
             ->groupBy('guesses_taken')
             ->select('guesses_taken', DB::raw('count(*) as count'))
@@ -57,8 +95,25 @@ class TodaysPuzzleStatsWidget extends BaseWidget
             ->pluck('count', 'guesses_taken')
             ->toArray();
 
+        // Get distribution of guesses for anonymous users
+        $anonDistribution = AnonymousGameProgress::where('puzzle_id', $todaysPuzzle->id)
+            ->where('solved', true)
+            ->groupBy('guesses_taken')
+            ->select('guesses_taken', DB::raw('count(*) as count'))
+            ->orderBy('guesses_taken')
+            ->pluck('count', 'guesses_taken')
+            ->toArray();
+
+        // Combine distributions
+        $guessDistribution = [];
+        foreach (range(1, 5) as $guessNum) {
+            $regCount = $regDistribution[$guessNum] ?? 0;
+            $anonCount = $anonDistribution[$guessNum] ?? 0;
+            $guessDistribution[$guessNum] = $regCount + $anonCount;
+        }
+
         // Format distribution for display
-        $distributionText = empty($guessDistribution)
+        $distributionText = empty($guessDistribution) || array_sum($guessDistribution) === 0
             ? 'No solved puzzles yet'
             : collect($guessDistribution)->map(function ($count, $guesses) {
                 return "$guesses: $count";
@@ -70,7 +125,7 @@ class TodaysPuzzleStatsWidget extends BaseWidget
                 ->color('success'),
 
             Stat::make('Total Players', (string)$totalPlayers)
-                ->description($totalPlayers === 1 ? '1 player has attempted' : "$totalPlayers players have attempted")
+                ->description("$totalRegPlayers registered / $totalAnonPlayers guests")
                 ->color('primary'),
 
             Stat::make('Completion Rate', "$completionRate%")

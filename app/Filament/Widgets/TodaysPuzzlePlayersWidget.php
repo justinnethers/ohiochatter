@@ -2,12 +2,14 @@
 
 namespace App\Filament\Widgets;
 
+use App\Models\AnonymousGameProgress;
 use App\Models\Puzzle;
 use App\Models\UserGameProgress;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class TodaysPuzzlePlayersWidget extends BaseWidget
 {
@@ -18,20 +20,72 @@ class TodaysPuzzlePlayersWidget extends BaseWidget
     {
         $todaysPuzzle = Puzzle::where('publish_date', Carbon::today()->toDateString())->first();
 
+        if (!$todaysPuzzle) {
+            // No puzzle today, return empty table
+            return $table
+                ->heading('Today\'s Puzzle Players')
+                ->description('No puzzle available for today')
+                ->query(UserGameProgress::query()->whereRaw('1 = 0')); // Empty query
+        }
+
+        // Use union of both authenticated and anonymous users
+        $authenticatedUsersQuery = UserGameProgress::query()
+            ->where('puzzle_id', $todaysPuzzle->id)
+            ->with('user')
+            ->select(
+                'id',
+                'user_id',
+                DB::raw('NULL as session_id'),
+                'solved',
+                'attempts',
+                'guesses_taken',
+                'completed_at',
+                'previous_guesses',
+                DB::raw("'Registered' as user_type")
+            );
+
+        $anonymousUsersQuery = AnonymousGameProgress::query()
+            ->where('puzzle_id', $todaysPuzzle->id)
+            ->select(
+                'id',
+                DB::raw('NULL as user_id'),
+                'session_id',
+                'solved',
+                'attempts',
+                'guesses_taken',
+                'completed_at',
+                'previous_guesses',
+                DB::raw("'Guest' as user_type")
+            );
+
+        // Create a base query for the combined results
+        $baseQuery = $authenticatedUsersQuery->union($anonymousUsersQuery);
+
         return $table
             ->heading('Today\'s Puzzle Players')
-            ->description($todaysPuzzle ? 'Players who have attempted today\'s puzzle: ' . $todaysPuzzle->answer : 'No puzzle available for today')
+            ->description('Players who have attempted today\'s puzzle: ' . $todaysPuzzle->answer)
             ->query(
-                $todaysPuzzle
-                    ? UserGameProgress::query()
-                    ->where('puzzle_id', $todaysPuzzle->id)
-                    ->with('user')
-                    : UserGameProgress::query()->whereRaw('1 = 0') // Empty query if no puzzle found
+            // Wrap the union query
+                UserGameProgress::query()
+                    ->from(DB::raw("({$baseQuery->toSql()}) as combined_users"))
+                    ->mergeBindings($baseQuery->getQuery())
             )
             ->columns([
+                Tables\Columns\TextColumn::make('user_type')
+                    ->label('User Type')
+                    ->badge()
+                    ->color(fn(string $state): string => match ($state) {
+                        'Registered' => 'success',
+                        'Guest' => 'info',
+                    }),
                 Tables\Columns\TextColumn::make('user.username')
                     ->label('Username')
-                    ->searchable(),
+                    ->getStateUsing(function ($record): string {
+                        if ($record->user_type === 'Registered' && $record->user) {
+                            return $record->user->username;
+                        }
+                        return 'Guest ' . substr($record->session_id, 0, 8);
+                    }),
                 Tables\Columns\IconColumn::make('solved')
                     ->boolean()
                     ->label('Solved'),
@@ -64,6 +118,11 @@ class TodaysPuzzlePlayersWidget extends BaseWidget
                     ->options([
                         '1' => 'Solved',
                         '0' => 'Failed',
+                    ]),
+                Tables\Filters\SelectFilter::make('user_type')
+                    ->options([
+                        'Registered' => 'Registered Users',
+                        'Guest' => 'Guest Users',
                     ]),
             ])
             ->defaultSort('completed_at', 'desc');

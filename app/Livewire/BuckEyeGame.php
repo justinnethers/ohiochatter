@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\AnonymousGameProgress;
 use App\Models\UserGameStats;
 use App\Services\PuzzleService;
 use Illuminate\Support\Facades\Auth;
@@ -70,7 +71,6 @@ class BuckEyeGame extends Component
      */
     public $successMessage;
 
-
     /**
      * Stats for the current puzzle
      */
@@ -93,6 +93,7 @@ class BuckEyeGame extends Component
      */
     public function mount(PuzzleService $puzzleService)
     {
+        // Load the puzzle with all attributes including image_attribution and link
         $this->puzzle = $puzzleService->getTodaysPuzzle();
 
         if (!$this->puzzle) {
@@ -131,16 +132,26 @@ class BuckEyeGame extends Component
                 $this->userStats = UserGameStats::getOrCreateForUser(Auth::id());
             }
         } else {
-            // For guests, load from session
-            $sessionKey = 'guest_game_' . $this->puzzle->publish_date;
-            $guestData = Session::get($sessionKey);
+            // For guests, first check for existing progress in the database
+            $sessionId = Session::getId();
+            $anonymousProgress = AnonymousGameProgress::where('puzzle_id', $this->puzzle->id)
+                ->where('session_id', $sessionId)
+                ->first();
 
-            if ($guestData) {
-                $this->previousGuesses = $guestData['previousGuesses'] ?? [];
-                $this->remainingGuesses = $guestData['remainingGuesses'] ?? 5;
-                $this->pixelationLevel = $guestData['pixelationLevel'] ?? 5;
-                $this->gameComplete = $guestData['gameComplete'] ?? false;
-                $this->gameWon = $guestData['gameWon'] ?? false;
+            if ($anonymousProgress) {
+                $this->previousGuesses = $anonymousProgress->previous_guesses ?: [];
+                $this->remainingGuesses = PuzzleService::MAX_GUESSES - $anonymousProgress->attempts;
+                $this->pixelationLevel = PuzzleService::PIXELATION_LEVELS - $anonymousProgress->attempts;
+
+                // Make sure we show clear image if the game was won
+                if ($anonymousProgress->solved) {
+                    $this->pixelationLevel = 0;
+                } elseif ($this->pixelationLevel < 0) {
+                    $this->pixelationLevel = 0;
+                }
+
+                $this->gameComplete = (bool)$anonymousProgress->completed_at;
+                $this->gameWon = $anonymousProgress->solved;
 
                 // Load stats if the game is already complete
                 if ($this->gameComplete) {
@@ -154,6 +165,38 @@ class BuckEyeGame extends Component
                         $this->successMessage = "Congratulations! You guessed correctly!";
                     } else {
                         $this->errorMessage = "Sorry, you're out of guesses. The answer was: " . $this->puzzle->answer;
+                    }
+                }
+            } else {
+                // Fallback to session if no database record exists
+                $sessionKey = 'guest_game_' . $this->puzzle->publish_date;
+                $guestData = Session::get($sessionKey);
+
+                if ($guestData) {
+                    $this->previousGuesses = $guestData['previousGuesses'] ?? [];
+                    $this->remainingGuesses = $guestData['remainingGuesses'] ?? 5;
+                    $this->pixelationLevel = $guestData['pixelationLevel'] ?? 5;
+                    $this->gameComplete = $guestData['gameComplete'] ?? false;
+                    $this->gameWon = $guestData['gameWon'] ?? false;
+
+                    // Load stats if the game is already complete
+                    if ($this->gameComplete) {
+                        $this->loadPuzzleStats();
+                        $this->showPuzzleStats = true;
+                    }
+
+                    // Set appropriate messages if the game is complete
+                    if ($this->gameComplete) {
+                        if ($this->gameWon) {
+                            $this->successMessage = "Congratulations! You guessed correctly!";
+                        } else {
+                            $this->errorMessage = "Sorry, you're out of guesses. The answer was: " . $this->puzzle->answer;
+                        }
+                    }
+
+                    // Migrate session data to database
+                    if ($this->previousGuesses || $this->gameComplete) {
+                        $this->saveAnonymousProgress();
                     }
                 }
             }
@@ -172,34 +215,87 @@ class BuckEyeGame extends Component
             return;
         }
 
-        // Get total players
-        $totalPlayers = \App\Models\UserGameProgress::where('puzzle_id', $this->puzzle->id)->count();
+        // Get authenticated users' progress
+        $authenticatedQuery = \App\Models\UserGameProgress::where('puzzle_id', $this->puzzle->id);
+
+        // Get anonymous users' progress
+        $anonymousQuery = AnonymousGameProgress::where('puzzle_id', $this->puzzle->id);
+
+        // Get total players (both authenticated and anonymous)
+        $totalAuthPlayers = $authenticatedQuery->count();
+        $totalAnonPlayers = $anonymousQuery->count();
+        $totalPlayers = $totalAuthPlayers + $totalAnonPlayers;
 
         // Get solved count
-        $solvedCount = \App\Models\UserGameProgress::where('puzzle_id', $this->puzzle->id)
+        $solvedAuthCount = \App\Models\UserGameProgress::where('puzzle_id', $this->puzzle->id)
             ->where('solved', true)
             ->count();
+
+        $solvedAnonCount = AnonymousGameProgress::where('puzzle_id', $this->puzzle->id)
+            ->where('solved', true)
+            ->count();
+
+        $solvedCount = $solvedAuthCount + $solvedAnonCount;
 
         // Calculate completion rate
         $completionRate = $totalPlayers > 0
             ? round(($solvedCount / $totalPlayers) * 100)
             : 0;
 
-        // Get average guesses for solved puzzles
-        $averageGuesses = \App\Models\UserGameProgress::where('puzzle_id', $this->puzzle->id)
+        // Get average guesses for solved puzzles (authenticated users)
+        $authAvgGuesses = \App\Models\UserGameProgress::where('puzzle_id', $this->puzzle->id)
             ->where('solved', true)
             ->avg('guesses_taken');
 
-        $averageGuesses = $averageGuesses ? round($averageGuesses, 1) : 'N/A';
+        // Get average guesses for solved puzzles (anonymous users)
+        $anonAvgGuesses = AnonymousGameProgress::where('puzzle_id', $this->puzzle->id)
+            ->where('solved', true)
+            ->avg('guesses_taken');
 
-        // Get distribution of guesses
-        $guessDistribution = \App\Models\UserGameProgress::where('puzzle_id', $this->puzzle->id)
+        // Combine the averages, weighted by the number of players in each group
+        $avgGuesses = null;
+        if ($solvedAuthCount > 0 || $solvedAnonCount > 0) {
+            $totalGuesses = 0;
+            $totalSolved = 0;
+
+            if ($solvedAuthCount > 0 && $authAvgGuesses) {
+                $totalGuesses += $authAvgGuesses * $solvedAuthCount;
+                $totalSolved += $solvedAuthCount;
+            }
+
+            if ($solvedAnonCount > 0 && $anonAvgGuesses) {
+                $totalGuesses += $anonAvgGuesses * $solvedAnonCount;
+                $totalSolved += $solvedAnonCount;
+            }
+
+            $avgGuesses = $totalSolved > 0 ? round($totalGuesses / $totalSolved, 1) : null;
+        }
+
+        $averageGuesses = $avgGuesses ?: 'N/A';
+
+        // Get distribution of guesses (authenticated users)
+        $authDistribution = \App\Models\UserGameProgress::where('puzzle_id', $this->puzzle->id)
             ->where('solved', true)
             ->groupBy('guesses_taken')
             ->select('guesses_taken', \Illuminate\Support\Facades\DB::raw('count(*) as count'))
-            ->orderBy('guesses_taken')
             ->pluck('count', 'guesses_taken')
             ->toArray();
+
+        // Get distribution of guesses (anonymous users)
+        $anonDistribution = AnonymousGameProgress::where('puzzle_id', $this->puzzle->id)
+            ->where('solved', true)
+            ->groupBy('guesses_taken')
+            ->select('guesses_taken', \Illuminate\Support\Facades\DB::raw('count(*) as count'))
+            ->pluck('count', 'guesses_taken')
+            ->toArray();
+
+        // Combine the distributions
+        $guessDistribution = [];
+        foreach (range(1, 5) as $guessNum) {
+            $authCount = $authDistribution[$guessNum] ?? 0;
+            $anonCount = $anonDistribution[$guessNum] ?? 0;
+            $guessDistribution[$guessNum] = $authCount + $anonCount;
+        }
 
         // Store stats in the property
         $this->puzzleStats = [
@@ -209,6 +305,44 @@ class BuckEyeGame extends Component
             'averageGuesses' => $averageGuesses,
             'guessDistribution' => $guessDistribution
         ];
+    }
+
+    /**
+     * Save anonymous user progress to the database and session
+     */
+    private function saveAnonymousProgress()
+    {
+        // Save to database
+        $sessionId = Session::getId();
+        $ipAddress = request()->ip();
+        $userAgent = request()->userAgent();
+
+        AnonymousGameProgress::updateOrCreate(
+            [
+                'puzzle_id' => $this->puzzle->id,
+                'session_id' => $sessionId
+            ],
+            [
+                'solved' => $this->gameWon,
+                'attempts' => count($this->previousGuesses),
+                'guesses_taken' => $this->gameWon ? count($this->previousGuesses) : null,
+                'previous_guesses' => $this->previousGuesses,
+                'completed_at' => $this->gameComplete ? now() : null,
+                'ip_address' => $ipAddress,
+                'user_agent' => $userAgent
+            ]
+        );
+
+        // Also save to session as a backup
+        $sessionKey = 'guest_game_' . $this->puzzle->publish_date;
+        Session::put($sessionKey, [
+            'previousGuesses' => $this->previousGuesses,
+            'remainingGuesses' => $this->remainingGuesses,
+            'pixelationLevel' => $this->pixelationLevel,
+            'gameComplete' => $this->gameComplete,
+            'gameWon' => $this->gameWon,
+            'showPuzzleStats' => $this->showPuzzleStats
+        ]);
     }
 
     public function submitGuess(PuzzleService $puzzleService)
@@ -255,13 +389,20 @@ class BuckEyeGame extends Component
 
             if ($this->gameComplete && Auth::check()) {
                 $this->userStats = UserGameStats::getOrCreateForUser(Auth::id());
-                // Load puzzle stats for the completed game
-                $this->loadPuzzleStats();
-                $this->showPuzzleStats = true;
+
+                // Important: Load puzzle stats AFTER the user's progress is saved
+                // This ensures the stats include the user's own contribution
                 $this->dispatch('gameCompleted', [
                     'won' => $this->gameWon,
                     'guesses' => count($this->previousGuesses)
                 ]);
+
+                // Add a small delay to ensure database operations complete
+                sleep(1);
+
+                // Now load the updated puzzle stats
+                $this->loadPuzzleStats();
+                $this->showPuzzleStats = true;
             }
         } else {
             // For guest users
@@ -275,7 +416,11 @@ class BuckEyeGame extends Component
                 $this->gameWon = true;
                 $this->pixelationLevel = 0;
                 $this->successMessage = "Congratulations! You guessed correctly!";
-                // Load stats for the completed game
+
+                // Save progress first
+                $this->saveAnonymousProgress();
+
+                // Then load the updated stats
                 $this->loadPuzzleStats();
                 $this->showPuzzleStats = true;
             } else if ($this->remainingGuesses <= 0) {
@@ -283,23 +428,19 @@ class BuckEyeGame extends Component
                 $this->gameWon = false;
                 $this->pixelationLevel = 0;
                 $this->errorMessage = "Sorry, you're out of guesses. The answer was: " . $this->puzzle->answer;
-                // Load stats for the completed game
+
+                // Save progress first
+                $this->saveAnonymousProgress();
+
+                // Then load the updated stats
                 $this->loadPuzzleStats();
                 $this->showPuzzleStats = true;
             } else {
                 $this->errorMessage = "Sorry, that's not correct. Try again!";
-            }
 
-            // Save to session
-            $sessionKey = 'guest_game_' . $this->puzzle->publish_date;
-            Session::put($sessionKey, [
-                'previousGuesses' => $this->previousGuesses,
-                'remainingGuesses' => $this->remainingGuesses,
-                'pixelationLevel' => $this->pixelationLevel,
-                'gameComplete' => $this->gameComplete,
-                'gameWon' => $this->gameWon,
-                'showPuzzleStats' => $this->showPuzzleStats
-            ]);
+                // Save progress for non-complete games too
+                $this->saveAnonymousProgress();
+            }
         }
 
         // Update the image URL

@@ -51,7 +51,16 @@ class PuzzleResource extends Resource
                 TextInput::make('word_count')->required(),
                 TextInput::make('category')->required(),
                 Textarea::make('hint')->required(),
-                Textarea::make('hint_2')->required()
+                Textarea::make('hint_2')->required(),
+                Textarea::make('image_attribution')
+                    ->label('Image Attribution')
+                    ->helperText('Enter attribution text with HTML links if needed. This will be shown after the game completes.')
+                    ->columnSpan(2),
+                TextInput::make('link')
+                    ->label('Read More Link')
+                    ->url()
+                    ->helperText('URL to learn more about the puzzle subject')
+                    ->columnSpan(2)
             ]);
     }
 

@@ -82,6 +82,24 @@
                     The answer was <span class="font-bold">{{ $puzzle->answer }}</span>
                 </p>
                 <p class="text-sm text-gray-600">Come back tomorrow for a new puzzle!</p>
+
+                @if($puzzle->image_attribution || $puzzle->link)
+                    <div class="mt-4 pt-2 border-t border-gray-300">
+                        @if($puzzle->image_attribution)
+                            <div class="text-sm text-gray-600 mb-1">
+                                <span class="font-semibold">Image:</span> {!! $puzzle->image_attribution !!}
+                            </div>
+                        @endif
+                        @if($puzzle->link)
+                            <div class="text-sm">
+                                <a href="{{ $puzzle->link }}" target="_blank"
+                                   class="text-blue-600 hover:text-blue-800 underline">
+                                    Learn more about {{ $puzzle->answer }}
+                                </a>
+                            </div>
+                        @endif
+                    </div>
+                @endif
             </div>
         @else
             <!-- Guess Input Form -->

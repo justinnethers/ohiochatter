@@ -305,6 +305,25 @@
                                                                     class="text-gray-400">Hint: </span>{{ $puzzle->hint }}
                                                             </div>
                                                         @endif
+
+                                                        @if($puzzle->image_attribution || $puzzle->link)
+                                                            <div class="mt-3 border-t border-gray-600 pt-2">
+                                                                @if($puzzle->image_attribution)
+                                                                    <div class="text-sm text-gray-400 mb-1">
+                                                                        <span
+                                                                            class="font-semibold text-gray-300">Image:</span> {!! $puzzle->image_attribution !!}
+                                                                    </div>
+                                                                @endif
+                                                                @if($puzzle->link)
+                                                                    <div class="text-sm">
+                                                                        <a href="{{ $puzzle->link }}" target="_blank"
+                                                                           class="text-blue-400 hover:text-blue-300 underline">
+                                                                            Learn more about {{ $puzzle->answer }}
+                                                                        </a>
+                                                                    </div>
+                                                                @endif
+                                                            </div>
+                                                        @endif
                                                     </div>
                                                 </div>
                                             </div>

@@ -28,8 +28,6 @@ class UserProgressRelationManager extends RelationManager
                     ->label('Solved'),
                 Tables\Columns\TextColumn::make('attempts')
                     ->label('Attempts'),
-                Tables\Columns\TextColumn::make('guesses_taken')
-                    ->label('Guesses Taken'),
                 Tables\Columns\TextColumn::make('completed_at')
                     ->label('Completed')
                     ->dateTime(),

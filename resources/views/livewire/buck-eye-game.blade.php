@@ -80,10 +80,11 @@
 
         @if (count($previousGuesses) > 0)
             <div class="text-gray-100">
-                <h3 class="text-lg font-semibold mb-2">Your guesses:</h3>
+                <h3 class="text-xs uppercase font-semibold mb-2">Your guesses</h3>
                 <div class="flex flex-wrap gap-2">
                     @foreach ($previousGuesses as $guess)
-                        <span class="px-2 py-0.5 bg-gray-200 rounded-full text-gray-800">{{ $guess }}</span>
+                        <span
+                            class="px-3 py-0.5 rounded-full shadow-inner {{ $loop->last && $gameWon ? 'bg-green-300 text-green-950' : 'bg-red-300 text-red-950' }}">{{ $guess }}</span>
                     @endforeach
                 </div>
             </div>
@@ -91,14 +92,15 @@
 
         <!-- Game Complete State -->
         @if ($gameComplete)
-            <div class="p-2 md:p-4 space-y-2 rounded-lg {{ $gameWon ? 'bg-green-100' : 'bg-red-100' }}">
-                <h3 class="text-xl font-bold {{ $gameWon ? 'text-green-800' : 'text-red-800' }}">
-                    {{ $gameWon ? 'Congratulations!' : 'Better luck tomorrow!' }}
-                </h3>
-                <p class="text-gray-800">
+            <div
+                class="relative rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10 space-y-4"
+            >
+                <h3 class="text-xl {{ $gameWon ? 'text-green-400' : 'text-red-400' }}">
+                    <span class="font-bold">{{ $gameWon ? 'Congratulations!' : 'Better luck tomorrow!' }}</span>
                     The answer was <span class="font-bold">{{ $puzzle->answer }}</span>
-                </p>
-                <p class="text-sm text-gray-600">Come back tomorrow for a new puzzle!</p>
+                </h3>
+
+                <p class="text-sm text-amber-400">Come back tomorrow for a new puzzle!</p>
             </div>
             <!-- Puzzle Statistics for completed games -->
             @if($showPuzzleStats && $puzzleStats)

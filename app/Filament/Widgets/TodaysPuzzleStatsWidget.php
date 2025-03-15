@@ -16,11 +16,13 @@ class TodaysPuzzleStatsWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        $todaysPuzzle = Puzzle::where('publish_date', Carbon::today()->toDateString())->first();
+        $todaysPuzzle = Puzzle::query()
+            ->where('publish_date', Carbon::today()->toDateString())
+            ->first();
 
         if (!$todaysPuzzle) {
             return [
-                Stat::make('Today\'s Puzzle', 'Not Available')
+                Stat::make("Today's Puzzle", 'Not Available')
                     ->description('No puzzle is scheduled for today')
                     ->descriptionIcon('heroicon-m-x-circle')
                     ->color('danger'),
@@ -29,43 +31,45 @@ class TodaysPuzzleStatsWidget extends BaseWidget
             ];
         }
 
-        // Get total registered players
-        $totalRegPlayers = UserGameProgress::where('puzzle_id', $todaysPuzzle->id)->count();
+        $totalRegPlayers = UserGameProgress::query()
+            ->where('puzzle_id', $todaysPuzzle->id)
+            ->where('user_id', '!=', 1)
+            ->count();
 
-        // Get total anonymous players
-        $totalAnonPlayers = AnonymousGameProgress::where('puzzle_id', $todaysPuzzle->id)->count();
+        $totalAnonPlayers = AnonymousGameProgress::query()
+            ->where('puzzle_id', $todaysPuzzle->id)
+            ->count();
 
-        // Total players
         $totalPlayers = $totalRegPlayers + $totalAnonPlayers;
 
-        // Get solved count for registered users
-        $solvedRegCount = UserGameProgress::where('puzzle_id', $todaysPuzzle->id)
+        $solvedRegCount = UserGameProgress::query()
+            ->where('puzzle_id', $todaysPuzzle->id)
+            ->where('solved', true)
+            ->where('user_id', '!=', 1)
+            ->count();
+
+        $solvedAnonCount = AnonymousGameProgress::query()
+            ->where('puzzle_id', $todaysPuzzle->id)
             ->where('solved', true)
             ->count();
 
-        // Get solved count for anonymous users
-        $solvedAnonCount = AnonymousGameProgress::where('puzzle_id', $todaysPuzzle->id)
-            ->where('solved', true)
-            ->count();
-
-        // Total solved count
         $solvedCount = $solvedRegCount + $solvedAnonCount;
 
-        // Calculate completion rate
         $completionRate = $totalPlayers > 0
             ? round(($solvedCount / $totalPlayers) * 100)
             : 0;
 
-        // Get average guesses for solved puzzles
-        $avgRegGuesses = UserGameProgress::where('puzzle_id', $todaysPuzzle->id)
+        $avgRegGuesses = UserGameProgress::query()
+            ->where('puzzle_id', $todaysPuzzle->id)
+            ->where('solved', true)
+            ->where('user_id', '!=', 1)
+            ->avg('guesses_taken');
+
+        $avgAnonGuesses = AnonymousGameProgress::query()
+            ->where('puzzle_id', $todaysPuzzle->id)
             ->where('solved', true)
             ->avg('guesses_taken');
 
-        $avgAnonGuesses = AnonymousGameProgress::where('puzzle_id', $todaysPuzzle->id)
-            ->where('solved', true)
-            ->avg('guesses_taken');
-
-        // Calculate combined average
         $averageGuesses = 'N/A';
         if ($solvedRegCount > 0 || $solvedAnonCount > 0) {
             $totalGuesses = 0;
@@ -86,8 +90,18 @@ class TodaysPuzzleStatsWidget extends BaseWidget
             }
         }
 
-        // Get distribution of guesses for registered users
-        $regDistribution = UserGameProgress::where('puzzle_id', $todaysPuzzle->id)
+        $regDistribution = UserGameProgress::query()
+            ->where('puzzle_id', $todaysPuzzle->id)
+            ->where('solved', true)
+            ->where('user_id', '!=', 1)
+            ->groupBy('guesses_taken')
+            ->select('guesses_taken', DB::raw('count(*) as count'))
+            ->orderBy('guesses_taken')
+            ->pluck('count', 'guesses_taken')
+            ->toArray();
+
+        $anonDistribution = AnonymousGameProgress::query()
+            ->where('puzzle_id', $todaysPuzzle->id)
             ->where('solved', true)
             ->groupBy('guesses_taken')
             ->select('guesses_taken', DB::raw('count(*) as count'))
@@ -95,24 +109,14 @@ class TodaysPuzzleStatsWidget extends BaseWidget
             ->pluck('count', 'guesses_taken')
             ->toArray();
 
-        // Get distribution of guesses for anonymous users
-        $anonDistribution = AnonymousGameProgress::where('puzzle_id', $todaysPuzzle->id)
-            ->where('solved', true)
-            ->groupBy('guesses_taken')
-            ->select('guesses_taken', DB::raw('count(*) as count'))
-            ->orderBy('guesses_taken')
-            ->pluck('count', 'guesses_taken')
-            ->toArray();
-
-        // Combine distributions
         $guessDistribution = [];
+
         foreach (range(1, 5) as $guessNum) {
             $regCount = $regDistribution[$guessNum] ?? 0;
             $anonCount = $anonDistribution[$guessNum] ?? 0;
             $guessDistribution[$guessNum] = $regCount + $anonCount;
         }
 
-        // Format distribution for display
         $distributionText = empty($guessDistribution) || array_sum($guessDistribution) === 0
             ? 'No solved puzzles yet'
             : collect($guessDistribution)->map(function ($count, $guesses) {
@@ -120,7 +124,7 @@ class TodaysPuzzleStatsWidget extends BaseWidget
             })->join(' | ');
 
         return [
-            Stat::make('Today\'s Puzzle', $todaysPuzzle->answer)
+            Stat::make("Today's Puzzle", $todaysPuzzle->answer)
                 ->description('Category: ' . $todaysPuzzle->category)
                 ->color('success'),
 

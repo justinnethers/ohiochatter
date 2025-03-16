@@ -14,26 +14,26 @@
                 @endif
             </div>
 
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <x-well-grid-item>
-                    <div class="text-xl md:text-2xl font-bold">{{ $puzzleStats['totalPlayers'] }}</div>
-                    <div class="text-xs text-gray-300">Players</div>
-                </x-well-grid-item>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                <x-well color="gray" shade="800" space="0">
+                    <div class="text-xs text-amber-400 uppercase font-semibold">Players</div>
+                    <div class="text-3xl font-bold text-gray-100">{{ $puzzleStats['totalPlayers'] }}</div>
+                </x-well>
 
-                <x-well-grid-item>
-                    <div class="text-xl md:text-2xl font-bold">{{ $puzzleStats['solvedCount'] }}</div>
-                    <div class="text-xs text-gray-300">Solved</div>
-                </x-well-grid-item>
+                <x-well color="gray" shade="800" space="0">
+                    <div class="text-xs text-amber-400 uppercase font-semibold"># Solved</div>
+                    <div class="text-3xl font-bold text-gray-100">{{ $puzzleStats['solvedCount'] }}</div>
+                </x-well>
 
-                <x-well-grid-item>
-                    <div class="text-xl md:text-2xl font-bold">{{ $puzzleStats['completionRate'] }}%</div>
-                    <div class="text-xs text-gray-300">Solved</div>
-                </x-well-grid-item>
+                <x-well color="gray" shade="800" space="0">
+                    <div class="text-xs text-amber-400 uppercase font-semibold">Solved %</div>
+                    <div class="text-3xl font-bold text-gray-100">{{ $puzzleStats['completionRate'] }}</div>
+                </x-well>
 
-                <x-well-grid-item>
-                    <div class="text-xl md:text-2xl font-bold">{{ $puzzleStats['averageGuesses'] }}</div>
-                    <div class="text-xs text-gray-300">Avg Guesses</div>
-                </x-well-grid-item>
+                <x-well color="gray" shade="800" space="0">
+                    <div class="text-xs text-amber-400 uppercase font-semibold">Avg Guesses</div>
+                    <div class="text-3xl font-bold text-gray-100">{{ $puzzleStats['averageGuesses'] }}</div>
+                </x-well>
             </div>
 
             @if(count($puzzleStats['guessDistribution']) > 0)

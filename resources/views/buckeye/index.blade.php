@@ -50,9 +50,9 @@
 
     <div class="container mx-auto space-y-4 px-2 md:p-0">
         <article>
-            <div class="bg-gray-800 p-2 md:p-4 rounded-xl">
+            <x-well color="gray" shade="800">
                 <livewire:buck-eye-game/>
-            </div>
+            </x-well>
         </article>
 
         @auth

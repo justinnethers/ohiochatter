@@ -2,10 +2,13 @@
 
 namespace App\Services;
 
+use App\Models\AnonymousGameProgress;
 use App\Models\Puzzle;
 use App\Models\User;
 use App\Models\UserGameProgress;
 use App\Models\UserGameStats;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 
 class PuzzleService
@@ -14,6 +17,87 @@ class PuzzleService
 
     const PIXELATION_LEVELS = 5;
 
+    public function loadPuzzleStats(Puzzle $puzzle): array
+    {
+        $authenticatedQuery = UserGameProgress::where('puzzle_id', $puzzle->id);
+        $anonymousQuery = AnonymousGameProgress::where('puzzle_id', $puzzle->id);
+
+        $totalAuthPlayers = $authenticatedQuery->count();
+        $totalAnonPlayers = $anonymousQuery->count();
+        $totalPlayers = $totalAuthPlayers + $totalAnonPlayers;
+
+        $solvedAuthCount = UserGameProgress::where('puzzle_id', $puzzle->id)
+            ->where('solved', true)
+            ->count();
+
+        $solvedAnonCount = AnonymousGameProgress::where('puzzle_id', $puzzle->id)
+            ->where('solved', true)
+            ->count();
+
+        $solvedCount = $solvedAuthCount + $solvedAnonCount;
+
+        $completionRate = $totalPlayers > 0
+            ? round(($solvedCount / $totalPlayers) * 100)
+            : 0;
+
+        $authAvgGuesses = UserGameProgress::where('puzzle_id', $puzzle->id)
+            ->where('solved', true)
+            ->avg('guesses_taken');
+
+        $anonAvgGuesses = AnonymousGameProgress::where('puzzle_id', $puzzle->id)
+            ->where('solved', true)
+            ->avg('guesses_taken');
+
+        $avgGuesses = null;
+        if ($solvedAuthCount > 0 || $solvedAnonCount > 0) {
+            $totalGuesses = 0;
+            $totalSolved = 0;
+
+            if ($solvedAuthCount > 0 && $authAvgGuesses) {
+                $totalGuesses += $authAvgGuesses * $solvedAuthCount;
+                $totalSolved += $solvedAuthCount;
+            }
+
+            if ($solvedAnonCount > 0 && $anonAvgGuesses) {
+                $totalGuesses += $anonAvgGuesses * $solvedAnonCount;
+                $totalSolved += $solvedAnonCount;
+            }
+
+            $avgGuesses = $totalSolved > 0 ? round($totalGuesses / $totalSolved, 1) : null;
+        }
+
+        $averageGuesses = $avgGuesses ?: 'N/A';
+
+        $authDistribution = UserGameProgress::where('puzzle_id', $puzzle->id)
+            ->where('solved', true)
+            ->groupBy('guesses_taken')
+            ->select('guesses_taken', DB::raw('count(*) as count'))
+            ->pluck('count', 'guesses_taken')
+            ->toArray();
+
+        $anonDistribution = AnonymousGameProgress::where('puzzle_id', $puzzle->id)
+            ->where('solved', true)
+            ->groupBy('guesses_taken')
+            ->select('guesses_taken', DB::raw('count(*) as count'))
+            ->pluck('count', 'guesses_taken')
+            ->toArray();
+
+        $guessDistribution = [];
+        foreach (range(1, 5) as $guessNum) {
+            $authCount = $authDistribution[$guessNum] ?? 0;
+            $anonCount = $anonDistribution[$guessNum] ?? 0;
+            $guessDistribution[$guessNum] = $authCount + $anonCount;
+        }
+
+        return [
+            'totalPlayers' => $totalPlayers,
+            'solvedCount' => $solvedCount,
+            'completionRate' => $completionRate,
+            'averageGuesses' => $averageGuesses,
+            'guessDistribution' => $guessDistribution
+        ];
+    }
+
     public function processGuess(User $user, string $guess): array
     {
         $puzzle = $this->getTodaysPuzzle();
@@ -21,11 +105,8 @@ class PuzzleService
         $progress = $this->getUserGameProgress($user);
 
         $progress->attempts++;
-        $previousGuesses = $progress->previous_guesses ?? [];
-        $previousGuesses[] = $guess;
-        $progress->previous_guesses = $previousGuesses;
+        $progress->previous_guesses = array_merge($progress->previous_guesses ?? [], [$guess]);
 
-        // Check if the guess is correct (case-insensitive)
         $isCorrect = strtolower(trim($guess)) === strtolower(trim($puzzle->answer));
 
         if ($isCorrect) {
@@ -33,21 +114,17 @@ class PuzzleService
             $progress->guesses_taken = $progress->attempts;
             $progress->completed_at = now();
 
-            // Update user stats
             $stats = UserGameStats::getOrCreateForUser($user->id);
             $stats->updateAfterGame(true, $progress->attempts);
         } elseif ($progress->attempts >= self::MAX_GUESSES) {
-            // Out of guesses
             $progress->completed_at = now();
 
-            // Update user stats
             $stats = UserGameStats::getOrCreateForUser($user->id);
             $stats->updateAfterGame(false);
         }
 
         $progress->save();
 
-        // Return the appropriate response
         if ($isCorrect) {
             return [
                 'status' => 'correct',
@@ -88,6 +165,20 @@ class PuzzleService
             'user_id' => $user->id,
             'puzzle_id' => $puzzle->id,
         ]);
+    }
+
+    public function getGuestGameProgress(): AnonymousGameProgress|null
+    {
+        $puzzle = $this->getTodaysPuzzle();
+
+        if (!$puzzle) {
+            return null;
+        }
+
+        $sessionId = Session::getId();
+        return AnonymousGameProgress::where('puzzle_id', $puzzle->id)
+            ->where('session_id', $sessionId)
+            ->first();
     }
 
     public function getImage(Puzzle $puzzle): string

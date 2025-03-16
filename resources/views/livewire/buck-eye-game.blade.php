@@ -16,8 +16,8 @@
                     <div class="flex-1 lg:flex-none">
                         <x-well space="0">
                             <div
-                                class="text-xs text-amber-400 uppercase font-semibold">{{ Str::plural('Word', $wordCount) }}</div>
-                            <div class="text-3xl font-bold text-gray-100">{{ $wordCount }}</div>
+                                class="text-xs text-amber-400 uppercase font-semibold">{{ Str::plural('Word', $puzzle->word_count) }}</div>
+                            <div class="text-3xl font-bold text-gray-100">{{ $puzzle->word_count }}</div>
                         </x-well>
                     </div>
                     <div class="flex-1 lg:flex-none">
@@ -48,8 +48,8 @@
                         <div class="flex-1 lg:flex-none">
                             <x-well space="0">
                                 <div
-                                    class="text-xs text-amber-400 uppercase font-semibold">{{ Str::plural('Word', $wordCount) }}</div>
-                                <div class="text-3xl font-bold text-gray-100">{{ $wordCount }}</div>
+                                    class="text-xs text-amber-400 uppercase font-semibold">{{ Str::plural('Word', $puzzle->word_count) }}</div>
+                                <div class="text-3xl font-bold text-gray-100">{{ $puzzle->word_count }}</div>
                             </x-well>
                         </div>
                         <div class="flex-1 lg:flex-none">

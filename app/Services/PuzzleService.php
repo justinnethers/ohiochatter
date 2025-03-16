@@ -21,16 +21,6 @@ class PuzzleService
     const PIXELATION_LEVELS = 5;
 
     /**
-     * Get today's puzzle, or null if none is available
-     *
-     * @return Puzzle|null
-     */
-    public function getTodaysPuzzle()
-    {
-        return Puzzle::getTodaysPuzzle();
-    }
-
-    /**
      * Check if a user has already played today's puzzle
      *
      * @param User $user
@@ -50,23 +40,13 @@ class PuzzleService
     }
 
     /**
-     * Get or create a user's game progress for today's puzzle
+     * Get today's puzzle, or null if none is available
      *
-     * @param User $user
-     * @return UserGameProgress
+     * @return Puzzle|null
      */
-    public function getUserGameProgress(User $user)
+    public function getTodaysPuzzle()
     {
-        $puzzle = $this->getTodaysPuzzle();
-
-        if (!$puzzle) {
-            return null;
-        }
-
-        return UserGameProgress::firstOrCreate([
-            'user_id' => $user->id,
-            'puzzle_id' => $puzzle->id,
-        ]);
+        return Puzzle::getTodaysPuzzle();
     }
 
     /**
@@ -89,7 +69,6 @@ class PuzzleService
 
         $progress = $this->getUserGameProgress($user);
 
-        // Check if the game is already completed
         if ($progress->completed_at) {
             return [
                 'status' => 'error',
@@ -97,7 +76,6 @@ class PuzzleService
             ];
         }
 
-        // Check if max guesses reached
         if ($progress->attempts >= self::MAX_GUESSES) {
             return [
                 'status' => 'error',
@@ -105,7 +83,6 @@ class PuzzleService
             ];
         }
 
-        // Record the attempt
         $progress->attempts++;
         $previousGuesses = $progress->previous_guesses ?? [];
         $previousGuesses[] = $guess;
@@ -157,6 +134,26 @@ class PuzzleService
                 'game_won' => false
             ];
         }
+    }
+
+    /**
+     * Get or create a user's game progress for today's puzzle
+     *
+     * @param User $user
+     * @return UserGameProgress
+     */
+    public function getUserGameProgress(User $user)
+    {
+        $puzzle = $this->getTodaysPuzzle();
+
+        if (!$puzzle) {
+            return null;
+        }
+
+        return UserGameProgress::firstOrCreate([
+            'user_id' => $user->id,
+            'puzzle_id' => $puzzle->id,
+        ]);
     }
 
     /**

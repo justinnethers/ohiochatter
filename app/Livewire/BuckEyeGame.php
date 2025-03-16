@@ -87,7 +87,13 @@ class BuckEyeGame extends Component
                         $this->loadPuzzleStats();
                         $this->showPuzzleStats = true;
                     }
-
+                    if ($this->gameComplete) {
+                        if ($this->gameWon) {
+                            $this->successMessage = "Congratulations! You guessed correctly!";
+                        } else {
+                            $this->errorMessage = "Sorry, you're out of guesses. The answer was: " . $this->puzzle->answer;
+                        }
+                    }
                     if ($this->previousGuesses || $this->gameComplete) {
                         $this->saveAnonymousProgress();
                     }
@@ -304,15 +310,17 @@ class BuckEyeGame extends Component
             $this->remainingGuesses--;
             $this->pixelationLevel = max(0, PuzzleService::PIXELATION_LEVELS - count($this->previousGuesses));
 
-            $this->saveAnonymousProgress();
-
             if ($isCorrect || $this->remainingGuesses <= 0) {
                 $this->gameComplete = true;
                 $this->gameWon = $isCorrect;
                 $this->pixelationLevel = 0;
+
+                $this->saveAnonymousProgress();
+
                 $this->loadPuzzleStats();
                 $this->showPuzzleStats = true;
             } else {
+                $this->saveAnonymousProgress();
                 $this->errorMessage = "Not quite. Try again!";
             }
         }

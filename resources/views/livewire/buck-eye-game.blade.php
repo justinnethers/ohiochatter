@@ -29,16 +29,9 @@
                 </div>
 
                 <div class="col-span-4 status-message">
-                    <!-- Game Status Messages -->
                     @if ($errorMessage)
                         <div class="bg-red-100 p-4 rounded-lg mb-4">
                             <p class="text-red-800">{{ $errorMessage }}</p>
-                        </div>
-                    @endif
-
-                    @if ($successMessage)
-                        <div class="bg-green-100 p-4 rounded-lg mb-4">
-                            <p class="text-green-800">{{ $successMessage }}</p>
                         </div>
                     @endif
                 </div>

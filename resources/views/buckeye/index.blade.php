@@ -154,28 +154,23 @@
 
         <!-- Game Instructions Article -->
         <article>
-            <div class="bg-gray-600 text-white p-2 px-4 rounded-t-md">
-                <h2 class="text-lg font-semibold">How to Play</h2>
-            </div>
+            <x-well color="gray" shade="800">
+                <h3 class="text-lg font-bold text-gray-100">How To Play</h3>
+                <div class="prose prose-invert max-w-none">
+                    <p>BuckEYE is a daily puzzle game that tests your knowledge of all things Ohio!</p>
 
-            <div class="p-2 bg-gray-700 rounded-b-md">
-                <div class="bg-gray-800 p-2 rounded-md">
-                    <div class="prose prose-invert max-w-none">
-                        <p>BuckEYE is a daily puzzle game that tests your knowledge of all things Ohio!</p>
+                    <h4 class="text-gray-200">Game Rules</h4>
+                    <ul class="list-disc pl-5 space-y-1">
+                        <li>Each day features a new Ohio-related puzzle (person, place, thing, etc.)</li>
+                        <li>You're given the word count and a highly blurred image</li>
+                        <li>You have 5 guesses to figure out the answer</li>
+                        <li>With each incorrect guess, the image becomes clearer</li>
+                        <li>A hint appears after your second guess</li>
+                    </ul>
 
-                        <h3 class="text-gray-200">Game Rules:</h3>
-                        <ul class="list-disc pl-5 space-y-1">
-                            <li>Each day features a new Ohio-related puzzle (person, place, thing, etc.)</li>
-                            <li>You're given the word count and a highly blurred image</li>
-                            <li>You have 5 guesses to figure out the answer</li>
-                            <li>With each incorrect guess, the image becomes clearer</li>
-                            <li>A hint appears after your second guess</li>
-                        </ul>
-
-                        <p class="mt-4">Come back each day for a new challenge and track your stats!</p>
-                    </div>
+                    <p class="mt-4">Come back each day for a new challenge and track your stats!</p>
                 </div>
-            </div>
+            </x-well>
         </article>
 
         <!-- Ad Section Article -->

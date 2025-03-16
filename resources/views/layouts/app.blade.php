@@ -65,11 +65,6 @@
                         this.scrollDirection = currentScrollY > this.lastScrollY ? 'down' : 'up';
                         this.lastScrollY = currentScrollY;
 
-                        // If we're in a transition already, don't process further
-                        if (this.transitioning) {
-                            return;
-                        }
-
                         // Handle different state changes with increased thresholds
                         if (!this.scrolled && this.scrollDirection === 'down' && currentScrollY > 70) {
                             this.setScrolledState(true);

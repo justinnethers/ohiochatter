@@ -26,12 +26,25 @@
             <meta property="og:locale" content="en_US">
         @endif
     </x-slot>
-    
+
     <x-slot name="header">
-        <div class="flex justify-between">
-            <h2 class="font-semibold text-gray-200 dark:text-gray-200 leading-tight">
-                BuckEYE Puzzle
-            </h2>
+        <div class="lg:flex justify-between">
+            <div class="text-gray-200 dark:text-gray-200 space-y-2">
+                <h1
+                    x-data="{}"
+                    x-bind:class="{ 'truncate': $store.scroll.scrolled }"
+                    class="text-xl font-semibold leading-tight"
+                >
+                    BuckEYE: Ohio's Ultimate Daily Puzzle Game | Test Your Buckeye State Knowledge
+                </h1>
+                <h2
+                    x-data="{}"
+                    x-bind:class="{ 'truncate': $store.scroll.scrolled }"
+                    class="text-sm text-600"
+                >
+                    Challenge your Ohio IQ! Daily Buckeye State puzzles and trivia that test even lifelong Ohioans.
+                </h2>
+            </div>
             @if (auth()->check())
                 <x-nav-link
                     href="{{ route('buckeye.stats') }}"
@@ -43,16 +56,8 @@
 
     <div class="container mx-auto space-y-4 px-2 md:p-0">
         <article>
-            <div class="bg-red-600 text-white p-2 px-4 rounded-t-md">
-                <div class="flex items-center justify-between">
-                    <h1 class="text-lg font-semibold">{{ now()->format('l, F j, Y') }}</h1>
-                </div>
-            </div>
-
-            <div class="p-2 bg-gray-700 rounded-b-md">
-                <div class="bg-gray-800 p-2 md:p-4 rounded-md">
-                    <livewire:buck-eye-game/>
-                </div>
+            <div class="bg-gray-800 p-2 md:p-4 rounded-xl">
+                <livewire:buck-eye-game/>
             </div>
         </article>
 

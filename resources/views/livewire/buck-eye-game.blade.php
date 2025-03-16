@@ -85,10 +85,9 @@
 
         @if($gameComplete)
             <x-well>
-                <h3 class="text-xl {{ $gameWon ? 'text-green-400' : 'text-red-400' }}">
-                    <span class="font-bold">{{ $gameWon ? 'Congratulations!' : 'Better luck tomorrow!' }}</span>
-                    The answer was <span class="font-bold">{{ $puzzle->answer }}</span>
-                </h3>
+                <div
+                    class="font-bold text-xl {{ $gameWon ? 'text-green-400' : 'text-red-400' }}">{{ $gameWon ? 'You got it!' : 'Better luck tomorrow!' }}</div>
+                <div class="text-lg">The answer was <span class="font-bold">{{ $puzzle->answer }}</span></div>
 
                 <p class="text-sm text-amber-400">Come back tomorrow for a new puzzle!</p>
             </x-well>

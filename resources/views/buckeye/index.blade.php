@@ -45,12 +45,6 @@
                     Challenge your Ohio IQ! Daily Buckeye State puzzles and trivia that test even lifelong Ohioans.
                 </h2>
             </div>
-            @if (auth()->check())
-                <x-nav-link
-                    href="{{ route('buckeye.stats') }}"
-                >View Stats
-                </x-nav-link>
-            @endif
         </div>
     </x-slot>
 

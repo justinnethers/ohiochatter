@@ -1,7 +1,18 @@
 @if($showPuzzleStats && $puzzleStats)
     <div class="my-2 md:my-4">
         <x-well>
-            <h3 class="text-lg font-bold">Today's Stats</h3>
+            <div class="flex justify-between">
+                <h3 class="text-lg font-bold">Today's Stats</h3>
+                @if (auth()->check())
+                    <a
+                        href="{{ route('buckeye.stats') }}"
+                    >
+                        <x-primary-button>
+                            View Your Stats
+                        </x-primary-button>
+                    </a>
+                @endif
+            </div>
 
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <x-well-grid-item>

@@ -105,7 +105,7 @@
 
         @else
             <!-- Guess Input Form -->
-            <form wire:submit.prevent="submitGuess" class="mb-6">
+            <form wire:submit.prevent="submitGuess" class="mb-2 md:mb-4">
                 <div class="flex flex-col md:flex-row gap-2">
                     <input
                         wire:key="current-guess-input"

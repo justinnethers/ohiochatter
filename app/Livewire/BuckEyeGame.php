@@ -19,9 +19,9 @@ class BuckEyeGame extends Component
 
     public $previousGuesses = [];
 
-    public $remainingGuesses = 5;
+    public $remainingGuesses = PuzzleService::MAX_GUESSES;
 
-    public $pixelationLevel = 5;
+    public $pixelationLevel = PuzzleService::PIXELATION_LEVELS;
 
     public $gameComplete = false;
 

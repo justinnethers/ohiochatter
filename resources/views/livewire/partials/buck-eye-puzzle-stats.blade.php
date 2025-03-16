@@ -48,7 +48,7 @@
                             @php
                                 $count = $puzzleStats['guessDistribution'][$guessNumber] ?? 0;
                                 $percentage = $maxCount > 0 ? ($count / $maxCount) * 100 : 0;
-                                $isCurrentGuessCount = $gameWon && count($previousGuesses) == $guessNumber;
+                                $isCurrentGuessCount = $gameState['gameWon'] && count($gameState['previousGuesses']) == $guessNumber;
                             @endphp
                             <div class="flex items-center">
                                 <div class="w-4 text-gray-300 font-bold">{{ $guessNumber }}</div>

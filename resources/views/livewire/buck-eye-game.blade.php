@@ -23,7 +23,7 @@
                     <div class="flex-1 lg:flex-none">
                         <x-well space="0">
                             <div class="text-xs text-amber-400 uppercase font-semibold">Guesses Left</div>
-                            <div class="text-3xl font-bold text-gray-100">{{ $remainingGuesses }}</div>
+                            <div class="text-3xl font-bold text-gray-100">{{ $gameState['remainingGuesses'] }}</div>
                         </x-well>
                     </div>
                 </div>
@@ -38,9 +38,9 @@
 
                 @include('livewire.partials.buck-eye-pixelated-image', [
                     'imageUrl' => $imageUrl,
-                    'pixelationLevel' => $pixelationLevel,
+                    'pixelationLevel' => $gameState['pixelationLevel'],
                     'puzzle' => $puzzle,
-                    'gameComplete' => $gameComplete
+                    'gameComplete' => $gameState['gameComplete']
                 ])
 
                 <div>
@@ -55,17 +55,17 @@
                         <div class="flex-1 lg:flex-none">
                             <x-well space="0">
                                 <div class="text-xs text-amber-400 uppercase font-semibold">Guesses Left</div>
-                                <div class="text-3xl font-bold text-gray-100">{{ $remainingGuesses }}</div>
+                                <div class="text-3xl font-bold text-gray-100">{{ $gameState['remainingGuesses'] }}</div>
                             </x-well>
                         </div>
-                        @if (count($previousGuesses) > 0)
+                        @if (count($gameState['previousGuesses']) > 0)
                             <div class="flex-1 lg:flex-none">
                                 <x-well space="2">
                                     <h3 class="text-xs text-amber-400 uppercase font-semibold mb-2">Your Guesses</h3>
                                     <div class="">
-                                        @foreach ($previousGuesses as $guess)
+                                        @foreach ($gameState['previousGuesses'] as $guess)
                                             <div
-                                                class="font-semibold {{ $loop->last && $gameWon ? 'text-green-400' : 'text-red-400' }}">{{ $guess }}</div>
+                                                class="font-semibold {{ $loop->last && $gameState['gameWon'] ? 'text-green-400' : 'text-red-400' }}">{{ $guess }}</div>
                                         @endforeach
                                     </div>
                                 </x-well>
@@ -76,10 +76,10 @@
             </div>
         </div>
 
-        @if($gameComplete)
+        @if($gameState['gameComplete'])
             <x-well>
                 <div
-                    class="font-bold text-xl {{ $gameWon ? 'text-green-400' : 'text-red-400' }}">{{ $gameWon ? 'You got it!' : 'Better luck tomorrow!' }}</div>
+                    class="font-bold text-xl {{ $gameState['gameWon'] ? 'text-green-400' : 'text-red-400' }}">{{ $gameState['gameWon'] ? 'You got it!' : 'Better luck tomorrow!' }}</div>
                 <div class="text-lg">The answer was <span class="font-bold">{{ $puzzle->answer }}</span></div>
 
                 <p class="text-sm text-amber-400">Come back tomorrow for a new puzzle!</p>
@@ -87,7 +87,7 @@
         @endif
 
         <!-- Game Complete State -->
-        @if ($gameComplete)
+        @if ($gameState['gameComplete'])
 
             @include('livewire.partials.buck-eye-puzzle-stats', [
                 'showPuzzleStats' => $showPuzzleStats,
@@ -105,7 +105,7 @@
                         wire:model="currentGuess"
                         class="text-black flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
                         placeholder="Enter your guess..."
-                        {{ $gameComplete ? 'disabled' : '' }}
+                        {{ $gameState['gameComplete'] ? 'disabled' : '' }}
                     >
                     <x-primary-button
                         class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
@@ -120,14 +120,14 @@
             </form>
         @endif
 
-        @if (count($previousGuesses) > 0)
+        @if (count($gameState['previousGuesses']) > 0)
             <div class="my-2 md:my-4 flex-1 lg:hidden">
                 <x-well space="2">
                     <h3 class="text-xs text-amber-400 uppercase font-semibold mb-2">Your guesses</h3>
                     <div class="text-left">
-                        @foreach ($previousGuesses as $guess)
+                        @foreach ($gameState['previousGuesses'] as $guess)
                             <div
-                                class="font-semibold {{ $loop->last && $gameWon ? 'text-green-400' : 'text-red-400' }}">{{ $guess }}</div>
+                                class="font-semibold {{ $loop->last && $gameState['gameWon'] ? 'text-green-400' : 'text-red-400' }}">{{ $guess }}</div>
                         @endforeach
                     </div>
                 </x-well>
@@ -135,8 +135,8 @@
         @endif
 
         @include('livewire.partials.buck-eye-hints', [
-            'remainingGuesses' => $remainingGuesses,
-            'gameComplete' => $gameComplete,
+            'remainingGuesses' => $gameState['remainingGuesses'],
+            'gameComplete' => $gameState['gameComplete'],
             'puzzle' => $puzzle
         ])
 

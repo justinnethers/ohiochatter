@@ -101,49 +101,51 @@ class PuzzleService
     public function processGuess(User $user, string $guess): array
     {
         $puzzle = $this->getTodaysPuzzle();
+        $userGameProgress = $this->getUserGameProgress($user);
 
-        $progress = $this->getUserGameProgress($user);
-
-        $progress->attempts++;
-        $progress->previous_guesses = array_merge($progress->previous_guesses ?? [], [$guess]);
+        $userGameProgress->attempts++;
+        $userGameProgress->previous_guesses = array_merge(
+            $userGameProgress->previous_guesses ?? [],
+            [$guess]
+        );
 
         $isCorrect = strtolower(trim($guess)) === strtolower(trim($puzzle->answer));
 
         if ($isCorrect) {
-            $progress->solved = true;
-            $progress->guesses_taken = $progress->attempts;
-            $progress->completed_at = now();
+            $userGameProgress->solved = true;
+            $userGameProgress->guesses_taken = $userGameProgress->attempts;
+            $userGameProgress->completed_at = now();
 
             $stats = UserGameStats::getOrCreateForUser($user->id);
-            $stats->updateAfterGame(true, $progress->attempts);
-        } elseif ($progress->attempts >= self::MAX_GUESSES) {
-            $progress->completed_at = now();
+            $stats->updateAfterGame(true, $userGameProgress->attempts);
+        } elseif ($userGameProgress->attempts >= self::MAX_GUESSES) {
+            $userGameProgress->completed_at = now();
 
             $stats = UserGameStats::getOrCreateForUser($user->id);
             $stats->updateAfterGame(false);
         }
 
-        $progress->save();
+        $userGameProgress->save();
 
         if ($isCorrect) {
             return [
-                'status' => 'correct',
-                'pixelation_level' => 0,  // Clear image
-                'remaining_guesses' => self::MAX_GUESSES - $progress->attempts,
-                'game_complete' => true,
-                'game_won' => true
+                'pixelationLevel' => 0,
+                'remainingGuesses' => self::MAX_GUESSES - $userGameProgress->attempts,
+                'previousGuesses' => $userGameProgress->previous_guesses,
+                'gameComplete' => true,
+                'gameWon' => true
             ];
         } else {
             // Calculate pixelation level (starts at MAX_LEVEL and decreases with each guess)
-            $pixelationLevel = self::PIXELATION_LEVELS - $progress->attempts;
+            $pixelationLevel = self::PIXELATION_LEVELS - $userGameProgress->attempts;
             if ($pixelationLevel < 0) $pixelationLevel = 0;
 
             return [
-                'status' => 'incorrect',
-                'pixelation_level' => $pixelationLevel,
-                'remaining_guesses' => self::MAX_GUESSES - $progress->attempts,
-                'game_complete' => $progress->attempts >= self::MAX_GUESSES,
-                'game_won' => false
+                'pixelationLevel' => $pixelationLevel,
+                'remainingGuesses' => self::MAX_GUESSES - $userGameProgress->attempts,
+                'previousGuesses' => $userGameProgress->previous_guesses,
+                'gameComplete' => $userGameProgress->attempts >= self::MAX_GUESSES,
+                'gameWon' => false
             ];
         }
     }

@@ -14,17 +14,15 @@ class BuckEyeGame extends Component
 {
     public $puzzle;
 
-    public $currentGuess = '';
+    public $gameState = [
+        'previousGuesses' => [],
+        'remainingGuesses' => PuzzleService::MAX_GUESSES,
+        'pixelationLevel' => PuzzleService::PIXELATION_LEVELS,
+        'gameComplete' => false,
+        'gameWon' => false,
+    ];
 
-    public $previousGuesses = [];
-
-    public $remainingGuesses = PuzzleService::MAX_GUESSES;
-
-    public $pixelationLevel = PuzzleService::PIXELATION_LEVELS;
-
-    public $gameComplete = false;
-
-    public $gameWon = false;
+    public $currentGuess;
 
     public $imageUrl;
 
@@ -37,7 +35,7 @@ class BuckEyeGame extends Component
     public $showPuzzleStats = false;
 
     protected $rules = [
-        'currentGuess' => 'required|string|min:2',
+        'currentGuess' => 'required|string|min:1',
     ];
 
     public function mount(PuzzleService $puzzleService)
@@ -69,15 +67,15 @@ class BuckEyeGame extends Component
 
     private function getUserProgress(UserGameProgress|AnonymousGameProgress $progress): void
     {
-        $this->previousGuesses = $progress->previous_guesses ?: [];
-        $this->remainingGuesses = PuzzleService::MAX_GUESSES - $progress->attempts;
-        $this->pixelationLevel = PuzzleService::PIXELATION_LEVELS - $progress->attempts;
+        $this->gameState['previousGuesses'] = $progress->previous_guesses ?: [];
+        $this->gameState['remainingGuesses'] = PuzzleService::MAX_GUESSES - $progress->attempts;
+        $this->gameState['pixelationLevel'] = PuzzleService::PIXELATION_LEVELS - $progress->attempts;
 
-        $this->gameComplete = (bool)$progress->completed_at;
-        $this->gameWon = $progress->solved;
+        $this->gameState['gameComplete'] = (bool)$progress->completed_at;
+        $this->gameState['gameWon'] = $progress->solved;
 
-        if ($this->gameComplete) {
-            $this->pixelationLevel = 0;
+        if ($this->gameState['gameComplete']) {
+            $this->gameState['pixelationLevel'] = 0;
             $this->showPuzzleStats();
         }
     }
@@ -91,7 +89,7 @@ class BuckEyeGame extends Component
 
     public function submitGuess(PuzzleService $puzzleService): void
     {
-        if ($this->gameComplete) {
+        if ($this->gameState['gameComplete']) {
             $this->errorMessage = "This game is already complete.";
             return;
         }
@@ -103,37 +101,31 @@ class BuckEyeGame extends Component
         if (Auth::check()) {
             $result = $puzzleService->processGuess(Auth::user(), $this->currentGuess);
 
-            $this->previousGuesses[] = $this->currentGuess;
-            $this->remainingGuesses = $result['remaining_guesses'];
-            $this->pixelationLevel = $result['pixelation_level'];
-            $this->gameComplete = $result['game_complete'];
-            $this->gameWon = $result['game_won'];
+            $this->gameState = array_merge($this->gameState, $result);
 
-            if ($result['status'] === 'incorrect') {
-                $this->errorMessage = 'Not quite. Try again!';
-            }
-
-            if ($this->gameComplete) {
-                $this->pixelationLevel = 0;
+            if ($this->gameState['gameComplete']) {
                 $this->userStats = UserGameStats::getOrCreateForUser(Auth::id());
 
                 $this->dispatch('gameCompleted', [
-                    'won' => $this->gameWon,
-                    'guesses' => count($this->previousGuesses)
+                    'won' => $this->gameState['gameWon'],
+                    'guesses' => count($this->gameState['previousGuesses'])
                 ]);
 
                 $this->showPuzzleStats();
+            } else {
+                $this->errorMessage = 'Not quite. Try again!';
             }
+
         } else {
             $isCorrect = strtolower(trim($this->currentGuess)) === strtolower(trim($this->puzzle->answer));
-            $this->previousGuesses[] = $this->currentGuess;
-            $this->remainingGuesses--;
-            $this->pixelationLevel = max(0, PuzzleService::PIXELATION_LEVELS - count($this->previousGuesses));
+            $this->gameState['previousGuesses'][] = $this->currentGuess;
+            $this->gameState['remainingGuesses']--;
+            $this->gameState['pixelationLevel'] = max(0, PuzzleService::PIXELATION_LEVELS - count($this->gameState['previousGuesses']));
 
-            if ($isCorrect || $this->remainingGuesses <= 0) {
-                $this->gameComplete = true;
-                $this->gameWon = $isCorrect;
-                $this->pixelationLevel = 0;
+            if ($isCorrect || $this->gameState['remainingGuesses'] <= 0) {
+                $this->gameState['gameComplete'] = true;
+                $this->gameState['gameWon'] = $isCorrect;
+                $this->gameState['pixelationLevel'] = 0;
 
                 $this->saveAnonymousProgress();
 
@@ -148,40 +140,23 @@ class BuckEyeGame extends Component
         $this->dispatch('clearCurrentGuess');
     }
 
-    /**
-     * Save anonymous user progress to the database and session
-     */
     private function saveAnonymousProgress(): void
     {
-        $sessionId = Session::getId();
-        $ipAddress = request()->ip();
-        $userAgent = request()->userAgent();
-
-        AnonymousGameProgress::updateOrCreate(
+        AnonymousGameProgress::query()->updateOrCreate(
             [
                 'puzzle_id' => $this->puzzle->id,
-                'session_id' => $sessionId
+                'session_id' => Session::getId()
             ],
             [
-                'solved' => $this->gameWon,
-                'attempts' => count($this->previousGuesses),
-                'guesses_taken' => $this->gameWon ? count($this->previousGuesses) : null,
-                'previous_guesses' => $this->previousGuesses,
-                'completed_at' => $this->gameComplete ? now() : null,
-                'ip_address' => $ipAddress,
-                'user_agent' => $userAgent
+                'solved' => $this->gameState['gameWon'],
+                'attempts' => count($this->gameState['previousGuesses']),
+                'guesses_taken' => $this->gameState['gameWon'] ? count($this->gameState['previousGuesses']) : null,
+                'previous_guesses' => $this->gameState['previousGuesses'],
+                'completed_at' => $this->gameState['gameComplete'] ? now() : null,
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent()
             ]
         );
-
-        $sessionKey = 'guest_game_' . $this->puzzle->publish_date;
-        Session::put($sessionKey, [
-            'previousGuesses' => $this->previousGuesses,
-            'remainingGuesses' => $this->remainingGuesses,
-            'pixelationLevel' => $this->pixelationLevel,
-            'gameComplete' => $this->gameComplete,
-            'gameWon' => $this->gameWon,
-            'showPuzzleStats' => $this->showPuzzleStats
-        ]);
     }
 
     public function render()

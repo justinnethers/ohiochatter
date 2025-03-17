@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Actions\BuckEye\OpenAIAnswerCheck;
+use App\Actions\BuckEye\RobustAnswerCheck;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
@@ -55,23 +56,15 @@ class Puzzle extends Model
      */
     public function isCorrectAnswer(string $guess): bool
     {
-        // First check for exact matches
         if ($this->exactAnswerMatch($guess)) {
             return true;
         }
 
-        // If OpenAI integration is disabled, return false
-        if (!config('services.openai.enabled', false)) {
-            return false;
-        }
-
         try {
-            // Get all possible correct answers
             $allAnswers = array_merge([$this->answer], $this->alternate_answers ?? []);
 
-            // Use OpenAI to check if the answer is semantically correct
-            $openAICheck = App::make(OpenAIAnswerCheck::class);
-            return $openAICheck($allAnswers, $guess);
+            $robustAnswerCheck = App::make(RobustAnswerCheck::class);
+            return $robustAnswerCheck($allAnswers, $guess);
 
         } catch (\Exception $e) {
             // Fall back to exact matching on error

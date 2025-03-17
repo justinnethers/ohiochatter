@@ -109,7 +109,7 @@ class PuzzleService
             [$guess]
         );
 
-        $isCorrect = strtolower(trim($guess)) === strtolower(trim($puzzle->answer));
+        $isCorrect = $puzzle->isCorrectAnswer($guess);
 
         if ($isCorrect) {
             $userGameProgress->solved = true;

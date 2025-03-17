@@ -24,6 +24,7 @@ class Puzzle extends Model
      */
     protected $casts = [
         'publish_date' => 'date',
+        'alternate_answers' => 'array',
     ];
 
     /**
@@ -42,5 +43,31 @@ class Puzzle extends Model
     public function userProgress()
     {
         return $this->hasMany(UserGameProgress::class);
+    }
+
+    /**
+     * Check if a guess matches any valid answer (primary or alternate)
+     *
+     * @param string $guess
+     * @return bool
+     */
+    public function isCorrectAnswer(string $guess): bool
+    {
+        $normalizedGuess = strtolower(trim($guess));
+        $normalizedAnswer = strtolower(trim($this->answer));
+
+        if ($normalizedGuess === $normalizedAnswer) {
+            return true;
+        }
+
+        if (!empty($this->alternate_answers)) {
+            foreach ($this->alternate_answers as $alternate) {
+                if (strtolower(trim($alternate)) === $normalizedGuess) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

@@ -117,7 +117,8 @@ class BuckEyeGame extends Component
             }
 
         } else {
-            $isCorrect = strtolower(trim($this->currentGuess)) === strtolower(trim($this->puzzle->answer));
+            $isCorrect = $this->puzzle->isCorrectAnswer($this->currentGuess);
+
             $this->gameState['previousGuesses'][] = $this->currentGuess;
             $this->gameState['remainingGuesses']--;
             $this->gameState['pixelationLevel'] = max(0, PuzzleService::PIXELATION_LEVELS - count($this->gameState['previousGuesses']));

@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use App\Actions\BuckEye\OpenAIAnswerCheck;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\App;
 
 class Puzzle extends Model
 {
@@ -46,20 +48,55 @@ class Puzzle extends Model
     }
 
     /**
-     * Check if a guess matches any valid answer (primary or alternate)
+     * Check if a guess is correct, considering exact matches and AI similarity check
      *
      * @param string $guess
      * @return bool
      */
     public function isCorrectAnswer(string $guess): bool
     {
+        // First check for exact matches
+        if ($this->exactAnswerMatch($guess)) {
+            return true;
+        }
+
+        // If OpenAI integration is disabled, return false
+        if (!config('services.openai.enabled', false)) {
+            return false;
+        }
+
+        try {
+            // Get all possible correct answers
+            $allAnswers = array_merge([$this->answer], $this->alternate_answers ?? []);
+
+            // Use OpenAI to check if the answer is semantically correct
+            $openAICheck = App::make(OpenAIAnswerCheck::class);
+            return $openAICheck($allAnswers, $guess);
+
+        } catch (\Exception $e) {
+            // Fall back to exact matching on error
+            return false;
+        }
+    }
+
+    /**
+     * Check if a guess exactly matches any valid answer (primary or alternate)
+     *
+     * @param string $guess
+     * @return bool
+     */
+    public function exactAnswerMatch(string $guess): bool
+    {
+        // Normalize the guess and main answer for comparison
         $normalizedGuess = strtolower(trim($guess));
         $normalizedAnswer = strtolower(trim($this->answer));
 
+        // Check if the guess matches the main answer
         if ($normalizedGuess === $normalizedAnswer) {
             return true;
         }
 
+        // Check if the guess matches any alternate answer
         if (!empty($this->alternate_answers)) {
             foreach ($this->alternate_answers as $alternate) {
                 if (strtolower(trim($alternate)) === $normalizedGuess) {

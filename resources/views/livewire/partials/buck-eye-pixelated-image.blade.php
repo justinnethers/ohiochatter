@@ -20,7 +20,7 @@
                     <div
                         class="font-semibold text-xs uppercase">Image Attribution
                     </div>
-                    <div>{!! $puzzle->image_attribution !!}</div>
+                    <div class="text-xs">{!! $puzzle->image_attribution !!}</div>
                 </div>
             @endif
             @if($puzzle->link)

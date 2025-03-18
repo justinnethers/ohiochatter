@@ -72,7 +72,7 @@
                     <div class="w-full h-full flex items-center justify-center">
                         <img
                             src="{{ $imageUrl }}"
-                            x-bind:style="`filter: blur(${pixelationLevel * 6}px);`"
+                            x-bind:style="`filter: blur(${pixelationLevel * 4}px);`"
                             class="max-w-full h-auto transition-all duration-200"
                             alt="Pixelated preview"
                         />

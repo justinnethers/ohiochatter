@@ -8,7 +8,7 @@
         src="{{ $imageUrl }}"
         alt="Pixelated Ohio Item"
         class="w-full select-none pointer-events-none rounded-xl"
-        style="filter: blur({{ max(0, $pixelationLevel * 6) }}px); image-rendering: pixelated; -webkit-user-select: none; user-select: none;"
+        style="filter: blur({{ max(0, $pixelationLevel * 4) }}px); image-rendering: pixelated; -webkit-user-select: none; user-select: none;"
         wire:key="image-{{ $pixelationLevel }}"
         draggable="false"
     >

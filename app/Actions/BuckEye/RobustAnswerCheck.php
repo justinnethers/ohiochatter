@@ -40,26 +40,28 @@ class RobustAnswerCheck
             return true;
         }
 
-        // Then try the Levenshtein distance check for typos
-        if ($this->levenshteinCheck($correctAnswers, $guess)) {
+        // Only use Levenshtein check for answers that are sufficiently similar
+        // to avoid false positives with generic answers
+        if ($this->shouldUseLevenshteinCheck($correctAnswers, $guess) &&
+            $this->levenshteinCheck($correctAnswers, $guess)) {
             return true;
         }
 
-        // Finally, use OpenAI as the last resort (most expensive but most flexible)
-        if (!config('services.openai.enabled', false)) {
-            return false;
+        // If OpenAI is enabled, use it as the last resort
+        if (config('services.openai.enabled', false)) {
+            // Generate a cache key based on the inputs
+            $cacheKey = $this->generateCacheKey($correctAnswers, $guess);
+
+            // Get cache time from config (default to 1 week if not specified)
+            $cacheTime = Config::get('services.openai.cache_time', 604800);
+
+            // Try to get result from cache first
+            return Cache::remember($cacheKey, $cacheTime, function () use ($correctAnswers, $guess) {
+                return $this->checkWithOpenAI($correctAnswers, $guess);
+            });
         }
 
-        // Generate a cache key based on the inputs
-        $cacheKey = $this->generateCacheKey($correctAnswers, $guess);
-
-        // Get cache time from config (default to 1 week if not specified)
-        $cacheTime = Config::get('services.openai.cache_time', 604800);
-
-        // Try to get result from cache first
-        return Cache::remember($cacheKey, $cacheTime, function () use ($correctAnswers, $guess) {
-            return $this->checkWithOpenAI($correctAnswers, $guess);
-        });
+        return false;
     }
 
     /**
@@ -77,28 +79,25 @@ class RobustAnswerCheck
                 return true;
             }
 
-            // Check singular/plural variations
-            // If answer ends with 's', check without 's'
-            if (Str::endsWith($normalizedGuess, 's') && rtrim($normalizedGuess, 's') === $normalizedAnswer) {
+            // Check singular/plural variations ONLY for exact phrases except for the trailing s
+            if (Str::endsWith($normalizedGuess, 's') &&
+                rtrim($normalizedGuess, 's') === $normalizedAnswer) {
                 return true;
             }
 
-            // If answer doesn't end with 's', check with 's'
-            if (!Str::endsWith($normalizedGuess, 's') && $normalizedGuess . 's' === $normalizedAnswer) {
+            if (!Str::endsWith($normalizedGuess, 's') &&
+                $normalizedGuess . 's' === $normalizedAnswer) {
                 return true;
             }
 
-            // Same checks but the other way around (for the answer)
-            if (Str::endsWith($normalizedAnswer, 's') && rtrim($normalizedAnswer, 's') === $normalizedGuess) {
+            // Same checks but the other way around
+            if (Str::endsWith($normalizedAnswer, 's') &&
+                rtrim($normalizedAnswer, 's') === $normalizedGuess) {
                 return true;
             }
 
-            if (!Str::endsWith($normalizedAnswer, 's') && $normalizedAnswer . 's' === $normalizedGuess) {
-                return true;
-            }
-
-            // Word order check
-            if ($this->hasSameWords($normalizedGuess, $normalizedAnswer)) {
+            if (!Str::endsWith($normalizedAnswer, 's') &&
+                $normalizedAnswer . 's' === $normalizedGuess) {
                 return true;
             }
         }
@@ -107,14 +106,105 @@ class RobustAnswerCheck
     }
 
     /**
-     * Check if two strings have the same words regardless of order
+     * Determine if Levenshtein check should be used based on answer/guess similarity
      */
-    protected function hasSameWords(string $str1, string $str2): bool
+    protected function shouldUseLevenshteinCheck(array $correctAnswers, string $guess): bool
     {
-        $words1 = collect(explode(' ', $str1))->filter()->sort()->values()->toArray();
-        $words2 = collect(explode(' ', $str2))->filter()->sort()->values()->toArray();
+        $normalizedGuess = Str::lower(trim($guess));
+        $guessWords = explode(' ', $normalizedGuess);
 
-        return $words1 === $words2;
+        // Single-word guesses can use Levenshtein
+        if (count($guessWords) === 1) {
+            foreach ($correctAnswers as $answer) {
+                $normalizedAnswer = Str::lower(trim($answer));
+                $answerWords = explode(' ', $normalizedAnswer);
+
+                // If the answer is also a single word, or the guess matches one of the significant words
+                if (count($answerWords) === 1 || $this->containsSignificantWord($normalizedGuess, $normalizedAnswer)) {
+                    return true;
+                }
+
+                // Check similarity for longer words
+                foreach ($answerWords as $answerWord) {
+                    if (strlen($answerWord) > 4) {
+                        // For longer words, check if they're similar enough
+                        similar_text(
+                            Str::lower($guessWords[0]),
+                            Str::lower($answerWord),
+                            $percentSimilar
+                        );
+
+                        if ($percentSimilar > 70) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        // For multi-word guesses, require more similarity to reduce false positives
+        foreach ($correctAnswers as $answer) {
+            $normalizedAnswer = Str::lower(trim($answer));
+
+            // Check if at least 50% of words from the answer appear in the guess
+            if ($this->wordOverlapPercentage($normalizedGuess, $normalizedAnswer) >= 0.5) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if guess contains at least one significant word from the answer
+     */
+    protected function containsSignificantWord(string $guess, string $answer): bool
+    {
+        $answerWords = explode(' ', $answer);
+        $stopWords = ['the', 'a', 'an', 'of', 'in', 'on', 'at', 'by', 'for', 'with', 'and', 'or', 'to'];
+
+        foreach ($answerWords as $word) {
+            // Skip stop words
+            if (in_array($word, $stopWords)) {
+                continue;
+            }
+
+            // Check if the significant word appears in the guess
+            if (str_contains($guess, $word)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Calculate what percentage of words from answer appear in guess
+     */
+    protected function wordOverlapPercentage(string $guess, string $answer): float
+    {
+        $guessWords = explode(' ', $guess);
+        $answerWords = explode(' ', $answer);
+        $stopWords = ['the', 'a', 'an', 'of', 'in', 'on', 'at', 'by', 'for', 'with', 'and', 'or', 'to'];
+
+        // Filter out stop words
+        $answerWords = array_filter($answerWords, function ($word) use ($stopWords) {
+            return !in_array($word, $stopWords);
+        });
+
+        if (empty($answerWords)) {
+            return 0;
+        }
+
+        $matchCount = 0;
+
+        foreach ($answerWords as $word) {
+            if (strlen($word) > 3 && (in_array($word, $guessWords) || str_contains($guess, $word))) {
+                $matchCount++;
+            }
+        }
+
+        return $matchCount / count($answerWords);
     }
 
     /**
@@ -127,32 +217,19 @@ class RobustAnswerCheck
         foreach ($correctAnswers as $answer) {
             $normalizedAnswer = Str::lower(trim($answer));
 
-            // Calculate Levenshtein distance
-            $distance = levenshtein($normalizedGuess, $normalizedAnswer);
+            // Simple check for single-word answers and guesses
+            if (!str_contains($normalizedGuess, ' ') && !str_contains($normalizedAnswer, ' ')) {
+                // Calculate Levenshtein distance for single-word answers
+                $distance = levenshtein($normalizedGuess, $normalizedAnswer);
 
-            // For short answers, allow 1 typo, for longer ones allow more
-            $maxAllowedDistance = floor(strlen($normalizedAnswer) * 0.2); // 20% of the length
-            $maxAllowedDistance = max(1, min(3, $maxAllowedDistance)); // Between 1 and 3
+                // Allow up to 2 character differences for longer words
+                $maxAllowedDistance = strlen($normalizedAnswer) <= 4 ? 1 : 2;
 
-            if ($distance <= $maxAllowedDistance) {
-                return true;
-            }
-
-            // Also check with variation for singular/plural
-            $singularPlural = [
-                rtrim($normalizedAnswer, 's'),
-                $normalizedAnswer . 's'
-            ];
-
-            foreach ($singularPlural as $variation) {
-                $distance = levenshtein($normalizedGuess, $variation);
                 if ($distance <= $maxAllowedDistance) {
                     return true;
                 }
-            }
-
-            // Check for typos in each word for multi-word answers and guesses
-            if (str_contains($normalizedGuess, ' ') && str_contains($normalizedAnswer, ' ')) {
+            } // Check for typos in each word for multi-word answers and guesses, but only if they're similar
+            else if (abs(str_word_count($normalizedGuess) - str_word_count($normalizedAnswer)) <= 1) {
                 if ($this->multiWordLevenshteinCheck($normalizedGuess, $normalizedAnswer)) {
                     return true;
                 }
@@ -170,7 +247,7 @@ class RobustAnswerCheck
         $guessWords = explode(' ', $guess);
         $answerWords = explode(' ', $answer);
 
-        // If the word counts are very different, it's probably not a match
+        // If the word counts are too different, it's probably not a match
         if (abs(count($guessWords) - count($answerWords)) > 1) {
             return false;
         }
@@ -178,19 +255,31 @@ class RobustAnswerCheck
         // Check each word against each other word to find potential matches
         $matchedGuessWords = [];
         $matchedAnswerWords = [];
+        $stopWords = ['the', 'a', 'an', 'of', 'in', 'on', 'at', 'by', 'for', 'with', 'and', 'or', 'to'];
 
         foreach ($guessWords as $i => $guessWord) {
+            // Skip stop words in guess
+            if (in_array(strtolower($guessWord), $stopWords)) {
+                $matchedGuessWords[] = $i;
+                continue;
+            }
+
             foreach ($answerWords as $j => $answerWord) {
                 // Skip already matched answer words
                 if (in_array($j, $matchedAnswerWords)) {
                     continue;
                 }
 
-                // Calculate distance
-                $distance = levenshtein($guessWord, $answerWord);
-                $maxAllowedDistance = floor(strlen($answerWord) * 0.3); // Allow more typos in individual words
-                $maxAllowedDistance = max(1, min(2, $maxAllowedDistance)); // Between 1 and 2
+                // Skip stop words in answer - don't count them as matches
+                if (in_array(strtolower($answerWord), $stopWords)) {
+                    continue;
+                }
 
+                // Adjust distance allowance based on word length
+                // Allow up to 2 characters to be wrong for longer words
+                $maxAllowedDistance = strlen($answerWord) <= 4 ? 1 : 2;
+
+                $distance = levenshtein($guessWord, $answerWord);
                 if ($distance <= $maxAllowedDistance) {
                     $matchedGuessWords[] = $i;
                     $matchedAnswerWords[] = $j;
@@ -199,9 +288,16 @@ class RobustAnswerCheck
             }
         }
 
-        // Calculate how many words matched
-        $matchedWordCount = count($matchedGuessWords);
-        $requiredMatchCount = min(count($guessWords), count($answerWords)) - 1; // Allow one word to not match
+        // Filter out stop words for calculating required matches
+        $significantAnswerWords = array_filter($answerWords, function ($word) use ($stopWords) {
+            return !in_array(strtolower($word), $stopWords);
+        });
+
+        // Calculate how many significant words matched
+        $matchedWordCount = count($matchedAnswerWords);
+
+        // Require at least 75% of significant words to match
+        $requiredMatchCount = ceil(count($significantAnswerWords) * 0.75);
 
         return $matchedWordCount >= $requiredMatchCount;
     }
@@ -232,7 +328,7 @@ class RobustAnswerCheck
                 'messages' => [
                     [
                         'role' => 'system',
-                        'content' => 'You are an assistant that evaluates whether an answer is close enough to be considered correct for a word puzzle game. You should be extremely lenient with typos, pluralization, and word variations. You always respond with JSON.'
+                        'content' => 'You are an assistant that evaluates whether an answer is close enough to be considered correct for a word puzzle game. You should be strict in evaluation, not allowing generic answers. You always respond with JSON.'
                     ],
                     [
                         'role' => 'user',
@@ -277,24 +373,18 @@ I have a word puzzle game where I need to check if a user's guess is close enoug
 Correct answers: $answersJson
 User's guess: "$guess"
 
-Be EXTREMELY LENIENT when determining if the user's guess is close enough to any of the correct answers. Consider all of the following to be valid variations:
-- Misspellings (even with multiple typos like "serpet" instead of "serpent")
-- Missing or extra letters
-- Capitalization differences
-- Singular/plural forms (e.g. "mound" vs "mounds")
-- Word order variations
-- Missing or extra spaces
-- Regional spelling variations
-- Common abbreviations
-- Missing or extra words that don't change the core meaning
+Be VERY STRICT when determining if the user's guess is close enough to any of the correct answers.
+- Generic answers (like "a bridge" for "Roebling Suspension Bridge") should NEVER be accepted
+- The guess must contain specific identifying words from the correct answer
+- Minor typos in key words can be accepted (up to 2 letters wrong in longer words)
+- Variations in word order may be accepted only if all key words are present
 
 Respond with a JSON object that only includes:
 {"is_correct": true or false}
 
-If the user's guess captures the essential meaning of any correct answer despite errors, respond with {"is_correct": true}. Be extremely generous in your assessment - it's much better to accept a slightly wrong answer than to reject a nearly correct one.
-
-Example 1: If the correct answer is "serpent mound" then "serpet mounds", "serpant mound", "mound of serpent" should all be considered correct.
-Example 2: If the correct answer is "lake erie", then "lack eerie", "lak eri", "erie lake" should all be considered correct.
+Example 1: If the correct answer is "Roebling Suspension Bridge" then "a bridge" should be INCORRECT.
+Example 2: If the correct answer is "Roebling Suspension Bridge" then "Reobling Bridge" could be correct (typo in key term).
+Example 3: If the correct answer is "Roebling Suspension Bridge" then "Bridge Suspension Roebling" could be correct (all key terms present).
 PROMPT;
     }
 }

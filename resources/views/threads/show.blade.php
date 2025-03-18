@@ -8,9 +8,10 @@
     </x-slot>
 
     <div class="container mx-auto">
+        {{ $replies->links('pagination::tailwind', ['top' => true]) }}
         <x-thread.show :$thread :$replies :$poll :$hasVoted :$voteCount/>
 
-        {{ $replies->onEachSide(3)->links() }}
+        {{ $replies->links() }}
 
         <div class="h-8"></div>
     </div>

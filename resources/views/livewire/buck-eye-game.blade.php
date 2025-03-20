@@ -9,7 +9,7 @@
         </div>
     @else
 
-        <div class="flex justify-center">
+        <div>
             <div class="lg:grid grid-cols-4 gap-4">
 
                 <div class="lg:hidden text-center flex grow lg:flex-col gap-2 md:gap-4 mb-2 md:mb-4">

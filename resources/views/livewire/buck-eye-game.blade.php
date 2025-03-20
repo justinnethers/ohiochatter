@@ -1,5 +1,5 @@
 <!-- resources/views/livewire/buck-eye-game-component.blade.php -->
-<div class="max-w-4xl mx-auto">
+<div>
     <div class="text-center text-gray-100">
     </div>
 

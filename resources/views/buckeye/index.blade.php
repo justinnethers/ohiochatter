@@ -50,7 +50,7 @@
 
     <div class="container mx-auto space-y-4 px-2 md:p-0">
         <article>
-            <div class="bg-gray-800 p-2 md:p-4 rounded-xl">
+            <div class="bg-gray-800 p-2 md:p-4 lg:pt-0 rounded-xl">
                 <livewire:buck-eye-game/>
             </div>
         </article>

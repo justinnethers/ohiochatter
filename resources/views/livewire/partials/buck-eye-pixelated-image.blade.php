@@ -14,21 +14,13 @@
     >
     @if($gameComplete && ($puzzle->image_attribution || $puzzle->link))
         <div
-            class="absolute bottom-0 h-auto p-6 w-full z-20 break-all bg-gradient-to-t from-gray-900/95 to-gray-900/30 rounded-b-xl">
+            class="absolute bottom-0 h-auto p-4 w-full z-20 break-all bg-gradient-to-t from-gray-900/95 to-gray-900/30 rounded-b-xl">
             @if($puzzle->image_attribution)
                 <div class="text-base text-gray-100 mb-2">
                     <div
                         class="font-semibold text-xs uppercase">Image Attribution
                     </div>
                     <div class="text-xs">{!! $puzzle->image_attribution !!}</div>
-                </div>
-            @endif
-            @if($puzzle->link)
-                <div class="text-sm">
-                    <a href="{{ $puzzle->link }}" target="_blank"
-                       class="text-blue-300 hover:text-blue-400 underline">
-                        Learn more about {{ $puzzle->answer }}
-                    </a>
                 </div>
             @endif
         </div>

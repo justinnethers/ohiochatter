@@ -48,24 +48,27 @@
         </div>
     </x-slot>
 
-    <div class="container mx-auto space-y-4 px-2 md:p-0">
-        <article>
-            <div class="bg-gray-800 p-2 md:p-4 lg:pt-0 rounded-xl">
-                <livewire:buck-eye-game/>
-            </div>
+    <div class="container mx-auto space-y-2 md:space-y-4 px-2 md:p-0">
+        <article class="bg-gray-800 p-2 md:p-4 lg:pt-0 rounded-xl">
+            <livewire:buck-eye-game/>
         </article>
 
         @auth
-            <article>
-                <div class="bg-green-800 text-white p-2 px-4 rounded-t-md">
+            <article class="bg-gray-800 text-white p-6 rounded-xl space-y-4">
+                <div class="flex justify-between">
                     <h2 class="text-lg font-semibold">Your Stats</h2>
+                    @if (auth()->check())
+                        <a
+                            href="{{ route('buckeye.stats') }}"
+                            class="hover:underline "
+                        >
+                            {{--                            <x-primary-button>--}}
+                            See More
+                            {{--                            </x-primary-button>--}}
+                        </a>
+                    @endif
                 </div>
-
-                <div class="p-2 bg-gray-700 text-gray-200 rounded-b-md">
-                    <div class="bg-gray-800 p-2 rounded-md">
-                        <livewire:buck-eye-user-stats/>
-                    </div>
-                </div>
+                <livewire:buck-eye-user-stats/>
             </article>
         @else
 

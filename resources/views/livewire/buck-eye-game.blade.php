@@ -82,6 +82,15 @@
                     class="font-bold text-xl {{ $gameState['gameWon'] ? 'text-green-400' : 'text-red-400' }}">{{ $gameState['gameWon'] ? 'You got it!' : 'Better luck tomorrow!' }}</div>
                 <div class="text-lg">The answer was <span class="font-bold">{{ $puzzle->answer }}</span></div>
 
+                @if($puzzle->link)
+                    <div class="text-sm">
+                        <a href="{{ $puzzle->link }}" target="_blank"
+                           class="text-blue-300 hover:text-blue-400 underline">
+                            Learn more about {{ $puzzle->answer }}
+                        </a>
+                    </div>
+                @endif
+                
                 <p class="text-sm text-amber-400">Come back tomorrow for a new puzzle!</p>
             </x-well>
         @endif
@@ -120,25 +129,27 @@
             </form>
         @endif
 
-        @if (count($gameState['previousGuesses']) > 0)
-            <div class="my-2 md:my-4 flex-1 lg:hidden">
-                <x-well space="2">
-                    <h3 class="text-xs text-amber-400 uppercase font-semibold mb-2">Your guesses</h3>
-                    <div class="text-left">
-                        @foreach ($gameState['previousGuesses'] as $guess)
-                            <div
-                                class="font-semibold {{ $loop->last && $gameState['gameWon'] ? 'text-green-400' : 'text-red-400' }}">{{ $guess }}</div>
-                        @endforeach
-                    </div>
-                </x-well>
-            </div>
-        @endif
+        <div class="grid grid-cols-2 gap-2 md:gap-4">
+            @if (count($gameState['previousGuesses']) > 0)
+                <div class="flex-1 lg:hidden">
+                    <x-well space="2">
+                        <h3 class="text-xs text-amber-400 uppercase font-semibold mb-2">Your guesses</h3>
+                        <div class="text-left">
+                            @foreach ($gameState['previousGuesses'] as $guess)
+                                <div
+                                    class="font-semibold {{ $loop->last && $gameState['gameWon'] ? 'text-green-400' : 'text-red-400' }}">{{ $guess }}</div>
+                            @endforeach
+                        </div>
+                    </x-well>
+                </div>
+            @endif
 
-        @include('livewire.partials.buck-eye-hints', [
-            'remainingGuesses' => $gameState['remainingGuesses'],
-            'gameComplete' => $gameState['gameComplete'],
-            'puzzle' => $puzzle
-        ])
+            @include('livewire.partials.buck-eye-hints', [
+                'remainingGuesses' => $gameState['remainingGuesses'],
+                'gameComplete' => $gameState['gameComplete'],
+                'puzzle' => $puzzle
+            ])
+        </div>
 
     @endif
 </div>

@@ -3,15 +3,6 @@
         <x-well>
             <div class="flex justify-between">
                 <h3 class="text-lg font-bold">Today's Stats</h3>
-                @if (auth()->check())
-                    <a
-                        href="{{ route('buckeye.stats') }}"
-                    >
-                        <x-primary-button>
-                            View Your Stats
-                        </x-primary-button>
-                    </a>
-                @endif
             </div>
 
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">

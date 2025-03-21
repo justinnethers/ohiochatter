@@ -73,7 +73,7 @@
 
         @if($gameState['gameComplete'])
             <x-well>
-                <div class="flex justify-between">
+                <div class="md:flex justify-between space-y-4">
                     <div class="space-y-4 flex-1">
                         <div
                             class="font-bold text-xl {{ $gameState['gameWon'] ? 'text-green-400' : 'text-red-400' }}">{{ $gameState['gameWon'] ? 'You got it!' : 'Better luck tomorrow!' }}</div>
@@ -90,8 +90,9 @@
 
                         <p class="text-sm text-amber-400">Come back tomorrow for a new puzzle!</p>
                     </div>
-                    <div>
-                        <x-primary-button class="share-button">Share Today's Puzzle</x-primary-button>
+                    <div class="flex md:block">
+                        <x-primary-button class="share-button flex-1 justify-center">Share Today's Puzzle
+                        </x-primary-button>
                     </div>
                 </div>
             </x-well>

@@ -4,9 +4,10 @@
 
     <x-slot name="head">
         @if(isset($puzzle) && $puzzle)
-            <meta property="og:title" content="BuckEYE - Daily Ohio Puzzle Game">
+            <meta property="og:title"
+                  content="BuckEYE: Ohio's Ultimate Daily Puzzle Game | Test Your Buckeye State Knowledge">
             <meta property="og:description"
-                  content="Test your knowledge of all things Ohio with today's BuckEYE puzzle!">
+                  content="Challenge your Ohio IQ with BuckEYE! Daily Buckeye State puzzles and trivia that test even lifelong Ohioans.">
             <meta property="og:type" content="website">
             <meta property="og:url" content="{{ url('/buckEYE') }}">
             <meta property="og:image"
@@ -15,9 +16,10 @@
             <meta property="og:image:height" content="630">
 
             <meta name="twitter:card" content="summary_large_image">
-            <meta name="twitter:title" content="BuckEYE - Daily Ohio Puzzle Game">
+            <meta name="twitter:title"
+                  content="BuckEYE: Ohio's Ultimate Daily Puzzle Game | Test Your Buckeye State Knowledge">
             <meta name="twitter:description"
-                  content="Test your knowledge of all things Ohio with today's BuckEYE puzzle!">
+                  content="Challenge your Ohio IQ with BuckEYE! Daily Buckeye State puzzles and trivia that test even lifelong Ohioans.">
             <meta name="twitter:image"
                   content="{{ url('/buckEYE/social-image/' . $puzzle->publish_date->format('Y-m-d') . '.jpg') }}">
             <meta name="twitter:image:alt" content="Blurred image of today's Ohio puzzle">

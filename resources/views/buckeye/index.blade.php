@@ -1,6 +1,6 @@
 <!-- resources/views/buckeye/index.blade.php -->
 <x-app-layout>
-    <x-slot name="title">BuckEYE - Daily Ohio Puzzle Game</x-slot>
+    <x-slot name="title">BuckEYE: Ohio's Ultimate Daily Puzzle Game | Test Your Buckeye State Knowledge</x-slot>
 
     <x-slot name="head">
         @if(isset($puzzle) && $puzzle)

@@ -1,8 +1,5 @@
 <!-- resources/views/livewire/buck-eye-game-component.blade.php -->
 <div>
-    <div class="text-center text-gray-100">
-    </div>
-
     @if (!$puzzle)
         <div class="bg-yellow-100 p-4 rounded-lg mb-4">
             <p class="text-yellow-800">{{ $errorMessage ?? 'No puzzle available today. Check back tomorrow!' }}</p>
@@ -76,20 +73,27 @@
 
         @if($gameState['gameComplete'])
             <x-well>
-                <div
-                    class="font-bold text-xl {{ $gameState['gameWon'] ? 'text-green-400' : 'text-red-400' }}">{{ $gameState['gameWon'] ? 'You got it!' : 'Better luck tomorrow!' }}</div>
-                <div class="text-lg">The answer was <span class="font-bold">{{ $puzzle->answer }}</span></div>
+                <div class="flex justify-between">
+                    <div class="space-y-4 flex-1">
+                        <div
+                            class="font-bold text-xl {{ $gameState['gameWon'] ? 'text-green-400' : 'text-red-400' }}">{{ $gameState['gameWon'] ? 'You got it!' : 'Better luck tomorrow!' }}</div>
+                        <div class="text-lg">The answer was <span class="font-bold">{{ $puzzle->answer }}</span></div>
 
-                @if($puzzle->link)
-                    <div class="text-sm">
-                        <a href="{{ $puzzle->link }}" target="_blank"
-                           class="text-blue-300 hover:text-blue-400 underline">
-                            Learn more about {{ $puzzle->answer }}
-                        </a>
+                        @if($puzzle->link)
+                            <div class="text-sm">
+                                <a href="{{ $puzzle->link }}" target="_blank"
+                                   class="text-blue-300 hover:text-blue-400 underline">
+                                    Learn more about {{ $puzzle->answer }}
+                                </a>
+                            </div>
+                        @endif
+
+                        <p class="text-sm text-amber-400">Come back tomorrow for a new puzzle!</p>
                     </div>
-                @endif
-
-                <p class="text-sm text-amber-400">Come back tomorrow for a new puzzle!</p>
+                    <div>
+                        <x-primary-button class="share-button">Share Today's Puzzle</x-primary-button>
+                    </div>
+                </div>
             </x-well>
         @endif
 
@@ -153,6 +157,22 @@
 </div>
 
 <script>
+    const shareButton = document.querySelector('.share-button');
+
+    shareButton.addEventListener('click', event => {
+        if (navigator.share) {
+            navigator.share({
+                title: 'BuckEYE Daily Puzzle Game | Ohio Chatter',
+                url: 'https://ohiochatter.com/buckEYE'
+            }).then(() => {
+                console.log('Thanks for sharing!');
+            })
+                .catch(console.error);
+        } else {
+            // fallback
+        }
+    });
+
     document.addEventListener('livewire:init', () => {
         Livewire.on('clearCurrentGuess', () => {
             const input = document.querySelector('input[wire\\:model="currentGuess"]');

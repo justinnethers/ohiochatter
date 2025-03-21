@@ -1,5 +1,4 @@
-<!-- Transparent overlay div to prevent image selection -->
-<div class="col-span-3 relative rounded-xl shadow-sm ring-1 bg-gray-900 ring-white/10 mb-2 md:mb-4">
+<div class="col-span-3 relative rounded-xl shadow-sm ring-1 bg-gray-900 ring-white/10 mb-2 md:mb-4 image-wrapper">
     <div class="absolute inset-0 w-full h-full z-10"
          style="pointer-events: auto; user-select: none; -webkit-user-select: none;"
          oncontextmenu="return false;">

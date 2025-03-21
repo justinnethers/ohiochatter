@@ -18,51 +18,45 @@
             <div class="max-w-6xl mx-auto space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <!-- Overall Stats Card -->
-                    <article>
-                        <div class="bg-red-600 text-white p-2 px-4 rounded-t-md">
-                            <h2 class="text-lg font-semibold">Overall Performance</h2>
-                        </div>
-                        <div class="p-2 bg-gray-700 rounded-b-md">
-                            <div class="bg-gray-800 p-2 rounded-md">
-                                <div class="grid grid-cols-2 gap-2">
-                                    <div class="text-center p-3 bg-gray-700 rounded-lg">
-                                        <div class="text-3xl font-bold">{{ $userStats->games_played }}</div>
-                                        <div class="text-sm text-gray-400">Games Played</div>
-                                    </div>
-                                    <div class="text-center p-3 bg-gray-700 rounded-lg">
-                                        <div class="text-3xl font-bold">{{ $userStats->games_won }}</div>
-                                        <div class="text-sm text-gray-400">Games Won</div>
-                                    </div>
-                                    <div class="text-center p-3 bg-gray-700 rounded-lg">
-                                        <div
-                                            class="text-3xl font-bold">{{ $userStats->games_played ? round(($userStats->games_won / $userStats->games_played) * 100) : 0 }}
-                                            %
-                                        </div>
-                                        <div class="text-sm text-gray-400">Win Rate</div>
-                                    </div>
-                                    <div class="text-center p-3 bg-green-500 text-green-950 rounded-lg">
-                                        <div class="text-3xl font-bold">{{ $userStats->max_streak }}</div>
-                                        <div class="text-sm">Best Streak</div>
-                                    </div>
+                    <x-well class="bg-gray-800 p-6 rounded-md">
+                        <h2 class="text-lg font-semibold">Overall Performance</h2>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="text-center p-3 bg-gray-700 rounded-lg">
+                                <div class="text-3xl font-bold">{{ $userStats->games_played }}</div>
+                                <div class="text-sm text-gray-400">Games Played</div>
+                            </div>
+                            <div class="text-center p-3 bg-gray-700 rounded-lg">
+                                <div class="text-3xl font-bold">{{ $userStats->games_won }}</div>
+                                <div class="text-sm text-gray-400">Games Won</div>
+                            </div>
+                            <div class="text-center p-3 bg-gray-700 rounded-lg">
+                                <div
+                                    class="text-3xl font-bold">{{ $userStats->games_played ? round(($userStats->games_won / $userStats->games_played) * 100) : 0 }}
+                                    %
                                 </div>
-
-                                <div class="mt-6">
-                                    <h3 class="font-semibold mb-2">Current Streak</h3>
-                                    <div class="bg-gray-600 rounded-full h-4">
-                                        <div
-                                            class="bg-blue-600 h-4 rounded-full"
-                                            style="width: {{ min(100, ($userStats->current_streak / max(1, $userStats->max_streak)) * 100) }}%"
-                                        ></div>
-                                    </div>
-                                    <div class="flex justify-between text-sm mt-1">
-                                        <div>0</div>
-                                        <div class="font-medium">{{ $userStats->current_streak }}</div>
-                                        <div>{{ $userStats->max_streak }}</div>
-                                    </div>
-                                </div>
+                                <div class="text-sm text-gray-400">Win Rate</div>
+                            </div>
+                            <div class="text-center p-3 bg-green-500 text-green-950 rounded-lg">
+                                <div class="text-3xl font-bold">{{ $userStats->max_streak }}</div>
+                                <div class="text-sm">Best Streak</div>
                             </div>
                         </div>
-                    </article>
+
+                        <div class="mt-6">
+                            <h3 class="font-semibold mb-2">Current Streak</h3>
+                            <div class="bg-gray-600 rounded-full h-4">
+                                <div
+                                    class="bg-blue-600 h-4 rounded-full"
+                                    style="width: {{ min(100, ($userStats->current_streak / max(1, $userStats->max_streak)) * 100) }}%"
+                                ></div>
+                            </div>
+                            <div class="flex justify-between text-sm mt-1">
+                                <div>0</div>
+                                <div class="font-medium">{{ $userStats->current_streak }}</div>
+                                <div>{{ $userStats->max_streak }}</div>
+                            </div>
+                        </div>
+                    </x-well>
 
                     <!-- Guess Distribution Card -->
                     <article>

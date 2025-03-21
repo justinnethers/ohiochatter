@@ -8,10 +8,8 @@
             <p class="text-yellow-800">{{ $errorMessage ?? 'No puzzle available today. Check back tomorrow!' }}</p>
         </div>
     @else
-
         <div>
             <div class="lg:grid grid-cols-4 gap-4">
-
                 <div class="lg:hidden text-center flex grow lg:flex-col gap-2 md:gap-4 mb-2 md:mb-4">
                     <div class="flex-1 lg:flex-none">
                         <x-well space="0">
@@ -28,7 +26,7 @@
                     </div>
                 </div>
 
-                <div class="col-span-4 status-message">
+                <div class="col-span-4 fixed top-2 z-50">
                     @if ($errorMessage)
                         <div class="bg-red-100 p-4 rounded-lg mb-4">
                             <p class="text-red-800">{{ $errorMessage }}</p>
@@ -90,7 +88,7 @@
                         </a>
                     </div>
                 @endif
-                
+
                 <p class="text-sm text-amber-400">Come back tomorrow for a new puzzle!</p>
             </x-well>
         @endif
@@ -161,13 +159,13 @@
             if (input) {
                 input.value = '';
             }
-            const statusMessage = document.querySelector('.status-message');
+            const statusMessage = document.querySelector('.image-wrapper');
 
             if (statusMessage) {
                 setTimeout(() => {
                     // Scroll with offset for header
                     window.scrollTo({
-                        top: statusMessage.getBoundingClientRect().top + window.pageYOffset - 120,
+                        top: statusMessage.getBoundingClientRect().top + window.pageYOffset - 165,
                         behavior: 'smooth'
                     });
                 }, 100);

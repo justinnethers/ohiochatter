@@ -23,7 +23,6 @@
                     </div>
                 </div>
 
-                <div class="error-message"></div>
                 @include('livewire.partials.buck-eye-pixelated-image', [
                     'imageUrl' => $imageUrl,
                     'pixelationLevel' => $gameState['pixelationLevel'],

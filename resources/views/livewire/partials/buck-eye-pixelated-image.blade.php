@@ -3,8 +3,16 @@
          style="pointer-events: auto; user-select: none; -webkit-user-select: none;"
          oncontextmenu="return false;">
     </div>
+    <div class="col-span-4 absolute top-0 left-0 z-50">
+        @if ($errorMessage)
+            <div
+                class="error-message opacity-50 bg-red-100 p-1 px-2 rounded-tl-lg rounded-br-lg mb-4 transition-opacity duration-300">
+                <p class="text-red-800 text-sm lg:text-base">{{ $errorMessage }}</p>
+            </div>
+        @endif
+    </div>
     <img
-        src="{{ $imageUrl }}" ohiochatter
+        src="{{ $imageUrl }}"
         alt="Pixelated Ohio Item"
         class="w-full select-none pointer-events-none rounded-xl"
         style="filter: blur({{ max(0, $pixelationLevel * 3) }}px); image-rendering: pixelated; -webkit-user-select: none; user-select: none;"

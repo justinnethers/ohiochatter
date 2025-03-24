@@ -23,19 +23,13 @@
                     </div>
                 </div>
 
-                <div class="col-span-4 fixed top-2 z-50">
-                    @if ($errorMessage)
-                        <div class="bg-red-100 p-4 rounded-lg mb-4">
-                            <p class="text-red-800">{{ $errorMessage }}</p>
-                        </div>
-                    @endif
-                </div>
-
+                <div class="error-message"></div>
                 @include('livewire.partials.buck-eye-pixelated-image', [
                     'imageUrl' => $imageUrl,
                     'pixelationLevel' => $gameState['pixelationLevel'],
                     'puzzle' => $puzzle,
-                    'gameComplete' => $gameState['gameComplete']
+                    'gameComplete' => $gameState['gameComplete'],
+                    'errorMessage' => $errorMessage
                 ])
 
                 <div>
@@ -180,16 +174,16 @@
             if (input) {
                 input.value = '';
             }
-            const statusMessage = document.querySelector('.image-wrapper');
+            const statusMessage = document.querySelector('.error-message');
 
             if (statusMessage) {
                 setTimeout(() => {
                     // Scroll with offset for header
                     window.scrollTo({
-                        top: statusMessage.getBoundingClientRect().top + window.pageYOffset - 165,
+                        top: statusMessage.getBoundingClientRect().top + window.pageYOffset - 100,
                         behavior: 'smooth'
                     });
-                }, 100);
+                }, 300);
             }
         });
     });

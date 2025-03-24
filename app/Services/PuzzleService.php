@@ -19,8 +19,10 @@ class PuzzleService
 
     public function loadPuzzleStats(Puzzle $puzzle): array
     {
-        $authenticatedQuery = UserGameProgress::where('puzzle_id', $puzzle->id);
-        $anonymousQuery = AnonymousGameProgress::where('puzzle_id', $puzzle->id);
+        $authenticatedQuery = UserGameProgress::query()
+            ->where('puzzle_id', $puzzle->id)
+            ->where('user_id', '!=', 1);
+        $anonymousQuery = AnonymousGameProgress::query()->where('puzzle_id', $puzzle->id);
 
         $totalAuthPlayers = $authenticatedQuery->count();
         $totalAnonPlayers = $anonymousQuery->count();
@@ -28,6 +30,7 @@ class PuzzleService
 
         $solvedAuthCount = UserGameProgress::where('puzzle_id', $puzzle->id)
             ->where('solved', true)
+            ->where('user_id', '!=', 1)
             ->count();
 
         $solvedAnonCount = AnonymousGameProgress::where('puzzle_id', $puzzle->id)
@@ -42,6 +45,7 @@ class PuzzleService
 
         $authAvgGuesses = UserGameProgress::where('puzzle_id', $puzzle->id)
             ->where('solved', true)
+            ->where('user_id', '!=', 1)
             ->avg('guesses_taken');
 
         $anonAvgGuesses = AnonymousGameProgress::where('puzzle_id', $puzzle->id)
@@ -70,6 +74,7 @@ class PuzzleService
 
         $authDistribution = UserGameProgress::where('puzzle_id', $puzzle->id)
             ->where('solved', true)
+            ->where('user_id', '!=', 1)
             ->groupBy('guesses_taken')
             ->select('guesses_taken', DB::raw('count(*) as count'))
             ->pluck('count', 'guesses_taken')

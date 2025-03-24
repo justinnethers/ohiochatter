@@ -81,14 +81,6 @@ class PuzzleResource extends Resource
                 Tables\Columns\TextColumn::make('answer')
                     ->description(fn(Puzzle $puzzle): string => $puzzle->hint, 'limit: 5'),
                 Tables\Columns\TextColumn::make('publish_date')->date(),
-                Tables\Columns\TextColumn::make('alternate_answers')
-                    ->label('Alt. Answers')
-                    ->formatStateUsing(function ($state) {
-                        if (!$state || empty($state)) return 'None';
-                        if (is_string($state)) return $state;
-                        if (is_array($state)) return implode(', ', $state);
-                        return 'None';
-                    }),
                 Tables\Columns\TextColumn::make('players_count')
                     ->label('Players')
                     ->getStateUsing(function (Puzzle $puzzle): int {

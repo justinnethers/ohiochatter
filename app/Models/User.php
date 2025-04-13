@@ -151,8 +151,9 @@ class User extends Authenticatable implements FilamentUser
     {
         $todaysPuzzle = Puzzle::getTodaysPuzzle();
 
+        // return true if there is no puzzle so the "new!" badge doesn't display.
         if (!$todaysPuzzle) {
-            return false;
+            return true;
         }
 
         return $this->gameProgress()

@@ -2,16 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\Content\FetchLocationContent;
 use App\Models\Content;
 use App\Models\ContentCategory;
 use App\Models\Region;
 use App\Models\County;
 use App\Models\City;
+use App\Services\LocationService;
+use App\Traits\HandlesLocationContent;
 use Illuminate\Http\Request;
 
 class ContentController extends Controller
 {
+    use HandlesLocationContent;
+
     /**
      * Display a listing of all content
      *
@@ -93,17 +96,18 @@ class ContentController extends Controller
      * Display content for a specific region
      *
      * @param Region $region
-     * @param FetchLocationContent $contentFetcher
      * @return \Illuminate\View\View
      */
-    public function region(Region $region, FetchLocationContent $contentFetcher)
+    public function region(Region $region)
     {
-        $contentData = $contentFetcher->allContentForRegion($region);
+        $locationService = app(LocationService::class);
+        $content = $locationService->getAllLocationContent(Region::class, $region->id);
+        $categories = $locationService->getCategoriesForLocation(Region::class, $region->id);
 
         return view('ohio.guide.region', [
             'region' => $region,
-            'content' => $contentData['content'],
-            'categories' => $contentData['categories']
+            'content' => $content,
+            'categories' => $categories
         ]);
     }
 
@@ -112,12 +116,12 @@ class ContentController extends Controller
      *
      * @param Region $region
      * @param ContentCategory $category
-     * @param FetchLocationContent $contentFetcher
      * @return \Illuminate\View\View
      */
-    public function regionCategory(Region $region, ContentCategory $category, FetchLocationContent $contentFetcher)
+    public function regionCategory(Region $region, ContentCategory $category)
     {
-        $content = $contentFetcher->contentForLocationCategory(
+        $locationService = app(LocationService::class);
+        $content = $locationService->getLocationCategoryContent(
             Region::class,
             $region->id,
             $category->id
@@ -131,24 +135,22 @@ class ContentController extends Controller
      *
      * @param Region $region
      * @param County $county
-     * @param FetchLocationContent $contentFetcher
      * @return \Illuminate\View\View
      */
-    public function county(Region $region, County $county, FetchLocationContent $contentFetcher)
+    public function county(Region $region, County $county)
     {
-        if ($county->region_id !== $region->id) {
-            abort(404);
-        }
-
-        $contentData = $contentFetcher->allContentForCounty($county);
-        $countyContentData = $contentFetcher->forCounty($county);
+        // Hierarchy validation handled by route model binding
+        $locationService = app(LocationService::class);
+        $content = $locationService->getAllLocationContent(County::class, $county->id);
+        $categories = $locationService->getCategoriesForLocation(County::class, $county->id);
+        $countyData = $locationService->getCountyData($county);
 
         return view('ohio.guide.county', [
             'region' => $region,
             'county' => $county,
-            'content' => $contentData['content'],
-            'categories' => $contentData['categories'],
-            'cityContent' => $countyContentData['childContent']
+            'content' => $content,
+            'categories' => $categories,
+            'cityContent' => $countyData['childContent']
         ]);
     }
 
@@ -158,16 +160,13 @@ class ContentController extends Controller
      * @param Region $region
      * @param County $county
      * @param ContentCategory $category
-     * @param FetchLocationContent $contentFetcher
      * @return \Illuminate\View\View
      */
-    public function countyCategory(Region $region, County $county, ContentCategory $category, FetchLocationContent $contentFetcher)
+    public function countyCategory(Region $region, County $county, ContentCategory $category)
     {
-        if ($county->region_id !== $region->id) {
-            abort(404);
-        }
-
-        $content = $contentFetcher->contentForLocationCategory(
+        // Hierarchy validation handled by route model binding
+        $locationService = app(LocationService::class);
+        $content = $locationService->getLocationCategoryContent(
             County::class,
             $county->id,
             $category->id
@@ -182,23 +181,21 @@ class ContentController extends Controller
      * @param Region $region
      * @param County $county
      * @param City $city
-     * @param FetchLocationContent $contentFetcher
      * @return \Illuminate\View\View
      */
-    public function city(Region $region, County $county, City $city, FetchLocationContent $contentFetcher)
+    public function city(Region $region, County $county, City $city)
     {
-        if ($county->region_id !== $region->id || $city->county_id !== $county->id) {
-            abort(404);
-        }
-
-        $contentData = $contentFetcher->allContentForCity($city);
+        // Hierarchy validation handled by route model binding
+        $locationService = app(LocationService::class);
+        $content = $locationService->getAllLocationContent(City::class, $city->id);
+        $categories = $locationService->getCategoriesForLocation(City::class, $city->id);
 
         return view('ohio.guide.city', [
             'region' => $region,
             'county' => $county,
             'city' => $city,
-            'content' => $contentData['content'],
-            'categories' => $contentData['categories']
+            'content' => $content,
+            'categories' => $categories
         ]);
     }
 
@@ -209,16 +206,13 @@ class ContentController extends Controller
      * @param County $county
      * @param City $city
      * @param ContentCategory $category
-     * @param FetchLocationContent $contentFetcher
      * @return \Illuminate\View\View
      */
-    public function cityCategory(Region $region, County $county, City $city, ContentCategory $category, FetchLocationContent $contentFetcher)
+    public function cityCategory(Region $region, County $county, City $city, ContentCategory $category)
     {
-        if ($county->region_id !== $region->id || $city->county_id !== $county->id) {
-            abort(404);
-        }
-
-        $content = $contentFetcher->contentForLocationCategory(
+        // Hierarchy validation handled by route model binding
+        $locationService = app(LocationService::class);
+        $content = $locationService->getLocationCategoryContent(
             City::class,
             $city->id,
             $category->id

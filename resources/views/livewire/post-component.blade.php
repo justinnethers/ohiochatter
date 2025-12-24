@@ -64,18 +64,20 @@
                         {!! $post->body !!}
                     </div>
                     @if ($this->firstPostOnPage)
-                        <div class="hidden md:block">
-                            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4406607721782655"
-                                    crossorigin="anonymous"></script>
-                            <!-- First Post Ad Square -->
-                            <ins class="adsbygoogle"
-                                 style="display:inline-block;width:250px;height:250px"
-                                 data-ad-client="ca-pub-4406607721782655"
-                                 data-ad-slot="6658997449"></ins>
-                            <script>
-                                (adsbygoogle = window.adsbygoogle || []).push({});
-                            </script>
-                        </div>
+                        @guest
+                            <div class="mt-4 md:mt-0 md:ml-4 w-full md:w-auto">
+                                <!-- First Post Ad - Responsive -->
+                                <ins class="adsbygoogle"
+                                     style="display:block"
+                                     data-ad-client="ca-pub-4406607721782655"
+                                     data-ad-slot="6658997449"
+                                     data-ad-format="auto"
+                                     data-full-width-responsive="true"></ins>
+                                <script>
+                                    (adsbygoogle = window.adsbygoogle || []).push({});
+                                </script>
+                            </div>
+                        @endguest
                     @endif
                 </div>
             @endif

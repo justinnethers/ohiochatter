@@ -27,6 +27,11 @@
             </div>
         @endif
 
+        @php
+            $adSlots = ['2001567130', '2900286656', '2521012709', '5660018222', '7961041643'];
+            $adCount = 0;
+            $adFrequency = 5; // Show ad every 5 replies
+        @endphp
         @foreach ($replies as $post)
             @php
                 $firstPostOnPage =  false;
@@ -37,6 +42,24 @@
                 }
             @endphp
             <livewire:post-component :$post :first-post-on-page="$firstPostOnPage"/>
+
+            @guest
+                @if (($loop->index + 1) % $adFrequency === 0 && !$loop->last)
+                    <div class="bg-gray-700 p-3 md:px-4 md:pt-4 md:pb-5 rounded md:rounded-md mb-4 shadow-lg">
+                        <!-- In-thread Ad -->
+                        <ins class="adsbygoogle"
+                             style="display:block"
+                             data-ad-client="ca-pub-4406607721782655"
+                             data-ad-slot="{{ $adSlots[$adCount % count($adSlots)] }}"
+                             data-ad-format="auto"
+                             data-full-width-responsive="true"></ins>
+                        <script>
+                            (adsbygoogle = window.adsbygoogle || []).push({});
+                        </script>
+                    </div>
+                    @php $adCount++ @endphp
+                @endif
+            @endguest
         @endforeach
 
         @if (auth()->check())

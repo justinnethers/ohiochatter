@@ -26,13 +26,8 @@
                         {{ __('Sports') }}
                     </x-nav-link>
 
-                    <x-nav-link href="{{ route('buckeye.index') }}" :active="request()->is('buckEYE')"
-                                class="relative">
-                        {{ __('BuckEYE Game') }}
-                        @if(!Auth::check() || Auth::check() && !Auth::user()->hasPlayedToday())
-                            <span
-                                class="absolute top-3 -right-3 rounded-lg bg-red-500 p-0.5 leading-tight text-white text-[0.5rem]">New!</span>
-                        @endif
+                    <x-nav-link href="{{ route('archive.index') }}" :active="request()->routeIs('archive.*')">
+                        {{ __('Archive') }}
                     </x-nav-link>
                 </div>
             </div>
@@ -161,16 +156,10 @@
             </x-responsive-nav-link>
 
             <x-responsive-nav-link
-                href="{{ route('buckeye.index') }}"
-                :active="request()->is('buckEYE')"
-                class="relative"
+                href="{{ route('archive.index') }}"
+                :active="request()->routeIs('archive.*')"
             >
-                {{ __('BuckEYE Game') }}
-                @if(!Auth::check() || Auth::check() && !Auth::user()->hasPlayedToday())
-                    <span
-                        class="absolute top-2 right-5 rounded-lg bg-red-500 px-1 text-white text-[0.6rem]"
-                    >New!</span>
-                @endif
+                {{ __('Archive') }}
             </x-responsive-nav-link>
 
             @if (Auth::check())

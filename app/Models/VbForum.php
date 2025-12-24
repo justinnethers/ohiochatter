@@ -8,7 +8,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class VbForum extends Model
 {
+    protected $table = 'vb_forums';
+
     protected $primaryKey = 'forumid';
+
+    public $timestamps = false;
 
     public function threads(): HasMany
     {

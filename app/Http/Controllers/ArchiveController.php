@@ -36,13 +36,16 @@ class ArchiveController extends Controller
 
     public function forum(VbForum $forum)
     {
-        $threads = $forum->threads()->with('creator')->paginate(50);
-        return view('archive/forum', compact('threads'));
+        $threads = $forum->threads()->with(['creator.avatar'])->paginate(50);
+
+        return view('archive/forum', compact('forum', 'threads'));
     }
 
     public function thread(VbThread $thread)
     {
-        $posts = $thread->posts()->orderBy('dateline')->paginate(25);
+        $thread->load('forum');
+        $posts = $thread->posts()->with(['creator.avatar'])->orderBy('dateline')->paginate(25);
+
         return view('archive/thread', compact('posts', 'thread'));
     }
 }

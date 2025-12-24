@@ -9,6 +9,12 @@ class VbPost extends Model
 {
     use HasFactory;
 
+    protected $table = 'vb_posts';
+
+    protected $primaryKey = 'postid';
+
+    public $timestamps = false;
+
     public function thread()
     {
         return $this->belongsTo(VbThread::class, 'threadid', 'threadid');

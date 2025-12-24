@@ -1,5 +1,6 @@
 <x-app-layout>
-    <x-slot name="title">Archive {{ $thread->title }}</x-slot>
+    <x-slot name="title">{{ $thread->title }} - Forum Archive</x-slot>
+    <x-slot name="meta">{{ Str::limit(strip_tags($posts->first()?->pagetext ?? ''), 160) }}</x-slot>
     <x-slot name="header">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col gap-1">
@@ -34,7 +35,7 @@
                 (adsbygoogle = window.adsbygoogle || []).push({});
             </script>
             <x-archive-breadcrumbs :items="[
-                ['title' => $thread->forum->title, 'url' => '/archive/' . $thread->forum->forumid],
+                ['title' => $thread->forum->title, 'url' => route('archive.forum', $thread->forum)],
                 ['title' => $thread->title]
             ]" />
             <div class="space-y-6">

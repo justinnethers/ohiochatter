@@ -1,8 +1,9 @@
 <x-app-layout>
-    <x-slot name="title">Archive Forums</x-slot>
+    <x-slot name="title">{{ $forum->title }} - Forum Archive</x-slot>
+    <x-slot name="meta">{{ $forum->description ?: "Browse archived threads from {$forum->title} on OhioChatter." }}</x-slot>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            Forum Archive - {{ $threads->first()?->forum->title ?? 'forum' }}
+            Forum Archive - {{ $forum->title }}
         </h2>
     </x-slot>
 
@@ -22,7 +23,7 @@
                 (adsbygoogle = window.adsbygoogle || []).push({});
             </script>
             <x-archive-breadcrumbs :items="[
-                ['title' => $threads->first()?->forum->title ?? 'Forum']
+                ['title' => $forum->title]
             ]"/>
             <div class="space-y-4">
                 @foreach($threads as $thread)
@@ -48,7 +49,7 @@
                                 <!-- Thread Content -->
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-center justify-between">
-                                        <a href="/archive/thread/{{ $thread->threadid }}?title={{ urlencode($thread->title) }}"
+                                        <a href="{{ route('archive.thread', $thread) }}"
                                            class="text-xl font-semibold text-white hover:text-blue-400 transition-colors truncate">
                                             {{ $thread->title }}
                                         </a>

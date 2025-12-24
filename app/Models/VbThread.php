@@ -9,9 +9,11 @@ class VbThread extends Model
 {
     use HasFactory;
 
+    protected $table = 'vb_threads';
+
     protected $primaryKey = 'threadid';
 
-    protected $with = ['posts', 'forum', 'creator'];
+    public $timestamps = false;
 
     public function posts()
     {

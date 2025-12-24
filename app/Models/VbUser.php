@@ -9,7 +9,11 @@ class VbUser extends Model
 {
     use HasFactory;
 
-    protected $with = ['avatar'];
+    protected $table = 'vb_users';
+
+    protected $primaryKey = 'userid';
+
+    public $timestamps = false;
 
     public function avatar()
     {

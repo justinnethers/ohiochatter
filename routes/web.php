@@ -96,8 +96,8 @@ Route::middleware('auth')->group(function () {
 
 Route::prefix('archive')->group(function () {
     Route::get('', [ArchiveController::class, 'index'])->name('archive.index');
-    Route::get('/forum/{forum}', [ArchiveController::class, 'forum']);
-    Route::get('/thread/{thread}', [ArchiveController::class, 'thread']);
+    Route::get('/forum/{forum}', [ArchiveController::class, 'forum'])->name('archive.forum');
+    Route::get('/thread/{thread}', [ArchiveController::class, 'thread'])->name('archive.thread');
 });
 
 Route::get('search', [SearchController::class, 'show'])->name('search.show');
@@ -159,12 +159,7 @@ Route::get('forum/showthread', function () {
     // Replace dashes with spaces for a more readable title
     $title = str_replace('-', ' ', $titlePart);
 
-    // Build the target URL, for example:
-    //   /archive/48553?title=2017 OC Mock NFL Draft Round 1
-    return redirect()->to(
-        "/archive/thread/{$threadId}?title=" . urlencode($title),
-        301
-    );
+    return redirect()->route('archive.thread', $threadId, 301);
 });
 
 Route::permanentRedirect('/forum', '/forums');

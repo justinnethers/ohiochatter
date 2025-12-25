@@ -7,6 +7,7 @@ use App\Models\Puzzle;
 use App\Models\User;
 use App\Models\UserGameProgress;
 use App\Models\UserGameStats;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
@@ -18,6 +19,14 @@ class PuzzleService
     const PIXELATION_LEVELS = 5;
 
     public function loadPuzzleStats(Puzzle $puzzle): array
+    {
+        // Cache puzzle stats for 5 minutes to reduce database load
+        return Cache::remember("puzzle_stats_{$puzzle->id}", 300, function () use ($puzzle) {
+            return $this->calculatePuzzleStats($puzzle);
+        });
+    }
+
+    private function calculatePuzzleStats(Puzzle $puzzle): array
     {
         $authenticatedQuery = UserGameProgress::query()
             ->where('puzzle_id', $puzzle->id)
@@ -157,7 +166,10 @@ class PuzzleService
 
     public function getTodaysPuzzle(): ?Puzzle
     {
-        return Puzzle::getTodaysPuzzle();
+        // Cache today's puzzle for 1 hour (puzzle changes daily anyway)
+        return Cache::remember('todays_puzzle', 3600, function () {
+            return Puzzle::getTodaysPuzzle();
+        });
     }
 
     public function getUserGameProgress(User $user): UserGameProgress|null

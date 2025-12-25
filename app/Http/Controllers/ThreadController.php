@@ -9,11 +9,19 @@ use App\Http\Requests\StoreThreadRequest;
 use App\Http\Requests\UpdateThreadRequest;
 use App\Models\Forum;
 use App\Models\Thread;
+use App\Services\SeoService;
+use App\ValueObjects\SeoData;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
 class ThreadController extends Controller
 {
+    public function __construct(
+        private SeoService $seoService
+    )
+    {
+    }
+
     public function index()
     {
         $page = request()->get('page', 1);
@@ -58,7 +66,25 @@ class ThreadController extends Controller
         }
 
         $threads->withPath(request()->url());
-        return view('threads.index', compact('threads'));
+
+        $title = 'Forum Discussions';
+        $canonical = route('thread.index');
+        if ($page > 1) {
+            $title .= " - Page {$page}";
+            $canonical .= "?page={$page}";
+        }
+
+        $seo = new SeoData(
+            title: $title,
+            description: 'Join the conversation on OhioChatter. Discuss Ohio sports, politics, local happenings, and connect with fellow Ohioans.',
+            canonical: $canonical,
+            breadcrumbs: [
+                ['name' => 'Home', 'url' => config('app.url')],
+                ['name' => 'Forums'],
+            ],
+        );
+
+        return view('threads.index', compact('threads', 'seo'));
     }
 
     public function create(Forum $forum)
@@ -103,7 +129,10 @@ class ThreadController extends Controller
             return redirect($redirect);
         }
 
-        return view('threads.show', $detailsFetcher->execute($thread));
+        $details = $detailsFetcher->execute($thread);
+        $seo = $this->seoService->forThread($thread);
+
+        return view('threads.show', array_merge($details, ['seo' => $seo]));
     }
 
     public function edit(Thread $thread)

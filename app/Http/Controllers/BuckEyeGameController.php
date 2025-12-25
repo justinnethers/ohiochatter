@@ -138,49 +138,27 @@ class BuckEyeGameController extends Controller
             $width = imagesx($source);
             $height = imagesy($source);
 
-            // Create a blurred version using a more efficient approach
-            // Scale down significantly first to reduce processing time
-            $scaleFactor = 0.03;
-            $smallWidth = max(1, floor($width * $scaleFactor));
-            $smallHeight = max(1, floor($height * $scaleFactor));
+            // Efficient blur: scale down, apply built-in blur filter, scale back up
+            // This is much faster than manual pixel-by-pixel processing
+            $scaleFactor = 0.05;
+            $smallWidth = max(1, (int) floor($width * $scaleFactor));
+            $smallHeight = max(1, (int) floor($height * $scaleFactor));
 
-            // Create small image (reduces details)
+            // Create small image (pixelation effect from downscaling)
             $small = imagecreatetruecolor($smallWidth, $smallHeight);
             imagecopyresampled($small, $source, 0, 0, 0, 0, $smallWidth, $smallHeight, $width, $height);
 
-            // Apply a simple box blur to the small image
-            $blurredSmall = imagecreatetruecolor($smallWidth, $smallHeight);
-            $blurRadius = 10;
-
-            // Simple box blur
-            for ($y = 0; $y < $smallHeight; $y++) {
-                for ($x = 0; $x < $smallWidth; $x++) {
-                    $redTotal = $greenTotal = $blueTotal = 0;
-                    $count = 0;
-
-                    // Sample surrounding pixels
-                    for ($j = max(0, $y - $blurRadius); $j <= min($smallHeight - 1, $y + $blurRadius); $j++) {
-                        for ($i = max(0, $x - $blurRadius); $i <= min($smallWidth - 1, $x + $blurRadius); $i++) {
-                            $rgb = imagecolorat($small, $i, $j);
-                            $redTotal += ($rgb >> 16) & 0xFF;
-                            $greenTotal += ($rgb >> 8) & 0xFF;
-                            $blueTotal += $rgb & 0xFF;
-                            $count++;
-                        }
-                    }
-
-                    // Set the average color
-                    $red = round($redTotal / $count);
-                    $green = round($greenTotal / $count);
-                    $blue = round($blueTotal / $count);
-
-                    imagesetpixel($blurredSmall, $x, $y, imagecolorallocate($blurredSmall, $red, $green, $blue));
-                }
+            // Apply PHP's built-in Gaussian blur multiple times for strong effect
+            for ($i = 0; $i < 5; $i++) {
+                imagefilter($small, IMG_FILTER_GAUSSIAN_BLUR);
             }
 
-            // Scale back up to full size
+            // Scale back up to full size (creates pixelated blur effect)
             $blurred = imagecreatetruecolor($width, $height);
-            imagecopyresampled($blurred, $blurredSmall, 0, 0, 0, 0, $width, $height, $smallWidth, $smallHeight);
+            imagecopyresampled($blurred, $small, 0, 0, 0, 0, $width, $height, $smallWidth, $smallHeight);
+
+            // Apply one more blur at full size to smooth out pixelation edges
+            imagefilter($blurred, IMG_FILTER_GAUSSIAN_BLUR);
 
             // Make sure the directory exists
             Storage::disk('public')->makeDirectory(dirname($socialImagePath), 0755, true, true);
@@ -192,7 +170,6 @@ class BuckEyeGameController extends Controller
             // Clean up
             imagedestroy($source);
             imagedestroy($small);
-            imagedestroy($blurredSmall);
             imagedestroy($blurred);
 
             // Return the saved file

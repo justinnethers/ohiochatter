@@ -140,10 +140,13 @@ class LocationService
      */
     private function getCountyContentInRegion(Region $region, int $limit = 6): Collection
     {
-        $countyIds = $region->counties->pluck('id');
-
+        // Use a subquery to avoid N+1: get county IDs directly in the query
         return Content::where('locatable_type', County::class)
-            ->whereIn('locatable_id', $countyIds)
+            ->whereIn('locatable_id', function ($query) use ($region) {
+                $query->select('id')
+                    ->from('counties')
+                    ->where('region_id', $region->id);
+            })
             ->with(['contentCategory', 'contentType', 'locatable'])
             ->published()
             ->latest('published_at')
@@ -156,10 +159,13 @@ class LocationService
      */
     private function getCityContentInCounty(County $county, int $limit = 6): Collection
     {
-        $cityIds = $county->cities->pluck('id');
-
+        // Use a subquery to avoid N+1: get city IDs directly in the query
         return Content::where('locatable_type', City::class)
-            ->whereIn('locatable_id', $cityIds)
+            ->whereIn('locatable_id', function ($query) use ($county) {
+                $query->select('id')
+                    ->from('cities')
+                    ->where('county_id', $county->id);
+            })
             ->with(['contentCategory', 'contentType', 'locatable'])
             ->published()
             ->latest('published_at')

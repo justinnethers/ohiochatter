@@ -6,11 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <meta name="description" content="{{ $meta ?? '' }}">
-
-    <title>@if (isset($title))
-            {{ $title }} -
-        @endif{{ config('app.name', 'Laravel') }}</title>
+    {{-- SEO Meta Tags --}}
+    @if(isset($seo))
+        <x-seo.head :seo="$seo" />
+        <title>{{ $seo->title }} - {{ config('app.name', 'OhioChatter') }}</title>
+    @else
+        <meta name="description" content="{{ $meta ?? '' }}">
+        <title>@if (isset($title)){{ $title }} - @endif{{ config('app.name', 'Laravel') }}</title>
+    @endif
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

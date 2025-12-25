@@ -40,11 +40,19 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('head')
 
-    @if (! Auth::check())
-        <script async
-                src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4406607721782655"
-                crossorigin="anonymous"></script>
-    @endif
+    <script async
+            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4406607721782655"
+            crossorigin="anonymous"></script>
+    @auth
+        <script>
+            (adsbygoogle = window.adsbygoogle || []).push({
+                google_ad_client: "ca-pub-4406607721782655",
+                enable_page_level_ads: {
+                    overlays: {bottom: false}
+                }
+            });
+        </script>
+    @endauth
 
     {{-- Add this to app.blade.php's <head> section --}}
     <script>

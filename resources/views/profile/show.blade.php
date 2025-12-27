@@ -20,9 +20,9 @@
 
             {{-- Profile Header Card --}}
             <div class="bg-gradient-to-br from-steel-800 to-steel-850 rounded-xl shadow-lg shadow-black/20 border border-steel-700/50 overflow-hidden mb-6">
-                {{-- Banner gradient --}}
-                <div class="h-24 md:h-32 bg-gradient-to-r from-accent-600 via-accent-500 to-accent-600 relative">
-                    <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%23ffffff\" fill-opacity=\"0.08\"%3E%3Cpath d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-50"></div>
+                {{-- Generated pattern banner --}}
+                <div class="h-24 md:h-32 relative overflow-hidden">
+                    <x-profile-pattern :username="$user->username" class="absolute inset-0 w-full h-full" />
                 </div>
 
                 <div class="px-4 md:px-8 pb-6 -mt-12 md:-mt-16">

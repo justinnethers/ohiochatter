@@ -48,6 +48,9 @@ class ProfileController extends Controller
         // Get game stats if they exist
         $gameStats = $user->gameStats;
 
+        // Get actual last post date from replies
+        $lastPostDate = $recentPosts->first()?->created_at;
+
         // Calculate account age
         $joinDate = $user->legacy_join_date
             ? \Carbon\Carbon::parse($user->legacy_join_date)
@@ -61,6 +64,7 @@ class ProfileController extends Controller
             'totalReps',
             'totalNegs',
             'gameStats',
+            'lastPostDate',
             'joinDate',
             'accountAge'
         ));

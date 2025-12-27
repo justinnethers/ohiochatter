@@ -1,76 +1,82 @@
 <x-app-layout>
     <x-slot name="title">Private Messages</x-slot>
     <x-slot name="header">
-        <div class="flex justify-between">
-            <h2 class="font-semibold text-3xl text-gray-800 dark:text-gray-200 leading-tight">
+        <div class="flex justify-between items-center">
+            <h2 class="font-bold text-xl text-white leading-tight flex items-center gap-3">
+                <span class="hidden md:inline-block w-1 h-6 bg-accent-500 rounded-full"></span>
                 Private Messages
             </h2>
-            <x-nav-link href="{{ route('messages.create') }}">New Message</x-nav-link>
+            <a href="{{ route('messages.create') }}" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-accent-500 to-accent-600 border border-transparent rounded-lg font-semibold text-sm text-white tracking-wide shadow-lg shadow-accent-500/25 hover:shadow-accent-500/40 hover:from-accent-600 hover:to-accent-700 hover:scale-[1.02] transition-all duration-200">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                New Message
+            </a>
         </div>
     </x-slot>
 
-    <div>
-        <div class="md:rounded-lg md:bg-gray-800 p-2 md:p-8 md:mt-4">
-            <section class="container">
-                @forelse($threads as $thread)
-                    <article class="bg-gray-700 p-3 md:px-4 md:pt-4 md:pb-5 text-gray-100 font-body rounded md:rounded-md mb-2 md:mb-6 shadow-lg">
-                        <a class="text-2xl hover:underline text-gray-200" href="{{ route('messages.show', $thread) }}">
-                            @if($thread->isUnread(auth()->id()))
-                                <span class="font-bold">{{ $thread->subject }}</span>
-                            @else
+    <div class="container mx-auto">
+        <div class="md:rounded-2xl md:bg-gradient-to-br md:from-steel-800/50 md:to-steel-900/50 md:backdrop-blur-sm md:border md:border-steel-700/30 p-2 md:p-8 md:mt-4">
+            @forelse($threads as $thread)
+                <article class="group bg-gradient-to-br from-steel-800 to-steel-850 p-4 md:p-5 text-steel-100 font-body rounded-xl mb-3 md:mb-4 shadow-lg shadow-black/20 border border-steel-700/50 hover:border-steel-600 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden">
+                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-accent-400 to-accent-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+                    <a class="text-lg md:text-xl hover:text-accent-400 text-white font-semibold transition-colors duration-200 block" href="{{ route('messages.show', $thread) }}">
+                        @if($thread->isUnread(auth()->id()))
+                            <span class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-accent-500 animate-pulse"></span>
                                 {{ $thread->subject }}
+                            </span>
+                        @else
+                            {{ $thread->subject }}
+                        @endif
+                    </a>
+
+                    <div class="md:flex text-sm md:text-base justify-between rounded-lg my-3 bg-steel-900/50 shadow-inner divide-y md:divide-y-0 divide-steel-700/50">
+                        <div class="flex items-center space-x-2 py-2 px-3">
+                            @if($firstMessage = $thread->messages->first())
+                                <x-avatar size="6" :avatar-path="$firstMessage->user->avatar_path" />
+                                <span class="text-steel-300">
+                                    started {{ $thread->created_at->setTimezone(auth()->user()->timezone ?? null)->diffForHumans() }}
+                                    by <a href="/profiles/{{ $firstMessage->user->username }}" class="text-accent-400 hover:text-accent-300 font-medium transition-colors">{{ $firstMessage->user->username }}</a>
+                                </span>
                             @endif
-                        </a>
-
-                        <div class="md:flex text-lg justify-between rounded md:rounded-md px-2 mt-3 mb-4 bg-gray-800 shadow">
-                            <div class="flex items-center space-x-2">
-                                @if($firstMessage = $thread->messages->first())
-                                    <x-avatar size="8" :avatar-path="$firstMessage->user->avatar_path" />
-                                    <span>
-                                        started {{ $thread->created_at->setTimezone(auth()->user()->timezone ?? null)->diffForHumans() }}
-                                        by <br class="md:hidden"><a href="/profiles/{{ $firstMessage->user->username }}" class="text-blue-500 hover:underline">{{ $firstMessage->user->username }}</a>
-                                    </span>
-                                @endif
-                            </div>
-
-                            <hr class="border-gray-700 border-2 md:hidden mt-2 mb-1.5">
-
-                            <div class="flex items-center justify-end space-x-2 bg-main-color posted-by-when rounded shadow md:shadow-none md:p-2 md:p-0 md:m-0">
-                                @if($lastMessage = $thread->messages->last())
-                                    @if($firstMessage && $lastMessage->user_id !== $firstMessage->user_id)
-                                        <div class="text-right">
-                                            <span class="md:mr-1">last reply was</span>
-                                            <span class="md:mr-1">
-                                                {{ $lastMessage->created_at->setTimezone(auth()->user()->timezone ?? null)->diffForHumans() }}
-                                                by<br class="md:hidden">
-                                            </span>
-                                            <a href="/profiles/{{ $lastMessage->user->username }}" class="text-blue-500 hover:underline">{{ $lastMessage->user->username }}</a>
-                                        </div>
-                                        <x-avatar size="8" :avatar-path="$lastMessage->user->avatar_path" />
-                                    @else
-                                        <div>
-                                            <span class="md:mr-1">no replies yet</span>
-                                        </div>
-                                    @endif
-                                @endif
-                            </div>
                         </div>
 
-                        <div class="text-lg md:mt-2">
-                            <div class="flex items-center space-x-4 text-gray-400">
-                                <span>{{ $thread->participants->count() }} participants</span>
-                                <span>{{ $thread->messages->count() }} messages</span>
-                            </div>
-                        </div>
-                    </article>
-                @empty
-                    <div class="bg-gray-700 p-3 md:px-4 md:pt-4 md:pb-5 text-gray-100 font-body rounded md:rounded-md mb-2 md:mb-6 shadow-lg">
-                        No messages found.
+                        @if($lastMessage = $thread->messages->last())
+                            @if($firstMessage && $lastMessage->user_id !== $firstMessage->user_id)
+                                <div class="flex items-center justify-end space-x-2 py-2 px-3">
+                                    <div class="text-right text-steel-300">
+                                        <span class="text-steel-400">{{ $lastMessage->created_at->setTimezone(auth()->user()->timezone ?? null)->diffForHumans() }}</span>
+                                        <a href="/profiles/{{ $lastMessage->user->username }}" class="text-accent-400 hover:text-accent-300 font-medium transition-colors">{{ $lastMessage->user->username }}</a>
+                                    </div>
+                                    <x-avatar size="6" :avatar-path="$lastMessage->user->avatar_path" />
+                                </div>
+                            @else
+                                <div class="flex items-center justify-end py-2 px-3">
+                                    <span class="text-steel-400">no replies yet</span>
+                                </div>
+                            @endif
+                        @endif
                     </div>
-                @endforelse
-            </section>
 
-            {{ $threads->links() }}
+                    <div class="flex flex-wrap text-sm text-steel-400 mt-2">
+                        <span class="mr-4">{{ $thread->participants->count() }} participants</span>
+                        <span>{{ $thread->messages->count() }} messages</span>
+                    </div>
+                </article>
+            @empty
+                <div class="bg-gradient-to-br from-steel-800 to-steel-850 p-6 text-steel-300 font-body rounded-xl shadow-lg shadow-black/20 border border-steel-700/50 text-center">
+                    <svg class="w-12 h-12 mx-auto mb-3 text-steel-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                    </svg>
+                    No messages found. Start a conversation!
+                </div>
+            @endforelse
+
+            <div class="mt-4">
+                {{ $threads->links() }}
+            </div>
         </div>
     </div>
 </x-app-layout>

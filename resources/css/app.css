@@ -2,89 +2,130 @@
 @import 'tailwindcss/components.css';
 @import 'tailwindcss/utilities.css';
 
+/* ========================================
+   OHIO CHATTER - Custom Design System
+   ======================================== */
+
+/* Base Typography */
 h1 {
-    @apply text-4xl;
+    @apply text-4xl text-white font-bold;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5 {
-    @apply font-headline;
+h2 {
+    @apply text-3xl text-white font-bold;
+}
+
+h3 {
+    @apply text-2xl text-steel-100 font-semibold;
+}
+
+h1, h2, h3, h4, h5 {
+    @apply font-headline tracking-tight;
 }
 
 p {
-    @apply font-body;
+    @apply font-body leading-relaxed;
 }
 
+/* Selection styling */
+::selection {
+    background-color: rgb(59 130 246 / 0.3);
+    color: white;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgb(15 23 42);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgb(71 85 105);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgb(100 116 139);
+}
+
+/* Pagination */
 .pagination-link {
-    @apply relative inline-flex items-center bg-gray-700 py-2 text-sm font-medium leading-5 text-gray-200;
+    @apply relative inline-flex items-center bg-steel-800 py-2 px-3 text-sm font-medium leading-5 text-steel-300 border border-steel-700 transition-all duration-200;
 }
 
 .pagination-link:hover {
-    @apply bg-blue-700 text-white;
+    @apply bg-accent-600 text-white border-accent-500;
 }
 
 .pagination-links .pagination-link:first-child {
-    @apply mr-0 rounded-l-md;
+    @apply mr-0 rounded-l-lg;
 }
 
 .pagination-links .pagination-link:last-child {
-    @apply ml-0 rounded-r-md;
+    @apply ml-0 rounded-r-lg;
 }
 
+/* Blockquotes */
 blockquote {
-    @apply border-l-8 border-gray-600 bg-gray-700 px-4 py-4 md:px-8 !important;
+    @apply border-l-4 border-accent-500/50 bg-steel-900/50 px-4 py-4 md:px-6 rounded-r-lg my-4 !important;
 }
 
+blockquote p {
+    @apply text-steel-300 italic;
+}
+
+/* Post body content */
 .post-body img {
     width: 100%;
     max-width: 600px;
     height: auto !important;
+    border-radius: 0.5rem;
 }
 
 .post-body a {
     word-break: break-word;
     text-decoration: underline;
+    text-decoration-color: rgb(59 130 246 / 0.5);
+    text-underline-offset: 2px;
+    transition: all 0.2s;
 }
 
 .post-body a:hover {
-    @apply text-blue-400;
+    @apply text-accent-400;
+    text-decoration-color: rgb(59 130 246);
 }
 
 .post-body ul, .trumbowyg-editor ul {
-    @apply list-disc list-inside;
+    @apply list-disc list-inside text-steel-300;
 }
 
 .post-body ol, .trumbowyg-editor ol {
-    @apply list-decimal list-inside;
+    @apply list-decimal list-inside text-steel-300;
 }
 
+/* Reply anchor scroll offset */
 [id^='reply-'] {
-    scroll-margin-top: 110px;
+    scroll-margin-top: 120px;
 }
 
-.trumbowyg.trumbowyg-editor-hidden .trumbowyg-textarea {
-    @apply text-black;
-}
-
+/* Iframes */
 iframe[allowfullscreen] {
     width: 100% !important;
     max-width: 600px;
     height: auto;
     margin-top: 1rem;
     aspect-ratio: 16 / 9;
+    border-radius: 0.5rem;
 }
 
-blockquote {
-    margin-bottom: 1rem;
+/* WYSIWYG Editor - Dark Theme */
+.trumbowyg.trumbowyg-editor-hidden .trumbowyg-textarea {
+    @apply text-black;
 }
-
-/*.editor ul,*/
-/*.editor ol {*/
-/*    list-style: auto;*/
-/*}*/
 
 .trumbowyg-dark .trumbowyg-box {
     border: none;
@@ -95,26 +136,28 @@ blockquote {
 }
 
 .trumbowyg-dark .trumbowyg-button-pane {
-    @apply bg-gray-700;
-    @apply rounded-t-lg;
+    background: rgb(30 41 59);
+    border-radius: 0.75rem 0.75rem 0 0;
     margin: 0;
     padding: 0;
-    border: none;
+    border: 1px solid rgb(51 65 85);
+    border-bottom: none;
 }
 
 .trumbowyg-dark .trumbowyg-button-pane .trumbowyg-button-group {
-    @apply bg-gray-700;
-    @apply border-none;
+    background: rgb(30 41 59);
+    border: none;
 }
 
 .trumbowyg-dark .trumbowyg-textarea {
-    /*@apply border-gray-950;*/
-    @apply rounded-b-lg;
+    border-radius: 0 0 0.75rem 0.75rem;
 }
 
 .trumbowyg-dark .trumbowyg-editor-box {
-    @apply bg-gray-800;
-    @apply rounded-b-lg;
+    background: rgb(15 23 42);
+    border-radius: 0 0 0.75rem 0.75rem;
+    border: 1px solid rgb(51 65 85);
+    border-top: none;
 }
 
 .trumbowyg-box.trumbowyg-editor-visible .trumbowyg-textarea {
@@ -126,4 +169,18 @@ blockquote {
     justify-content: center;
     align-content: center;
     width: 40px;
+}
+
+/* Focus ring utility */
+.focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-accent-500/50 focus:ring-offset-2 focus:ring-offset-steel-900;
+}
+
+/* Card hover glow effect */
+.card-glow {
+    transition: box-shadow 0.3s ease;
+}
+
+.card-glow:hover {
+    box-shadow: 0 0 20px rgb(59 130 246 / 0.1), 0 0 40px rgb(59 130 246 / 0.05);
 }

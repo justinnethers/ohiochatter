@@ -12,8 +12,9 @@
         <div class="md:rounded-2xl md:bg-gradient-to-br md:from-steel-800/50 md:to-steel-900/50 md:backdrop-blur-sm md:border md:border-steel-700/30 p-2 md:p-8 md:mt-4">
             {{ $threads->links('pagination::tailwind', ['top' => true]) }}
 
-            <x-archive-breadcrumbs :items="[
-                ['title' => $forum->title]
+            <x-breadcrumbs :items="[
+                ['title' => 'Archive', 'url' => route('archive.index')],
+                ['title' => $forum->title],
             ]"/>
 
             <div class="bg-steel-800/50 p-3 rounded-xl mb-4 shadow-lg shadow-black/20 border border-steel-700/30">

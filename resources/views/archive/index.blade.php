@@ -10,7 +10,9 @@
 
     <div class="container mx-auto">
         <div class="md:rounded-2xl md:bg-gradient-to-br md:from-steel-800/50 md:to-steel-900/50 md:backdrop-blur-sm md:border md:border-steel-700/30 p-2 md:p-8 md:mt-4">
-            <x-archive-breadcrumbs :items="[]"/>
+            <x-breadcrumbs :items="[
+                ['title' => 'Archive'],
+            ]"/>
 
             <div class="bg-steel-800/50 p-3 rounded-xl mb-4 shadow-lg shadow-black/20 border border-steel-700/30">
                 <ins class="adsbygoogle"

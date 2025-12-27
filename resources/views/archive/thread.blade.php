@@ -12,10 +12,11 @@
         {{ $posts->links('pagination::tailwind', ['top' => true]) }}
 
         <div class="p-2 pt-0 md:p-0">
-            <x-archive-breadcrumbs :items="[
+            <x-breadcrumbs :items="[
+                ['title' => 'Archive', 'url' => route('archive.index')],
                 ['title' => $thread->forum->title, 'url' => route('archive.forum', $thread->forum)],
-                ['title' => $thread->title]
-            ]" />
+                ['title' => $thread->title],
+            ]"/>
 
             <div class="bg-steel-800/50 p-3 rounded-xl mb-4 shadow-lg shadow-black/20 border border-steel-700/30">
                 <ins class="adsbygoogle"

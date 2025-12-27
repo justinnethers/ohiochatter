@@ -1,6 +1,10 @@
 <div>
     <div class="p-2 pt-0 md:p-0">
-        <x-breadcrumbs :forum="$thread->forum"/>
+        <x-breadcrumbs :items="[
+            ['title' => 'Forums', 'url' => '/forums'],
+            ['title' => $thread->forum->name, 'url' => '/forums/' . $thread->forum->slug],
+            ['title' => $thread->title],
+        ]"/>
         @if($thread->poll)
             <livewire:poll-component :poll="$thread->poll"/>
         @endif
@@ -31,7 +35,8 @@
 
             @guest
                 @if (($loop->index + 1) % $adFrequency === 0 && !$loop->last)
-                    <div class="bg-gradient-to-br from-steel-800 to-steel-850 p-4 rounded-xl mb-5 shadow-lg shadow-black/20 border border-steel-700/50">
+                    <div
+                        class="bg-gradient-to-br from-steel-800 to-steel-850 p-4 rounded-xl mb-5 shadow-lg shadow-black/20 border border-steel-700/50">
                         <!-- In-thread Ad -->
                         <ins class="adsbygoogle"
                              style="display:block"
@@ -62,7 +67,8 @@
                 <div class="flex justify-between items-center">
                     <x-primary-button>
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
                         </svg>
                         Submit Post
                     </x-primary-button>

@@ -11,11 +11,21 @@ class UserSelect extends Component
     public string $search = '';
     public Collection $selectedUsers;
     public Collection $filteredUsers;
+    public ?string $initialRecipient = null;
 
-    public function mount(): void
+    public function mount(?string $initialRecipient = null): void
     {
         $this->selectedUsers = collect();
         $this->filteredUsers = collect();
+
+        // Check for recipient from query param or passed prop
+        $recipient = $initialRecipient ?? request()->query('recipient');
+        if ($recipient) {
+            $user = User::where('username', $recipient)->first();
+            if ($user && $user->id !== auth()->id()) {
+                $this->selectedUsers->push($user);
+            }
+        }
     }
 
     public function updatedSearch(): void

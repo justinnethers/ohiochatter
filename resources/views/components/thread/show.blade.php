@@ -10,20 +10,6 @@
                 <div class="flex-1">
                     <livewire:post-component :post="$thread" :first-post-on-page="true"/>
                 </div>
-                {{--                <div class="hidden md:block md:w-1/5">--}}
-                {{--                    <article class="bg-gray-800 p-3 md:px-4 md:pt-4 md:pb-5 text-gray-100 font-body rounded md:rounded-md mb-2 md:mb-6 shadow-lg">--}}
-                {{--                        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4406607721782655"--}}
-                {{--                                crossorigin="anonymous"></script>--}}
-                {{--                        <!-- First Post Ad Square -->--}}
-                {{--                        <ins class="adsbygoogle"--}}
-                {{--                             style="display:inline-block;width:250px;height:250px"--}}
-                {{--                             data-ad-client="ca-pub-4406607721782655"--}}
-                {{--                             data-ad-slot="6658997449"></ins>--}}
-                {{--                        <script>--}}
-                {{--                            (adsbygoogle = window.adsbygoogle || []).push({});--}}
-                {{--                        </script>--}}
-                {{--                    </article>--}}
-                {{--                </div>--}}
             </div>
         @endif
 
@@ -45,7 +31,7 @@
 
             @guest
                 @if (($loop->index + 1) % $adFrequency === 0 && !$loop->last)
-                    <div class="bg-gray-700 p-3 md:px-4 md:pt-4 md:pb-5 rounded md:rounded-md mb-4 shadow-lg">
+                    <div class="bg-gradient-to-br from-steel-800 to-steel-850 p-4 rounded-xl mb-5 shadow-lg shadow-black/20 border border-steel-700/50">
                         <!-- In-thread Ad -->
                         <ins class="adsbygoogle"
                              style="display:block"
@@ -64,7 +50,7 @@
 
         @if (auth()->check())
             <form
-                class="p-0 rounded-lg shadow mb-8"
+                class="bg-gradient-to-br from-steel-800 to-steel-850 p-4 md:p-6 rounded-xl shadow-lg shadow-black/20 border border-steel-700/50 mb-8"
                 action="{{ request()->url() }}/replies"
                 method="POST"
             >
@@ -73,8 +59,13 @@
                     <x-wysiwyg id="body" wire:model.defer="body" :thread="$thread"/>
                 </div>
                 <div class="h-4"></div>
-                <div class="flex justify-between">
-                    <x-primary-button>Submit Post</x-primary-button>
+                <div class="flex justify-between items-center">
+                    <x-primary-button>
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                        </svg>
+                        Submit Post
+                    </x-primary-button>
                     <livewire:thread-lock-toggle :thread="$thread"/>
                 </div>
             </form>

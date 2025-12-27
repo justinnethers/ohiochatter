@@ -1,10 +1,9 @@
 @if ($paginator->hasPages())
     <nav role="navigation" aria-label="{{ __('Pagination Navigation') }}" class="py-2">
-        <div class="flex justify-center items-center flex-1 sm:hidden @if(isset($top) && $top) mb-8 @else mt-8 @endif">
-            <ul class="flex text-2xl md:text-sm">
-                <li class="mx-1 text-gray-600 rounded">
-                    <a class="p-2 {{ ($paginator->currentPage() == 1) ? ' disabled' : 'hover:bg-blue-600 hover:text-white' }}" href="{{ $paginator->url(1) }}">&laquo;</a>
-                </li>
+        {{-- Mobile pagination --}}
+        <div class="flex justify-center items-center flex-1 sm:hidden @if(isset($top) && $top) mb-6 @else mt-6 @endif">
+            <div class="flex items-center gap-1.5 text-lg">
+                <a class="flex items-center justify-center w-10 h-10 rounded-lg transition-all duration-200 {{ ($paginator->currentPage() == 1) ? 'text-steel-600 cursor-not-allowed' : 'text-steel-300 bg-steel-800 border border-steel-700/50 hover:bg-steel-700 hover:text-white hover:border-steel-600' }}" href="{{ $paginator->url(1) }}">&laquo;</a>
                 @for ($i = 1; $i <= $paginator->lastPage(); $i++)
                     @php
                         $link_limit = 7;
@@ -19,63 +18,49 @@
                         }
                     @endphp
                     @if ($from < $i && $i < $to)
-                        <li class="mx-1 text-gray-600">
-                            <a class="p-2  {{ ($paginator->currentPage() == $i) ? ' text-blue-600 font-bold border-b-2 border-blue-600' : 'hover:bg-blue-600 hover:text-white rounded' }}" href="{{ $paginator->url($i) }}">{{ $i }}</a>
-                        </li>
+                        <a class="flex items-center justify-center w-10 h-10 rounded-lg transition-all duration-200 {{ ($paginator->currentPage() == $i) ? 'bg-accent-500/15 text-accent-400 font-bold border border-steel-700/50' : 'text-steel-300 bg-steel-800 border border-steel-700/50 hover:bg-steel-700 hover:text-white hover:border-steel-600' }}" href="{{ $paginator->url($i) }}">{{ $i }}</a>
                     @endif
                 @endfor
-                <li class="mx-1 text-gray-600 rounded">
-                    <a class="p-2 {{ ($paginator->currentPage() == $paginator->lastPage()) ? ' disabled' : 'hover:bg-blue-600 hover:text-white' }}" href="{{ $paginator->url($paginator->lastPage()) }}">&raquo;</a>
-                </li>
-            </ul>
+                <a class="flex items-center justify-center w-10 h-10 rounded-lg transition-all duration-200 {{ ($paginator->currentPage() == $paginator->lastPage()) ? 'text-steel-600 cursor-not-allowed' : 'text-steel-300 bg-steel-800 border border-steel-700/50 hover:bg-steel-700 hover:text-white hover:border-steel-600' }}" href="{{ $paginator->url($paginator->lastPage()) }}">&raquo;</a>
+            </div>
         </div>
 
-        <div class="hidden sm:flex justify-center items-center flex-1">
-            <ul class="flex items-center mb-4 text-gray-300">
-                {{-- Pagination Elements --}}
-
-                <li class="mx-1">
-                    <a class="p-2 rounded {{ ($paginator->currentPage() == 1) ? ' disabled' : 'hover:bg-blue-600 hover:text-white' }}" href="{{ $paginator->url(1) }}">&laquo;</a>
-                </li>
+        {{-- Desktop pagination --}}
+        <div class="hidden sm:flex justify-center items-center flex-1 @if(isset($top) && $top) mb-4 @else mt-4 @endif">
+            <div class="flex items-center gap-1">
+                <a class="flex items-center justify-center w-8 h-8 rounded-lg text-sm transition-all duration-200 {{ ($paginator->currentPage() == 1) ? 'text-steel-600 cursor-not-allowed' : 'text-steel-300 bg-steel-800 border border-steel-700/50 hover:bg-steel-700 hover:text-white hover:border-steel-600' }}" href="{{ $paginator->url(1) }}">&laquo;</a>
                 @foreach ($elements as $element)
-                    {{-- "Three Dots" Separator --}}
-                <ul>
                     @if (is_string($element))
-                        <span aria-disabled="true" class="relative inline-flex items-center px-4 -ml-px  text-gray-100 cursor-default leading-5">{{ $element }}</span>
+                        <span class="px-2 text-steel-600">{{ $element }}</span>
                     @endif
 
-                    {{-- Array Of Links --}}
                     @if (is_array($element))
                         @foreach ($element as $page => $url)
                             @if ($page == $paginator->currentPage())
-                                <span aria-current="page" class="p-2 px-3 text-blue-600 font-bold border-b-2 border-blue-600">{{ $page }}</span>
+                                <span aria-current="page" class="flex items-center justify-center w-8 h-8 rounded-lg bg-accent-500/15 text-accent-400 font-semibold border border-steel-700/50">{{ $page }}</span>
                             @else
-                                <a href="{{ $url }}" class="hover:bg-blue-600 hover:text-white rounded p-2 px-3 focus:z-10 focus:outline-none focus:ring ring-gray-300 focus:border-blue-300 active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150" aria-label="{{ __('Go to page :page', ['page' => $page]) }}">{{ $page }}</a>
+                                <a href="{{ $url }}" class="flex items-center justify-center w-8 h-8 rounded-lg text-steel-300 bg-steel-800 border border-steel-700/50 hover:bg-steel-700 hover:text-white hover:border-steel-600 transition-all duration-200" aria-label="{{ __('Go to page :page', ['page' => $page]) }}">{{ $page }}</a>
                             @endif
                         @endforeach
                     @endif
-
-                </ul>
                 @endforeach
-                <li class="mx-1">
-                    <a class="p-2 rounded {{ ($paginator->currentPage() == $paginator->lastPage()) ? ' disabled' : 'hover:bg-blue-600 hover:text-white' }}" href="{{ $paginator->url($paginator->lastPage()) }}">&raquo;</a>
-                </li>
-            </ul>
+                <a class="flex items-center justify-center w-8 h-8 rounded-lg text-sm transition-all duration-200 {{ ($paginator->currentPage() == $paginator->lastPage()) ? 'text-steel-600 cursor-not-allowed' : 'text-steel-300 bg-steel-800 border border-steel-700/50 hover:bg-steel-700 hover:text-white hover:border-steel-600' }}" href="{{ $paginator->url($paginator->lastPage()) }}">&raquo;</a>
+            </div>
         </div>
 
         <div class="hidden @if (isset($top) && !$top) sm:flex-1 sm:flex sm:flex-col sm:items-center sm:justify-between sm:space-y-4 @endif">
             <div>
-                <p class="text-sm text-gray-200 leading-5">
+                <p class="text-sm text-steel-500 leading-5">
                     {!! __('Showing') !!}
                     @if ($paginator->firstItem())
-                        <span class="font-medium">{{ $paginator->firstItem() }}</span>
+                        <span class="text-steel-300">{{ $paginator->firstItem() }}</span>
                         {!! __('to') !!}
-                        <span class="font-medium">{{ $paginator->lastItem() }}</span>
+                        <span class="text-steel-300">{{ $paginator->lastItem() }}</span>
                     @else
                         {{ $paginator->count() }}
                     @endif
                     {!! __('of') !!}
-                    <span class="font-medium">{{ $paginator->total() }}</span>
+                    <span class="text-steel-300">{{ $paginator->total() }}</span>
                     {!! __('results') !!}
                 </p>
             </div>

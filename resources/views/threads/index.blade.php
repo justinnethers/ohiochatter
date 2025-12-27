@@ -29,8 +29,7 @@
                 @foreach ($threads as $thread)
                     <x-thread.listing :$thread/>
                     @if (($loop->index + 1) % $check === 0)
-                        <article
-                            class="bg-gray-700 p-3 md:px-4 md:pt-4 md:pb-5 text-gray-100 font-body rounded md:rounded-md mb-2 md:mb-6 shadow-lg">
+                        <article class="bg-gradient-to-br from-steel-800 to-steel-850 p-4 rounded-xl mb-3 md:mb-5 shadow-lg shadow-black/20 border border-steel-700/50">
                             <script async
                                     src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4406607721782655"
                                     crossorigin="anonymous"></script>

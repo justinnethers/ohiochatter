@@ -1,19 +1,22 @@
 <nav x-data="{ open: false }"
      x-init="$store.scroll.init()"
-     :class="{ 'h-16': !$store.scroll.scrolled, 'h-10': $store.scroll.scrolled }"
-     class="fixed top-0 left-0 right-0 z-50 bg-gray-800 dark:bg-gray-800 border-b border-gray-700 dark:border-gray-700 transition-all duration-300">
+     :class="{ 'h-16': !$store.scroll.scrolled, 'h-12': $store.scroll.scrolled }"
+     class="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-steel-900 via-steel-800 to-steel-900 backdrop-blur-md border-b border-steel-700/50 shadow-lg shadow-black/20 transition-all duration-300">
+    {{-- Blue accent line at top --}}
+    <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-accent-500 to-transparent"></div>
+
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
         <div class="flex justify-between h-full transition-all duration-300">
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a class="text-gray-100 font-bold text-xl" href="{{ route('thread.index') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-200 dark:text-gray-200"/>
+                    <a class="text-white font-bold text-xl flex items-center gap-2 group" href="{{ route('thread.index') }}">
+                        <x-application-logo class="block h-9 w-auto fill-current text-white group-hover:text-accent-400 transition-colors duration-200"/>
                     </a>
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                <div class="hidden space-x-6 sm:-my-px sm:ml-10 sm:flex">
                     <x-nav-link :href="route('thread.index')" :active="request()->routeIs('thread.index')">
                         {{ __('All Threads') }}
                     </x-nav-link>

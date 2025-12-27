@@ -1,17 +1,17 @@
 <div>
-    <form action="{{ route('search.show') }}" method="GET" class="flex gap-2">
-        <input
+    <form action="{{ route('search.show') }}" method="GET" class="flex gap-3">
+        <x-text-input
             type="search"
             name="q"
             value="{{ request('q') ?? request('query') }}"
             placeholder="Search threads, posts, users..."
-            class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm p-1.5 px-3 text-lg w-full font-medium"
-        >
-        <button
-            type="submit"
-            class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-        >
+            class="flex-1"
+        />
+        <x-primary-button type="submit">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
             Search
-        </button>
+        </x-primary-button>
     </form>
 </div>

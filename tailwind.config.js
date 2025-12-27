@@ -5,6 +5,13 @@ export default {
         "./resources/**/*.js",
         "./resources/**/*.vue",
     ],
+    safelist: [
+        // Forum tag colors
+        'bg-blue-500', 'bg-blue-600',
+        'bg-red-500', 'bg-red-600',
+        'bg-green-500', 'bg-green-600',
+        'bg-orange-500', 'bg-orange-600',
+    ],
   theme: {
     extend: {
         fontFamily: {

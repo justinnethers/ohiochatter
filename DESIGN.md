@@ -1,294 +1,329 @@
 # OhioChatter Design System
 
-This document defines the visual design language for OhioChatter. Follow these guidelines to maintain consistency across all pages and components.
+> **For LLMs**: Read this entire file before implementing. Apply these patterns consistently to any pages or components you modify.
 
 ---
 
-## Color Palette
+## Quick Reference - Common Patterns
 
-### Primary Colors
+### Page Structure Template
 
-| Name | Tailwind Class | Hex | Usage |
-|------|---------------|-----|-------|
-| Accent (Blue) | `accent-500` | `#3b82f6` | Primary actions, links, active states |
-| Accent Light | `accent-400` | `#60a5fa` | Hover states, highlights |
-| Accent Dark | `accent-600` | `#2563eb` | Button hover, emphasis |
+Every page should follow this structure:
 
-### Neutral Colors (Steel)
+```blade
+<x-app-layout>
+    <x-slot name="title">Page Title</x-slot>
+    <x-slot name="header">
+        <div class="flex justify-between items-center">
+            <h2 class="font-bold text-xl text-white leading-tight flex items-center gap-3">
+                <span class="hidden md:inline-block w-1 h-6 bg-accent-500 rounded-full"></span>
+                Page Title
+            </h2>
+            {{-- Optional: Action button or back link --}}
+        </div>
+    </x-slot>
 
-| Name | Tailwind Class | Hex | Usage |
-|------|---------------|-----|-------|
-| Background | `steel-950` | `#020617` | Page background (darkest) |
-| Surface Dark | `steel-900` | `#0f172a` | Page background gradient |
-| Surface | `steel-850` | `#172033` | Card backgrounds |
-| Surface Light | `steel-800` | `#1e293b` | Card backgrounds, nav |
-| Border | `steel-700` | `#334155` | Borders, dividers |
-| Border Light | `steel-600` | `#475569` | Hover borders |
-| Text Muted | `steel-400` | `#94a3b8` | Secondary text |
-| Text | `steel-300` | `#cbd5e1` | Body text |
-| Text Light | `steel-200` | `#e2e8f0` | Emphasized text |
-| Text Bright | `white` | `#ffffff` | Headings, important text |
+    <div class="container mx-auto">
+        <div class="md:rounded-2xl md:bg-gradient-to-br md:from-steel-800/50 md:to-steel-900/50 md:backdrop-blur-sm md:border md:border-steel-700/30 p-2 md:p-8 md:mt-4">
+            {{-- Page content here --}}
+        </div>
+    </div>
+</x-app-layout>
+```
 
-### Semantic Colors
+### Color Rules
 
-| Purpose | Color | Usage |
-|---------|-------|-------|
-| Positive/Rep | `emerald-400/500` | Thumbs up, success states |
-| Negative/Neg | `rose-400/500` | Thumbs down, error states |
-| Warning | `amber-400` | Warnings, poll indicators |
+| Use Case | Classes |
+|----------|---------|
+| Page/card backgrounds | `bg-steel-800`, `bg-steel-850`, `bg-steel-900` |
+| Input backgrounds | `bg-steel-950` (darkest, for inset effect) |
+| Primary text | `text-white` or `text-steel-100` |
+| Secondary text | `text-steel-300` |
+| Muted text | `text-steel-400` |
+| Links | `text-accent-400 hover:text-accent-300` |
+| Borders | `border-steel-700/50` or `border-steel-600` |
+| Primary actions | `bg-gradient-to-r from-accent-500 to-accent-600` |
+
+### Replace These Old Classes
+
+| Old (gray-based) | New (steel-based) |
+|------------------|-------------------|
+| `bg-gray-700` | `bg-steel-800` |
+| `bg-gray-800` | `bg-steel-850` or `bg-steel-900` |
+| `bg-gray-900` | `bg-steel-950` |
+| `text-gray-100/200` | `text-steel-100` or `text-white` |
+| `text-gray-300` | `text-steel-300` |
+| `text-gray-400` | `text-steel-400` |
+| `border-gray-600/700` | `border-steel-600` or `border-steel-700` |
+| `text-blue-500` | `text-accent-400` |
+| `hover:text-blue-*` | `hover:text-accent-300` |
+| `focus:border-indigo-*` | `focus:border-accent-500` |
+| `focus:ring-indigo-*` | `focus:ring-accent-500/20` |
+| `dark:*` prefixes | Remove (not needed, always dark) |
+
+---
+
+## Components Reference
+
+### Buttons
+
+**Primary Button** - Use `<x-primary-button>`:
+```blade
+<x-primary-button>
+    <svg class="w-4 h-4 mr-2" ...></svg>
+    Button Text
+</x-primary-button>
+```
+
+**Secondary Button** - Use `<x-secondary-button>`:
+```blade
+<x-secondary-button type="button" onclick="...">
+    Cancel
+</x-secondary-button>
+```
+
+**Danger Button** - Use `<x-danger-button>`:
+```blade
+<x-danger-button>Delete</x-danger-button>
+```
+
+### Form Inputs
+
+**Text Input** - Use `<x-text-input>`:
+```blade
+<div>
+    <x-input-label for="name" class="mb-2">Label</x-input-label>
+    <x-text-input id="name" name="name" value="{{ old('name') }}" required />
+    <x-input-error :messages="$errors->get('name')" class="mt-2" />
+</div>
+```
+
+**Select** - Use `<x-select>`:
+```blade
+<div>
+    <x-input-label for="type" class="mb-2">Type</x-input-label>
+    <x-select id="type" name="type">
+        <option value="a">Option A</option>
+        <option value="b">Option B</option>
+    </x-select>
+</div>
+```
+
+**Checkbox**:
+```blade
+<label class="inline-flex items-center text-steel-200 cursor-pointer">
+    <input type="checkbox" name="option" value="1"
+           class="rounded border-steel-600 bg-steel-800 text-accent-500 focus:ring-2 focus:ring-accent-500/20 focus:ring-offset-steel-900">
+    <span class="ml-3 font-medium">Checkbox label</span>
+</label>
+```
+
+**WYSIWYG Editor**:
+```blade
+<x-wysiwyg id="body" name="body" />
+```
+
+### Cards
+
+**Content/Thread Card** (with hover effects):
+```blade
+<article class="group bg-gradient-to-br from-steel-800 to-steel-850 p-4 md:p-5 text-steel-100 rounded-xl mb-3 md:mb-4 shadow-lg shadow-black/20 border border-steel-700/50 hover:border-steel-600 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden">
+    {{-- Accent stripe (shows on hover) --}}
+    <div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-accent-400 to-accent-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+    {{-- Card content --}}
+</article>
+```
+
+**Static Card** (no hover):
+```blade
+<div class="bg-gradient-to-br from-steel-800 to-steel-850 p-4 md:p-6 rounded-xl shadow-lg shadow-black/20 border border-steel-700/50">
+    {{-- Content --}}
+</div>
+```
+
+**Post Card** - Use components:
+```blade
+<x-post.card>
+    <x-post.owner :owner="$post->user" :username="$post->user->username" ... />
+    <div class="flex-1 flex flex-col relative">
+        <x-post.header :date="$post->created_at" />
+        <div class="prose prose-invert prose-lg p-4 md:p-8 flex-1 post-body">
+            {!! $post->body !!}
+        </div>
+    </div>
+</x-post.card>
+```
+
+### Breadcrumbs
+
+```blade
+<x-breadcrumbs :items="[
+    ['title' => 'Section', 'url' => '/section'],
+    ['title' => 'Subsection', 'url' => '/section/sub'],
+    ['title' => 'Current Page'],  {{-- No URL = current page (accent colored) --}}
+]"/>
+```
+
+### Dropdowns
+
+```blade
+<x-dropdown align="right" width="48">
+    <x-slot name="trigger">
+        <button class="...">Trigger</button>
+    </x-slot>
+    <x-slot name="content">
+        <x-dropdown-link :href="route('...')">Link 1</x-dropdown-link>
+        <x-dropdown-link :href="route('...')">Link 2</x-dropdown-link>
+    </x-slot>
+</x-dropdown>
+```
+
+### Modals
+
+```blade
+<x-danger-button x-data="" x-on:click.prevent="$dispatch('open-modal', 'confirm-delete')">
+    Delete
+</x-danger-button>
+
+<x-modal name="confirm-delete" :show="false" focusable>
+    <form method="post" action="..." class="p-6">
+        @csrf
+        @method('delete')
+
+        <h2 class="text-lg font-semibold text-white">Confirm Delete</h2>
+        <p class="mt-2 text-sm text-steel-400">Are you sure?</p>
+
+        <div class="mt-6 flex justify-end gap-3">
+            <x-secondary-button x-on:click="$dispatch('close')">Cancel</x-secondary-button>
+            <x-danger-button>Delete</x-danger-button>
+        </div>
+    </form>
+</x-modal>
+```
+
+### Inner Content Box
+
+For metadata sections or nested containers:
+```blade
+<div class="rounded-lg bg-steel-900/50 shadow-inner p-3">
+    {{-- Content --}}
+</div>
+```
+
+### User Pills
+
+For participant lists or selected users:
+```blade
+<div class="flex flex-wrap gap-2">
+    @foreach($users as $user)
+        <div class="flex items-center gap-2 bg-steel-900/50 rounded-full px-3 py-1.5 border border-steel-700/30">
+            <x-avatar size="5" :avatar-path="$user->avatar_path" />
+            <span class="text-sm text-steel-200">{{ $user->username }}</span>
+        </div>
+    @endforeach
+</div>
+```
+
+### Empty States
+
+```blade
+<div class="bg-gradient-to-br from-steel-800 to-steel-850 p-6 text-steel-300 rounded-xl shadow-lg shadow-black/20 border border-steel-700/50 text-center">
+    <svg class="w-12 h-12 mx-auto mb-3 text-steel-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        {{-- Icon path --}}
+    </svg>
+    No items found.
+</div>
+```
+
+### Back Links
+
+```blade
+<a href="{{ route('...') }}" class="text-steel-300 hover:text-white transition-colors flex items-center gap-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+    </svg>
+    Back to Section
+</a>
+```
+
+### Unread/Notification Indicators
+
+**Pulsing dot** (for unread items):
+```blade
+<span class="w-2 h-2 rounded-full bg-accent-500 animate-pulse"></span>
+```
+
+**Badge on avatar** (for counts):
+```blade
+<div class="relative">
+    <x-avatar size="6" :avatar-path="$user->avatar_path"/>
+    @if($unreadCount > 0)
+        <span class="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-red-500 ring-2 ring-steel-800"></span>
+    @endif
+</div>
+```
 
 ---
 
 ## Typography
 
-### Font Families
-
-- **Headlines**: `font-headline` (Work Sans) - Navigation, headings, UI elements
-- **Body**: `font-body` (Merriweather) - Post content, paragraphs, readable text
-
-### Heading Sizes
-
-```html
-<h1> - text-4xl font-bold text-white
-<h2> - text-3xl font-bold text-white
-<h3> - text-2xl font-semibold text-steel-100
-```
-
-### Text Styles
-
-- **Page titles**: `text-white font-bold`
-- **Card titles**: `text-white font-semibold text-lg md:text-xl`
-- **Body text**: `text-steel-300`
-- **Muted/secondary**: `text-steel-400`
-- **Links**: `text-accent-400 hover:text-accent-300`
-- **Usernames**: `text-accent-400 hover:text-accent-300 font-medium`
+| Element | Classes |
+|---------|---------|
+| Page heading | `font-bold text-xl text-white` |
+| Section heading | `text-lg font-semibold text-white` |
+| Card title | `text-lg md:text-xl font-semibold text-white` |
+| Body text | `text-steel-300` |
+| Small/muted text | `text-sm text-steel-400` |
+| Links | `text-accent-400 hover:text-accent-300 transition-colors` |
+| Usernames | `text-accent-400 hover:text-accent-300 font-medium` |
+| Labels | `font-semibold text-steel-200` |
+| Uppercase labels | `text-sm font-semibold text-steel-400 uppercase tracking-wide` |
 
 ---
 
-## Layout
+## Spacing & Layout
 
-### Container
-
-```html
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-```
-
-### Page Background
-
-```html
-<div class="min-h-screen bg-gradient-to-br from-steel-950 via-steel-900 to-steel-950">
-```
-
-### Content Cards (Main containers)
-
-```html
-<div class="md:rounded-2xl md:bg-gradient-to-br md:from-steel-800/50 md:to-steel-900/50 md:backdrop-blur-sm md:border md:border-steel-700/30 p-2 md:p-8">
-```
+- Form field spacing: `space-y-6` between fields
+- Card spacing: `mb-3 md:mb-4` or `space-y-4`
+- Button gaps: `gap-3`
+- Padding: `p-4 md:p-6` for cards, `p-2 md:p-8` for containers
+- Labels above inputs: `class="mb-2"` on label
 
 ---
 
-## Components
+## Transitions
 
-### Buttons
-
-**Primary Button** (main actions):
-```html
-<button class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-accent-500 to-accent-600 rounded-lg font-semibold text-white tracking-wide shadow-lg shadow-accent-500/25 hover:shadow-accent-500/40 hover:from-accent-600 hover:to-accent-700 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200">
-```
-
-**Secondary Button** (secondary actions):
-```html
-<button class="inline-flex items-center px-4 py-2 bg-steel-800 border border-steel-600 rounded-lg font-semibold text-sm text-steel-200 tracking-wide shadow-sm hover:bg-steel-700 hover:border-steel-500 hover:text-white hover:scale-[1.02] active:scale-[0.98] transition-all duration-200">
-```
-
-**Danger Button** (destructive actions):
-```html
-<button class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 rounded-lg font-semibold text-xs text-white uppercase tracking-widest shadow-lg shadow-red-500/25 hover:shadow-red-500/40 hover:from-red-600 hover:to-red-700 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200">
-```
-
-### Cards
-
-**Thread/Content Card**:
-```html
-<article class="group bg-gradient-to-br from-steel-800 to-steel-850 p-4 text-steel-100 font-body rounded-xl mb-3 md:mb-5 shadow-lg shadow-black/20 border border-steel-700/50 hover:border-steel-600 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden">
-    {{-- Optional: Accent stripe on left --}}
-    <div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-accent-400 to-accent-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-    {{-- Content --}}
-</article>
-```
-
-**Post Card**:
-```html
-<article class="bg-gradient-to-br from-steel-800 to-steel-850 text-white mb-5 md:flex rounded-xl relative border border-steel-700/50 shadow-xl shadow-black/20 overflow-hidden">
-    {{-- Subtle top accent line --}}
-    <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-steel-600/50 to-transparent"></div>
-
-    {{-- Content --}}
-</article>
-```
-
-### Navigation
-
-**Nav Container**:
-```html
-<nav class="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-steel-900 via-steel-800 to-steel-900 backdrop-blur-md border-b border-steel-700/50 shadow-lg shadow-black/20">
-    {{-- Blue accent line at top --}}
-    <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-accent-500 to-transparent"></div>
-</nav>
-```
-
-**Nav Link (Active)**:
-```html
-<a class="inline-flex items-center px-1 pt-1 border-b-2 border-accent-500 text-sm font-semibold text-white tracking-wide">
-```
-
-**Nav Link (Inactive)**:
-```html
-<a class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-steel-300 tracking-wide hover:text-white hover:border-accent-400/50 transition-all duration-200">
-```
-
-### Section Headers
-
-Use accent pill indicator for visual hierarchy:
-```html
-<h2 class="font-bold text-white leading-tight flex items-center gap-3">
-    <span class="hidden md:inline-block w-1 h-6 bg-accent-500 rounded-full"></span>
-    Section Title
-</h2>
-```
-
-### Inner Content Boxes
-
-For nested content areas (meta info, etc.):
-```html
-<div class="rounded-lg bg-steel-900/50 shadow-inner divide-y md:divide-y-0 divide-steel-700/50">
-```
+Always add transitions to interactive elements:
+- Standard: `transition-colors duration-200`
+- Cards: `transition-all duration-300`
+- Buttons: `transition-all duration-200`
 
 ---
 
-## Effects & Interactions
+## Implementation Checklist
 
-### Shadows
+When updating a page:
 
-| Type | Class | Usage |
-|------|-------|-------|
-| Default | `shadow-lg shadow-black/20` | Cards, elevated elements |
-| Hover | `hover:shadow-xl` | Card hover states |
-| Inner | `shadow-inner` | Inset containers |
-
-### Transitions
-
-Standard transition for interactive elements:
-```html
-transition-all duration-200
-```
-
-For cards with more movement:
-```html
-transition-all duration-300
-```
-
-### Hover Effects
-
-**Cards**: Subtle lift + shadow
-```html
-hover:shadow-xl hover:-translate-y-0.5 hover:border-steel-600
-```
-
-**Buttons**: Scale up slightly
-```html
-hover:scale-[1.02] active:scale-[0.98]
-```
-
-**Links**: Color change
-```html
-hover:text-accent-400 hover:text-accent-300
-```
-
-**Footer links**: Slide right
-```html
-hover:text-white hover:pl-2 transition-all duration-200
-```
-
-### Border Radius
-
-| Element | Class |
-|---------|-------|
-| Cards | `rounded-xl` |
-| Buttons | `rounded-lg` |
-| Containers | `rounded-2xl` (large), `rounded-lg` (medium) |
-| Pills/badges | `rounded-full` |
+1. [ ] Replace `bg-gray-*` with `bg-steel-*`
+2. [ ] Replace `text-gray-*` with `text-steel-*`
+3. [ ] Replace `border-gray-*` with `border-steel-*`
+4. [ ] Replace `blue/indigo` focus states with `accent`
+5. [ ] Remove all `dark:` prefixes
+6. [ ] Use proper page structure with container
+7. [ ] Add header with accent pill indicator
+8. [ ] Use `<x-text-input>`, `<x-select>`, `<x-input-label>` for forms
+9. [ ] Use `<x-primary-button>`, `<x-secondary-button>` for actions
+10. [ ] Add hover states and transitions to interactive elements
+11. [ ] Use gradient backgrounds for cards: `from-steel-800 to-steel-850`
+12. [ ] Add proper shadows: `shadow-lg shadow-black/20`
+13. [ ] Use rounded corners: `rounded-xl` for cards, `rounded-lg` for buttons/inputs
 
 ---
 
-## Decorative Elements
+## File Locations
 
-### Accent Lines
-
-**Top of section** (gradient fade):
-```html
-<div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent-500/50 to-transparent"></div>
-```
-
-**Full accent line**:
-```html
-<div class="h-0.5 bg-gradient-to-r from-transparent via-accent-500 to-transparent"></div>
-```
-
-### Accent Pills
-
-Used next to headings for visual hierarchy:
-```html
-<span class="w-1 h-5 bg-accent-500 rounded-full"></span>
-```
-
----
-
-## Avatars
-
-Standard avatar with ring:
-```html
-<x-avatar size="6" :avatar-path="$user->avatar_path" class="ring-2 ring-steel-700"/>
-```
-
-Sizes: `6`, `8`, `10`, `16`, `20` (default is 28)
-
----
-
-## Forms
-
-### Text Inputs
-
-```html
-<input class="bg-steel-900 border border-steel-700 text-steel-300 rounded-lg focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 transition-all duration-200">
-```
-
----
-
-## Do's and Don'ts
-
-### Do
-- Use `steel-*` colors for backgrounds and borders
-- Use `accent-*` colors sparingly for interactive elements and highlights
-- Apply gradients subtly (`from-steel-800 to-steel-850`)
-- Use consistent border radius (`rounded-xl` for cards, `rounded-lg` for buttons)
-- Add transitions to all interactive elements
-- Use `shadow-black/20` for shadows (not colored shadows)
-
-### Don't
-- Use colored glows or shadows (keep shadows neutral)
-- Use bright colors for large areas
-- Mix different accent colors (stick to blue)
-- Forget hover states on interactive elements
-- Use sharp corners (always round them)
-- Use pure black (`#000`) - use `steel-950` instead
-
----
-
-## File References
-
-- **Tailwind Config**: `tailwind.config.js` - Color definitions
-- **Global CSS**: `resources/css/app.css` - Base styles, utilities
-- **Components**: `resources/views/components/` - Reusable UI components
-- **Layouts**: `resources/views/layouts/` - Page layouts, nav, footer
+- **Components**: `resources/views/components/`
+- **Layouts**: `resources/views/layouts/`
+- **Tailwind Config**: `tailwind.config.js`
+- **Global CSS**: `resources/css/app.css`

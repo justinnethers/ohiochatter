@@ -1,40 +1,37 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Modules\Geography\Http\Controllers;
 
-use App\Models\Region;
-use App\Models\County;
+use App\Http\Controllers\Controller;
 use App\Models\City;
-use App\Services\LocationService;
-use App\Services\SeoService;
+use App\Models\County;
+use App\Models\Region;
+use App\Modules\Geography\Queries\FetchCityData;
+use App\Modules\Geography\Queries\FetchCountyData;
+use App\Modules\Geography\Queries\FetchLocationHierarchy;
+use App\Modules\Geography\Queries\FetchRegionData;
+use App\Modules\Geography\Queries\FetchRegionsWithContent;
+use App\Modules\Geography\Services\GeographySeoService;
+use Illuminate\View\View;
 
 class LocationController extends Controller
 {
     public function __construct(
-        private LocationService $locationService,
-        private SeoService $seoService
+        private GeographySeoService $seoService,
+        private FetchLocationHierarchy $fetchHierarchy
     ) {}
 
-    public function regions()
+    public function index(FetchRegionsWithContent $query): View
     {
-        $regions = $this->locationService->getAllRegionsWithContent();
-
-        $seo = new \App\ValueObjects\SeoData(
-            title: 'Explore Ohio Regions | Local Guides & Community',
-            description: 'Discover all regions of Ohio. Find local guides, community discussions, and resources for every corner of the Buckeye State.',
-            canonical: route('ohio.index'),
-            breadcrumbs: [
-                ['name' => 'Home', 'url' => config('app.url')],
-                ['name' => 'Ohio'],
-            ],
-        );
+        $regions = $query->execute();
+        $seo = $this->seoService->forRegionsIndex();
 
         return view('ohio.regions.index', compact('regions', 'seo'));
     }
 
-    public function showRegion(Region $region)
+    public function showRegion(Region $region, FetchRegionData $query): View
     {
-        $data = $this->locationService->getRegionData($region);
+        $data = $query->execute($region);
         $seo = $this->seoService->forRegion($region);
 
         return view('ohio.regions.show', [
@@ -47,9 +44,11 @@ class LocationController extends Controller
         ]);
     }
 
-    public function showCounty(Region $region, County $county)
+    public function showCounty(Region $region, County $county, FetchCountyData $query): View
     {
-        $data = $this->locationService->getCountyData($county);
+        $this->fetchHierarchy->validateHierarchy($region, $county);
+
+        $data = $query->execute($county);
         $seo = $this->seoService->forCounty($region, $county);
 
         return view('ohio.counties.show', [
@@ -63,9 +62,11 @@ class LocationController extends Controller
         ]);
     }
 
-    public function showCity(Region $region, County $county, City $city)
+    public function showCity(Region $region, County $county, City $city, FetchCityData $query): View
     {
-        $data = $this->locationService->getCityData($city);
+        $this->fetchHierarchy->validateHierarchy($region, $county, $city);
+
+        $data = $query->execute($city);
         $seo = $this->seoService->forCity($region, $county, $city);
 
         return view('ohio.cities.show', [

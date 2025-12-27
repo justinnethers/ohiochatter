@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Scout\Searchable;
 
 class City extends Model
 {
-    use Searchable;
+    use HasFactory, Searchable;
 
     protected $guarded = [];
 
@@ -28,7 +29,8 @@ class City extends Model
 
     protected $casts = [
         'is_major' => 'boolean',
-        'coordinates' => 'array'
+        'coordinates' => 'array',
+        'demographics' => 'array',
     ];
 
     public function toSearchableArray()

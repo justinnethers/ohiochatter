@@ -2,9 +2,7 @@
 
 use App\Http\Controllers\ArchiveController;
 use App\Http\Controllers\BuckEyeGameController;
-use App\Http\Controllers\ContentController;
 use App\Http\Controllers\ForumController;
-use App\Http\Controllers\LocationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReplyController;
 use App\Http\Controllers\SearchController;
@@ -25,43 +23,8 @@ Route::get('forums', function () {
 Route::get('forums/{forum}', [ForumController::class, 'show'])->name('forum.show');
 Route::get('forums/{forum}/{thread}', [ThreadController::class, 'show'])->name('thread.show');
 
-Route::prefix('ohio')->group(function () {
-    // Location Routes - Unified LocationController
-    Route::get('/', [LocationController::class, 'regions'])->name('ohio.index');
-
-    // Guide Routes - Must come BEFORE generic {region} routes to avoid conflicts
-    Route::prefix('guide')->group(function () {
-        // Main Guide Pages
-        Route::get('/', [ContentController::class, 'index'])->name('guide.index');
-        Route::get('/categories', [ContentController::class, 'categories'])->name('guide.categories');
-        Route::get('/category/{category:slug}', [ContentController::class, 'category'])->name('guide.category');
-        Route::get('/article/{content}', [ContentController::class, 'show'])->name('guide.show');
-
-        // Location-based Content Routes
-        Route::get('/{region}', [ContentController::class, 'region'])->name('guide.region');
-        Route::get('/{region}/category/{category:slug}', [ContentController::class, 'regionCategory'])
-            ->name('guide.region.category');
-        Route::get('/{region}/{county}', [ContentController::class, 'county'])->name('guide.county');
-        Route::get('/{region}/{county}/category/{category:slug}', [ContentController::class, 'countyCategory'])
-            ->name('guide.county.category');
-        Route::get('/{region}/{county}/{city}', [ContentController::class, 'city'])->name('guide.city');
-        Route::get('/{region}/{county}/{city}/category/{category:slug}', [ContentController::class, 'cityCategory'])
-            ->name('guide.city.category');
-    });
-
-    // Generic Location Routes - Must come AFTER guide routes
-    Route::get('/{region}', [LocationController::class, 'showRegion'])->name('region.show');
-    Route::get('/{region}/{county}', [LocationController::class, 'showCounty'])->name('county.show');
-    Route::get('/{region}/{county}/{city}', [LocationController::class, 'showCity'])->name('city.show');
-
-    // "Best of" Routes - Redirects to guide equivalents
-    Route::get('/{region}/best/{category:slug}', [ContentController::class, 'regionCategory'])
-        ->name('region.best');
-    Route::get('/{region}/{county}/best/{category:slug}', [ContentController::class, 'countyCategory'])
-        ->name('county.best');
-    Route::get('/{region}/{county}/{city}/best/{category:slug}', [ContentController::class, 'cityCategory'])
-        ->name('city.best');
-});
+// Ohio routes are now loaded from the Geography module
+// See: app/Modules/Geography/routes.php
 
 Route::middleware('auth')->group(function () {
     Route::get('threads/create', [ThreadController::class, 'create']);

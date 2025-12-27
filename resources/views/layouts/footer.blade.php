@@ -53,6 +53,11 @@
                                     Archive
                                 </a>
                             </li>
+                            <li>
+                                <a href="{{ route('ohio.index') }}" class="hover:text-orange-500 transition-colors">
+                                    Ohio Guide
+                                </a>
+                            </li>
                         </ul>
                     </div>
 

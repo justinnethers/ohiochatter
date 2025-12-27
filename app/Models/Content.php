@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Laravel\Scout\Searchable;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Laravel\Scout\Searchable;
 
 class Content extends Model
 {
-    use Searchable, SoftDeletes;
+    use HasFactory, Searchable, SoftDeletes;
 
     protected $table = 'content';
 

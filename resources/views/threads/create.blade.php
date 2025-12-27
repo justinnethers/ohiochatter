@@ -29,15 +29,13 @@
 
                 <div class="space-y-6">
                     <div>
-                        <x-input-label for="title" class="text-steel-200 mb-2">Title</x-input-label>
-                        <x-text-input id="title" name="title" value="{{ old('title') }}" required
-                                      class="w-full bg-steel-900 border-steel-700 text-steel-200 rounded-lg focus:border-accent-500 focus:ring-accent-500/20"/>
+                        <x-input-label for="title" class="mb-2">Title</x-input-label>
+                        <x-text-input id="title" name="title" value="{{ old('title') }}" required/>
                     </div>
 
                     <div>
-                        <x-input-label for="forum_id" class="text-steel-200 mb-2">Forum</x-input-label>
-                        <x-select id="forum_id" name="forum_id"
-                                  class="w-full bg-steel-900 border-steel-700 text-steel-200 rounded-lg focus:border-accent-500 focus:ring-accent-500/20">
+                        <x-input-label for="forum_id" class="mb-2">Forum</x-input-label>
+                        <x-select id="forum_id" name="forum_id">
                             @foreach ($forums as $f)
                                 @if ($f->id == $forum->id)
                                     @php ($selected = ' selected')
@@ -67,23 +65,22 @@
                                    id="has_poll"
                                    name="has_poll"
                                    value="1"
-                                   class="rounded border-steel-600 bg-steel-800 text-accent-500 focus:ring-accent-500/20 focus:ring-offset-steel-900"
+                                   class="rounded border-steel-600 bg-steel-800 text-accent-500 focus:ring-2 focus:ring-accent-500/20 focus:ring-offset-steel-900"
                                 {{ old('has_poll') ? 'checked' : '' }}>
                             <span class="ml-3 font-medium">Add a poll to this thread</span>
                         </label>
 
                         <div id="poll-fields" class="mt-4 space-y-4" style="display: none;">
                             <div>
-                                <x-input-label for="poll_type" class="text-steel-300 mb-2">Poll Type</x-input-label>
-                                <x-select id="poll_type" name="poll_type"
-                                          class="w-full bg-steel-800 border-steel-600 text-steel-200 rounded-lg focus:border-accent-500 focus:ring-accent-500/20">
+                                <x-input-label for="poll_type" class="mb-2">Poll Type</x-input-label>
+                                <x-select id="poll_type" name="poll_type">
                                     <option value="single">Single Choice</option>
                                     <option value="multiple">Multiple Choice</option>
                                 </x-select>
                             </div>
 
                             <div>
-                                <x-input-label class="text-steel-300 mb-2">Poll Options</x-input-label>
+                                <x-input-label class="mb-2">Poll Options</x-input-label>
                                 <div id="poll-options" class="space-y-3">
                                     <div>
                                         <x-text-input
@@ -91,7 +88,6 @@
                                             name="options[]"
                                             placeholder="Option 1"
                                             value="{{ old('options.0') }}"
-                                            class="w-full bg-steel-800 border-steel-600 text-steel-200 rounded-lg focus:border-accent-500 focus:ring-accent-500/20"
                                         />
                                     </div>
                                     <div>
@@ -100,7 +96,6 @@
                                             name="options[]"
                                             placeholder="Option 2"
                                             value="{{ old('options.1') }}"
-                                            class="w-full bg-steel-800 border-steel-600 text-steel-200 rounded-lg focus:border-accent-500 focus:ring-accent-500/20"
                                         />
                                     </div>
                                 </div>
@@ -152,7 +147,7 @@
                 input.type = 'text';
                 input.name = 'options[]';
                 input.placeholder = `Option ${optionCount}`;
-                input.className = 'w-full bg-steel-800 border border-steel-600 text-steel-200 rounded-lg focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 px-3 py-2';
+                input.className = 'border border-steel-600 bg-steel-950 text-steel-100 placeholder-steel-500 focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 rounded-lg shadow-inner p-2.5 px-4 text-base w-full transition-colors duration-200';
 
                 const removeButton = document.createElement('button');
                 removeButton.type = 'button';

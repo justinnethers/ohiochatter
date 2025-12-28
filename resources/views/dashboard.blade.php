@@ -166,8 +166,10 @@
                             <div class="space-y-4">
                                 @foreach($threadsWithActivity as $thread)
                                     @php
-                                        $perPage = auth()->user()->repliesPerPage();
-                                        $page = (int) ceil($thread->replies_count / $perPage);
+                                        $page = \App\Services\ReplyPaginationService::calculatePage(
+                                            $thread->replies_count,
+                                            \App\Services\ReplyPaginationService::getPerPage()
+                                        );
                                     @endphp
                                     <x-thread.card
                                         :thread="$thread"
@@ -221,8 +223,10 @@
                                                 </span>
                                             </p>
                                             @php
-                                                $repPerPage = auth()->user()->repliesPerPage();
-                                                $repPage = (int) ceil($activity['reply_position'] / $repPerPage);
+                                                $repPage = \App\Services\ReplyPaginationService::calculatePage(
+                                                    $activity['reply_position'],
+                                                    \App\Services\ReplyPaginationService::getPerPage()
+                                                );
                                             @endphp
                                             <a href="{{ route('thread.show', ['forum' => $activity['forum_slug'], 'thread' => $activity['thread_slug']]) }}?page={{ $repPage }}#reply-{{ $activity['reply_id'] }}" class="text-steel-400 text-xs hover:text-accent-400 transition-colors truncate block">
                                                 in {{ $activity['thread_title'] }}

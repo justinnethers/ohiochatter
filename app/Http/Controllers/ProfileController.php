@@ -7,10 +7,10 @@ use App\Models\Rep;
 use App\Models\Neg;
 use App\Models\Thread;
 use App\Models\User;
+use App\Services\ReplyPaginationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
@@ -30,10 +30,7 @@ class ProfileController extends Controller
         $recentPosts = $user->replies()
             ->with(['thread', 'thread.forum'])
             ->select('replies.*')
-            ->selectSub(
-                'SELECT COUNT(*) FROM replies r2 WHERE r2.thread_id = replies.thread_id AND r2.id <= replies.id',
-                'position'
-            )
+            ->selectSub(ReplyPaginationService::positionSubquery(), 'position')
             ->latest()
             ->take(10)
             ->get();

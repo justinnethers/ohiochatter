@@ -234,8 +234,10 @@
                                 @foreach($recentPosts as $post)
                                     @if($post->thread)
                                         @php
-                                            $perPage = auth()->check() ? auth()->user()->repliesPerPage() : 20;
-                                            $page = (int) ceil($post->position / $perPage);
+                                            $page = \App\Services\ReplyPaginationService::calculatePage(
+                                                $post->position,
+                                                \App\Services\ReplyPaginationService::getPerPage()
+                                            );
                                         @endphp
                                         <x-thread.card
                                             :thread="$post->thread"

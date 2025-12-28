@@ -6,6 +6,7 @@ use App\Models\Neg;
 use App\Models\Rep;
 use App\Models\Reply;
 use App\Models\Thread;
+use App\Services\ReplyPaginationService;
 use Cmgmyr\Messenger\Models\Thread as MessageThread;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -82,7 +83,7 @@ class DashboardController extends Controller
                 'threads.slug as thread_slug',
                 'forums.slug as forum_slug',
                 'replies.id as reply_id',
-                DB::raw('(SELECT COUNT(*) FROM replies r2 WHERE r2.thread_id = replies.thread_id AND r2.id <= replies.id) as reply_position')
+                DB::raw('(' . ReplyPaginationService::positionSubquery() . ') as reply_position')
             )
             ->orderByDesc('reps.created_at')
             ->limit(5)
@@ -105,7 +106,7 @@ class DashboardController extends Controller
                 'threads.slug as thread_slug',
                 'forums.slug as forum_slug',
                 'replies.id as reply_id',
-                DB::raw('(SELECT COUNT(*) FROM replies r2 WHERE r2.thread_id = replies.thread_id AND r2.id <= replies.id) as reply_position')
+                DB::raw('(' . ReplyPaginationService::positionSubquery() . ') as reply_position')
             )
             ->orderByDesc('negs.created_at')
             ->limit(5)

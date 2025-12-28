@@ -15,11 +15,11 @@ export default {
   theme: {
     extend: {
         fontFamily: {
-            display: ['Merriweather', 'sans-serif'],
-            body: ['Merriweather', 'sans-serif'],
-            sans: ['Work Sans', 'sans-serif'],
-            serif: ['Merriweather', 'serif'],
-            headline: ['Work Sans', 'sans-serif'],
+            display: ['Bitter', 'serif'],
+            body: ['Bitter', 'serif'],
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+            serif: ['Bitter', 'serif'],
+            headline: ['Plus Jakarta Sans', 'sans-serif'],
         },
         colors: {
             // Primary blue accent

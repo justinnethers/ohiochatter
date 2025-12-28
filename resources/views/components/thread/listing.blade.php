@@ -10,15 +10,16 @@
             <span class="text-accent-400 mr-1">&raquo;</span>
         @endif
         @if (auth()->check() && $thread->hasUpdatesFor(auth()->user()))
-            <span class="font-black text-white">
+            <span class="font-bold text-white">
+                <span class="inline-block w-2 h-2 bg-accent-400 rounded-full mr-2 animate-pulse"></span>
                 @if ($thread->poll)
                     <span class="text-amber-400">Poll:</span>
                 @endif{{ $thread->title }}
             </span>
         @else
-            <span class="text-steel-200 group-hover:text-white transition-colors">
+            <span class="font-normal text-steel-300">
                 @if ($thread->poll)
-                    <span class="text-amber-400">Poll:</span>
+                    <span class="text-amber-400/70">Poll:</span>
                 @endif{{ $thread->title }}
             </span>
         @endif

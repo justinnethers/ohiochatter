@@ -8,16 +8,41 @@
     </h3>
 
     @if($hasVoted)
-        {{-- Results View (Answered State) --}}
+        {{-- Results View (Answered State) - Sorted by votes --}}
         <div class="rounded-lg bg-steel-900/50 shadow-inner p-4 space-y-4">
-            @foreach($poll->pollOptions as $option)
-                <div>
+            @foreach($this->rankedOptions as $index => $option)
+                @php
+                    $rank = $index + 1;
+                    $percentage = $this->getPercentage($option);
+                    // Only show medal colors if there are actual votes
+                    $hasVotes = $option->votes->count() > 0;
+                @endphp
+                <div class="relative">
                     <div class="flex flex-col sm:flex-row sm:justify-between mb-2">
-                        <span class="break-words text-steel-100 font-medium">{{ $option->label }}</span>
-                        <span class="text-sm text-accent-400 font-semibold">{{ $this->getPercentage($option) }}%</span>
+                        <span class="break-words text-steel-100 font-medium flex items-center gap-2">
+                            @if($rank === 1 && $hasVotes)
+                                <span class="text-amber-400">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                                    </svg>
+                                </span>
+                            @endif
+                            {{ $option->label }}
+                        </span>
+                        <span class="text-sm font-semibold @if($rank === 1 && $hasVotes) text-amber-400 @elseif($rank === 2 && $hasVotes) text-slate-300 @elseif($rank === 3 && $hasVotes) text-orange-400 @else text-steel-400 @endif">
+                            {{ $percentage }}%
+                        </span>
                     </div>
                     <div class="w-full bg-steel-950 rounded-full overflow-hidden h-3">
-                        <div class="bg-gradient-to-r from-accent-500 to-accent-600 rounded-full h-full transition-all duration-500 ease-out" style="width: {{ $this->getPercentage($option) }}%"></div>
+                        @if($rank === 1 && $hasVotes)
+                            <div class="bg-gradient-to-r from-amber-400 to-yellow-500 rounded-full h-full transition-all duration-500 ease-out" style="width: {{ $percentage }}%"></div>
+                        @elseif($rank === 2 && $hasVotes)
+                            <div class="bg-gradient-to-r from-slate-300 to-slate-400 rounded-full h-full transition-all duration-500 ease-out" style="width: {{ $percentage }}%"></div>
+                        @elseif($rank === 3 && $hasVotes)
+                            <div class="bg-gradient-to-r from-orange-400 to-orange-500 rounded-full h-full transition-all duration-500 ease-out" style="width: {{ $percentage }}%"></div>
+                        @else
+                            <div class="bg-gradient-to-r from-steel-500 to-steel-600 rounded-full h-full transition-all duration-500 ease-out" style="width: {{ $percentage }}%"></div>
+                        @endif
                     </div>
                     <span class="text-xs text-steel-400 mt-1.5 block">{{ $option->votes->count() }} {{ \Illuminate\Support\Str::plural('vote', $option->votes->count()) }}</span>
                 </div>
@@ -34,24 +59,36 @@
         <div class="space-y-3">
             @if($poll->type === 'single')
                 @foreach($poll->pollOptions as $option)
-                    <label class="flex items-center cursor-pointer p-3 rounded-lg bg-steel-900/50 border border-steel-700/50 hover:border-accent-500/50 hover:bg-steel-900 transition-all duration-200 group">
+                    <label class="group/option relative flex items-center cursor-pointer p-3 rounded-lg bg-steel-900/50 border border-steel-700/50 hover:border-accent-500/50 hover:bg-steel-900 has-[:checked]:border-accent-500 has-[:checked]:bg-steel-900 has-[:checked]:shadow-[0_0_15px_-3px] has-[:checked]:shadow-accent-500/30 transition-all duration-200">
                         <input type="radio"
                                wire:model.live="selectedOption"
                                name="poll_choice"
                                value="{{ $option->id }}"
-                               class="w-4 h-4 text-accent-500 bg-steel-950 border-steel-600 focus:ring-2 focus:ring-accent-500/20 focus:ring-offset-0">
-                        <span class="ml-3 text-steel-200 group-hover:text-steel-100 transition-colors">{{ $option->label }}</span>
+                               class="sr-only">
+                        {{-- Custom radio indicator --}}
+                        <div class="relative w-5 h-5 shrink-0 rounded-full border-2 border-steel-500 bg-steel-950 group-has-[:checked]/option:border-accent-500 transition-all duration-200 flex items-center justify-center">
+                            {{-- Inner dot with scale animation --}}
+                            <div class="w-2.5 h-2.5 rounded-full bg-gradient-to-br from-accent-400 to-accent-600 scale-0 group-has-[:checked]/option:scale-100 transition-transform duration-200 ease-out"></div>
+                        </div>
+                        <span class="ml-3 text-steel-200 group-hover/option:text-steel-100 group-has-[:checked]/option:text-white transition-colors">{{ $option->label }}</span>
                     </label>
                 @endforeach
             @else
                 <p class="text-sm text-steel-400 mb-2">Select all that apply:</p>
                 @foreach($poll->pollOptions as $option)
-                    <label class="flex items-center cursor-pointer p-3 rounded-lg bg-steel-900/50 border border-steel-700/50 hover:border-accent-500/50 hover:bg-steel-900 transition-all duration-200 group">
+                    <label class="group/option relative flex items-center cursor-pointer p-3 rounded-lg bg-steel-900/50 border border-steel-700/50 hover:border-accent-500/50 hover:bg-steel-900 has-[:checked]:border-accent-500 has-[:checked]:bg-steel-900 has-[:checked]:shadow-[0_0_15px_-3px] has-[:checked]:shadow-accent-500/30 transition-all duration-200">
                         <input type="checkbox"
                                wire:model.live="selectedOptions"
                                value="{{ $option->id }}"
-                               class="w-4 h-4 rounded text-accent-500 bg-steel-950 border-steel-600 focus:ring-2 focus:ring-accent-500/20 focus:ring-offset-0">
-                        <span class="ml-3 break-words flex-1 text-steel-200 group-hover:text-steel-100 transition-colors">{{ $option->label }}</span>
+                               class="sr-only">
+                        {{-- Custom checkbox indicator --}}
+                        <div class="relative w-5 h-5 shrink-0 rounded border-2 border-steel-500 bg-steel-950 group-has-[:checked]/option:border-accent-500 group-has-[:checked]/option:bg-gradient-to-br group-has-[:checked]/option:from-accent-500 group-has-[:checked]/option:to-accent-600 transition-all duration-200 flex items-center justify-center">
+                            {{-- Checkmark icon --}}
+                            <svg class="w-3 h-3 text-white scale-0 group-has-[:checked]/option:scale-100 transition-transform duration-200 ease-out" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+                        <span class="ml-3 break-words flex-1 text-steel-200 group-hover/option:text-steel-100 group-has-[:checked]/option:text-white transition-colors">{{ $option->label }}</span>
                     </label>
                 @endforeach
             @endif

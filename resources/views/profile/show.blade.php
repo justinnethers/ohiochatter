@@ -233,9 +233,13 @@
                             <div class="space-y-4">
                                 @foreach($recentPosts as $post)
                                     @if($post->thread)
+                                        @php
+                                            $perPage = auth()->check() ? auth()->user()->repliesPerPage() : 20;
+                                            $page = (int) ceil($post->position / $perPage);
+                                        @endphp
                                         <x-thread.card
                                             :thread="$post->thread"
-                                            :href="$post->thread->path() . '#reply-' . $post->id"
+                                            :href="$post->thread->path() . '?page=' . $page . '#reply-' . $post->id"
                                             :timestamp="$post->created_at"
                                             :excerpt="Str::limit(strip_tags($post->body), 200)"
                                         />

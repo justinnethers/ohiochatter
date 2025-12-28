@@ -26,9 +26,14 @@ class ProfileController extends Controller
             $user->increment('profile_views');
         }
 
-        // Get user's recent posts (replies)
+        // Get user's recent posts (replies) with position for pagination
         $recentPosts = $user->replies()
             ->with(['thread', 'thread.forum'])
+            ->select('replies.*')
+            ->selectSub(
+                'SELECT COUNT(*) FROM replies r2 WHERE r2.thread_id = replies.thread_id AND r2.id <= replies.id',
+                'position'
+            )
             ->latest()
             ->take(10)
             ->get();

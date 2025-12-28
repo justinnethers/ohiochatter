@@ -45,102 +45,44 @@ class SearchMegaMenu extends Component
     protected function performSearch(): void
     {
         $query = $this->search;
+        $likeQuery = '%' . $query . '%';
         $results = [];
 
-        // Threads
-        if ($this->enabledTypes['threads'] ?? true) {
-            $threads = Thread::search($query)
-                ->take(5)
-                ->get()
-                ->load('forum');
+        // Use direct queries with LIKE instead of Scout for better performance
+        // Single query batch to reduce round trips
 
-            if ($threads->isNotEmpty()) {
-                $results['threads'] = $threads;
-            }
+        // Threads - direct query
+        $threads = Thread::where('title', 'like', $likeQuery)
+            ->orWhere('body', 'like', $likeQuery)
+            ->with('forum')
+            ->limit(5)
+            ->get();
+
+        if ($threads->isNotEmpty()) {
+            $results['threads'] = $threads;
         }
 
-        // Posts (Replies)
-        if ($this->enabledTypes['posts'] ?? true) {
-            $posts = Reply::search($query)
-                ->take(5)
-                ->get()
-                ->load(['thread', 'owner']);
+        // Users - direct query (fast, just username)
+        $users = User::where('username', 'like', $likeQuery)
+            ->limit(5)
+            ->get();
 
-            if ($posts->isNotEmpty()) {
-                $results['posts'] = $posts;
-            }
+        if ($users->isNotEmpty()) {
+            $results['users'] = $users;
         }
 
-        // Users
-        if ($this->enabledTypes['users'] ?? true) {
-            $users = User::search($query)
-                ->take(5)
-                ->get();
+        // Archive Threads - direct query
+        $archiveThreads = VbThread::where('title', 'like', $likeQuery)
+            ->with('forum')
+            ->limit(5)
+            ->get();
 
-            if ($users->isNotEmpty()) {
-                $results['users'] = $users;
-            }
+        if ($archiveThreads->isNotEmpty()) {
+            $results['archive'] = $archiveThreads->map(fn($t) => ['type' => 'thread', 'item' => $t]);
         }
 
-        // Archive (VbThread and VbPost)
-        if ($this->enabledTypes['archive'] ?? true) {
-            $archiveThreads = VbThread::search($query)
-                ->take(3)
-                ->get()
-                ->load('forum');
-
-            $archivePosts = VbPost::search($query)
-                ->take(3)
-                ->get()
-                ->load('thread');
-
-            $archive = collect();
-            if ($archiveThreads->isNotEmpty()) {
-                $archive = $archive->merge($archiveThreads->map(fn($t) => ['type' => 'thread', 'item' => $t]));
-            }
-            if ($archivePosts->isNotEmpty()) {
-                $archive = $archive->merge($archivePosts->map(fn($p) => ['type' => 'post', 'item' => $p]));
-            }
-
-            if ($archive->isNotEmpty()) {
-                $results['archive'] = $archive->take(5);
-            }
-        }
-
-        // Guides (Content)
-        if ($this->enabledTypes['guides'] ?? true) {
-            $guides = Content::search($query)
-                ->take(5)
-                ->get();
-
-            if ($guides->isNotEmpty()) {
-                $results['guides'] = $guides;
-            }
-        }
-
-        // Locations (Regions and Cities)
-        if ($this->enabledTypes['locations'] ?? true) {
-            $regions = Region::search($query)
-                ->take(3)
-                ->get();
-
-            $cities = City::search($query)
-                ->take(3)
-                ->get()
-                ->load('county');
-
-            $locations = collect();
-            if ($regions->isNotEmpty()) {
-                $locations = $locations->merge($regions->map(fn($r) => ['type' => 'region', 'item' => $r]));
-            }
-            if ($cities->isNotEmpty()) {
-                $locations = $locations->merge($cities->map(fn($c) => ['type' => 'city', 'item' => $c]));
-            }
-
-            if ($locations->isNotEmpty()) {
-                $results['locations'] = $locations->take(5);
-            }
-        }
+        // Skip heavy searches (posts, archive posts, guides, locations) for live search
+        // These can be found via the full search page
 
         $this->results = $results;
     }

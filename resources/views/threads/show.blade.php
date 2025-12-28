@@ -2,7 +2,7 @@
     <x-slot name="meta">{{ $thread->meta_description }}</x-slot>
     <x-slot name="title">{{ $thread->title }}</x-slot>
     <x-slot name="header">
-        <h2 class="font-bold text-white leading-tight flex items-center gap-3">
+        <h2 class="text-lg md:text-xl font-bold text-white leading-tight flex items-center gap-3">
             <span class="hidden md:inline-block w-1 h-6 bg-accent-500 rounded-full"></span>
             {{ $thread->title }}
         </h2>

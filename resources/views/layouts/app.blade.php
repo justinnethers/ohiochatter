@@ -149,9 +149,9 @@
 
         @if (isset($header))
             <header x-data="{}"
-                    x-bind:class="{ 'py-4 top-16': !$store.scroll.scrolled, 'py-2 top-10': $store.scroll.scrolled }"
+                    x-bind:class="{ 'py-2 md:py-4 top-16': !$store.scroll.scrolled, 'py-1.5 md:py-2 top-10': $store.scroll.scrolled }"
                     class="bg-gradient-to-r from-steel-800 via-steel-800 to-steel-850 border-b border-steel-700/50 shadow-xl shadow-black/20 sticky z-40 transition-all duration-300">
-                <div x-bind:class="{ 'text-xl': !$store.scroll.scrolled, 'text-lg': $store.scroll.scrolled }"
+                <div x-bind:class="{ 'text-base md:text-lg': !$store.scroll.scrolled, 'text-sm md:text-base': $store.scroll.scrolled }"
                      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     {{ $header }}
                 </div>

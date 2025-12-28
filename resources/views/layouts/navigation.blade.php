@@ -10,7 +10,7 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a class="text-white font-bold text-xl flex items-center gap-2 group" href="{{ route('thread.index') }}">
+                    <a class="text-white font-bold text-xl flex items-center gap-2 group" href="{{ route('home') }}">
                         <x-application-logo class="block h-9 w-auto fill-current text-white group-hover:text-accent-400 transition-colors duration-200"/>
                     </a>
                 </div>

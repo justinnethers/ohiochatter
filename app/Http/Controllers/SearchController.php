@@ -17,7 +17,7 @@ class SearchController extends Controller
 
 
         if (empty($query)) {
-            return redirect()->route('search.index');
+            return redirect()->route('home');
         }
 
         $page = [

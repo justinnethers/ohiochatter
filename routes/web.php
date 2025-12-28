@@ -4,6 +4,7 @@ use App\Http\Controllers\ArchiveController;
 use App\Http\Controllers\BuckEyeGameController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ForumController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReplyController;
 use App\Http\Controllers\SearchController;
@@ -11,9 +12,7 @@ use App\Http\Controllers\ThreadController;
 use App\Modules\Messages\Http\Controllers\MessageController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('', function () {
-    return redirect('threads');
-});
+Route::get('/', HomeController::class)->name('home');
 
 Route::get('threads', [ThreadController::class, 'index'])->name('thread.index');
 

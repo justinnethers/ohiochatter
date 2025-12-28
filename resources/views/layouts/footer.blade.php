@@ -9,7 +9,7 @@
             <div class="order-last lg:order-first">
                 <div class="flex flex-col items-center lg:items-start">
                     <div class="w-40 h-40 bg-white p-3 rounded-2xl shadow-xl shadow-black/30 mb-5 hover:scale-105 transition-transform duration-300">
-                        <a href="/">
+                        <a href="{{ route('home') }}">
                             <img src="{{ asset('images/logo.png') }}" alt="Site Logo" class="w-full h-full object-contain">
                         </a>
                     </div>

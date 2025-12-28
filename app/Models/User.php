@@ -20,6 +20,11 @@ class User extends Authenticatable implements FilamentUser
 {
     use HasApiTokens, HasFactory, Notifiable, Messagable, Searchable;
 
+    /**
+     * Cache of thread view records for this request.
+     */
+    protected ?array $threadViewsCache = null;
+
     protected $fillable = [
         'username',
         'email',
@@ -84,6 +89,9 @@ class User extends Authenticatable implements FilamentUser
                 ['user_id' => $this->id, 'thread_id' => $thread->id],
                 ['last_view' => Carbon::now()]
             );
+
+        // Clear the cache so subsequent checks reflect the update
+        $this->threadViewsCache = null;
     }
 
     /**
@@ -97,13 +105,20 @@ class User extends Authenticatable implements FilamentUser
 
     /**
      * Retrieve the thread view record for the user.
+     * Uses per-request caching to avoid N+1 queries on thread lists.
      */
     public function threadViewRecord(Thread $thread): ?object
     {
-        return DB::table('threads_users_views')
-            ->where('user_id', $this->id)
-            ->where('thread_id', $thread->id)
-            ->first();
+        // Load all thread view records for this user on first access
+        if ($this->threadViewsCache === null) {
+            $this->threadViewsCache = DB::table('threads_users_views')
+                ->where('user_id', $this->id)
+                ->get()
+                ->keyBy('thread_id')
+                ->toArray();
+        }
+
+        return $this->threadViewsCache[$thread->id] ?? null;
     }
 
     /**
@@ -116,9 +131,15 @@ class User extends Authenticatable implements FilamentUser
 
     /**
      * Update the user's last activity timestamp.
+     * Rate-limited to once per minute to reduce DB writes.
      */
     public function touchActivity(): void
     {
+        // Only update if last activity was more than a minute ago
+        if ($this->last_activity && $this->last_activity->diffInSeconds(now()) < 60) {
+            return;
+        }
+
         $this->last_activity = $this->freshTimestamp();
         $this->save();
     }

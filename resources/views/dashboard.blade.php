@@ -153,27 +153,18 @@
                         <h3 class="text-lg font-semibold text-white mb-4">New Activity</h3>
 
                         @if($threadsWithActivity->count() > 0)
-                            <div class="space-y-3">
+                            <div class="space-y-4">
                                 @foreach($threadsWithActivity as $thread)
-                                    <a href="{{ $thread->path() }}"
-                                       class="block p-4 rounded-lg bg-steel-900/50 border border-steel-700/30 hover:border-accent-500/50 hover:bg-steel-900 transition-all duration-200 group">
-                                        <div class="flex items-start justify-between gap-4">
-                                            <div class="flex-1 min-w-0">
-                                                <span class="font-medium text-white group-hover:text-accent-400 transition-colors">
-                                                    {{ $thread->title }}
-                                                </span>
-                                                <div class="flex items-center gap-3 mt-2 text-sm text-steel-400">
-                                                    <span class="inline-flex items-center px-2 py-0.5 bg-{{ $thread->forum->color ?? 'steel' }}-500/20 text-{{ $thread->forum->color ?? 'steel' }}-400 rounded text-xs font-medium">
-                                                        {{ $thread->forum->name }}
-                                                    </span>
-                                                    @if($thread->lastReply)
-                                                        <span>{{ $thread->lastReply->owner->username }} replied {{ $thread->lastReply->created_at->diffForHumans() }}</span>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                            <span class="flex-shrink-0 w-2 h-2 bg-accent-500 rounded-full mt-2"></span>
-                                        </div>
-                                    </a>
+                                    @php
+                                        $perPage = auth()->user()->repliesPerPage();
+                                        $page = (int) ceil($thread->replies_count / $perPage);
+                                    @endphp
+                                    <x-thread.card
+                                        :thread="$thread"
+                                        :href="$thread->path('?page=' . $page . '#reply-' . $thread->lastReply->id)"
+                                        :timestamp="$thread->lastReply->created_at"
+                                        :reply-count="$thread->replies_count"
+                                    />
                                 @endforeach
                             </div>
                         @else
@@ -219,7 +210,11 @@
                                                     gave you a {{ $activity['type'] === 'rep' ? 'rep' : 'neg' }}
                                                 </span>
                                             </p>
-                                            <a href="{{ route('thread.show', ['forum' => $activity['forum_slug'], 'thread' => $activity['thread_slug']]) }}" class="text-steel-400 text-xs hover:text-accent-400 transition-colors truncate block">
+                                            @php
+                                                $repPerPage = auth()->user()->repliesPerPage();
+                                                $repPage = (int) ceil($activity['reply_position'] / $repPerPage);
+                                            @endphp
+                                            <a href="{{ route('thread.show', ['forum' => $activity['forum_slug'], 'thread' => $activity['thread_slug']]) }}?page={{ $repPage }}#reply-{{ $activity['reply_id'] }}" class="text-steel-400 text-xs hover:text-accent-400 transition-colors truncate block">
                                                 in {{ $activity['thread_title'] }}
                                             </a>
                                         </div>

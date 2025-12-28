@@ -72,11 +72,19 @@ class DashboardController extends Controller
             ->join('threads', 'replies.thread_id', '=', 'threads.id')
             ->join('forums', 'threads.forum_id', '=', 'forums.id')
             ->join('users', 'reps.user_id', '=', 'users.id')
-            ->select('reps.created_at', 'users.username', 'threads.title as thread_title', 'threads.slug as thread_slug', 'forums.slug as forum_slug')
+            ->select(
+                'reps.created_at',
+                'users.username',
+                'threads.title as thread_title',
+                'threads.slug as thread_slug',
+                'forums.slug as forum_slug',
+                'replies.id as reply_id',
+                DB::raw('(SELECT COUNT(*) FROM replies r2 WHERE r2.thread_id = replies.thread_id AND r2.id <= replies.id) as reply_position')
+            )
             ->orderByDesc('reps.created_at')
             ->limit(5)
             ->get()
-            ->map(fn($r) => ['type' => 'rep', 'username' => $r->username, 'thread_title' => $r->thread_title, 'thread_slug' => $r->thread_slug, 'forum_slug' => $r->forum_slug, 'created_at' => $r->created_at]);
+            ->map(fn($r) => ['type' => 'rep', 'username' => $r->username, 'thread_title' => $r->thread_title, 'thread_slug' => $r->thread_slug, 'forum_slug' => $r->forum_slug, 'reply_id' => $r->reply_id, 'reply_position' => $r->reply_position, 'created_at' => $r->created_at]);
 
         $negs = DB::table('negs')
             ->join('replies', function ($join) use ($userId) {
@@ -87,11 +95,19 @@ class DashboardController extends Controller
             ->join('threads', 'replies.thread_id', '=', 'threads.id')
             ->join('forums', 'threads.forum_id', '=', 'forums.id')
             ->join('users', 'negs.user_id', '=', 'users.id')
-            ->select('negs.created_at', 'users.username', 'threads.title as thread_title', 'threads.slug as thread_slug', 'forums.slug as forum_slug')
+            ->select(
+                'negs.created_at',
+                'users.username',
+                'threads.title as thread_title',
+                'threads.slug as thread_slug',
+                'forums.slug as forum_slug',
+                'replies.id as reply_id',
+                DB::raw('(SELECT COUNT(*) FROM replies r2 WHERE r2.thread_id = replies.thread_id AND r2.id <= replies.id) as reply_position')
+            )
             ->orderByDesc('negs.created_at')
             ->limit(5)
             ->get()
-            ->map(fn($n) => ['type' => 'neg', 'username' => $n->username, 'thread_title' => $n->thread_title, 'thread_slug' => $n->thread_slug, 'forum_slug' => $n->forum_slug, 'created_at' => $n->created_at]);
+            ->map(fn($n) => ['type' => 'neg', 'username' => $n->username, 'thread_title' => $n->thread_title, 'thread_slug' => $n->thread_slug, 'forum_slug' => $n->forum_slug, 'reply_id' => $n->reply_id, 'reply_position' => $n->reply_position, 'created_at' => $n->created_at]);
 
         $recentRepActivity = $reps->merge($negs)
             ->sortByDesc('created_at')
@@ -105,21 +121,27 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
-        // Threads with activity - simplified
-        $threadIds = DB::table('replies')
-            ->where('user_id', $userId)
-            ->select('thread_id', DB::raw('MAX(created_at) as last_reply'))
-            ->groupBy('thread_id')
-            ->orderByDesc('last_reply')
-            ->limit(10)
-            ->pluck('thread_id');
+        // Threads with new activity from others - single efficient query
+        $threadIdsWithActivity = DB::select("
+            SELECT t.id, lr.created_at as last_reply_at
+            FROM threads t
+            INNER JOIN (
+                SELECT thread_id, MAX(id) as last_reply_id
+                FROM replies
+                GROUP BY thread_id
+            ) latest ON t.id = latest.thread_id
+            INNER JOIN replies lr ON lr.id = latest.last_reply_id
+            WHERE lr.user_id != ?
+            AND t.id IN (SELECT DISTINCT thread_id FROM replies WHERE user_id = ?)
+            ORDER BY lr.created_at DESC
+            LIMIT 5
+        ", [$userId, $userId]);
 
-        $threadsWithActivity = Thread::whereIn('id', $threadIds)
+        $threadsWithActivity = Thread::whereIn('id', collect($threadIdsWithActivity)->pluck('id'))
             ->with(['lastReply.owner', 'forum'])
+            ->withCount('replies')
             ->get()
-            ->filter(fn($t) => $t->lastReply && $t->lastReply->user_id !== $userId)
-            ->sortByDesc(fn($t) => $t->lastReply->created_at)
-            ->take(5);
+            ->sortByDesc(fn($t) => $t->lastReply->created_at);
 
         // Game stats
         $gameStats = $user->gameStats;

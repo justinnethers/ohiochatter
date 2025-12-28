@@ -36,13 +36,6 @@
                         </a>
                     </div>
                 </div>
-
-                {{-- User Activity Section (authenticated only) --}}
-                @auth
-                    @if($threadsWithActivity->isNotEmpty())
-                        <x-home.user-activity :threads="$threadsWithActivity" :repScore="$repScore" />
-                    @endif
-                @endauth
             </div>
 
             {{-- Sidebar --}}

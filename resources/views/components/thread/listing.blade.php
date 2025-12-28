@@ -27,13 +27,13 @@
             <span class="font-bold {{ $thread->locked ? 'text-steel-400 group-hover/title:text-steel-300' : 'text-white group-hover/title:text-accent-400' }} transition-colors duration-200 inline-flex items-center">
                 <span class="w-2.5 h-2.5 bg-accent-400 rounded-full mr-2.5 flex-shrink-0"></span>
                 @if ($thread->poll)
-                    <span class="text-amber-400">Poll:</span>
+                    <span class="text-amber-400 mr-1">Poll:</span>
                 @endif{{ $thread->title }}
             </span>
         @else
             <span class="font-normal {{ $thread->locked ? 'text-steel-500 group-hover/title:text-steel-400' : 'text-steel-300 group-hover/title:text-accent-400' }} transition-colors duration-200">
                 @if ($thread->poll)
-                    <span class="text-amber-400/70">Poll:</span>
+                    <span class="text-amber-400/70 mr-1">Poll:</span>
                 @endif{{ $thread->title }}
             </span>
         @endif

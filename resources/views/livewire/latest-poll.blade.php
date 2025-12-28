@@ -37,10 +37,10 @@
             @elseif($hasVoted)
                 {{-- Voted view - show results --}}
                 <div class="space-y-2 mb-3">
-                    @foreach($poll->pollOptions->sortByDesc(fn($o) => $o->votes->count())->take(4) as $index => $option)
+                    @foreach($poll->pollOptions->sortByDesc(fn($o) => $o->votes->count())->take(4) as $option)
                         @php
                             $percentage = $this->getPercentage($option);
-                            $isFirst = $index === 0 && $option->votes->count() > 0;
+                            $isFirst = $loop->first && $option->votes->count() > 0;
                         @endphp
                         <div>
                             <div class="flex justify-between text-xs mb-1">

@@ -17,6 +17,9 @@ class DashboardController extends Controller
         $user = auth()->user();
         $userId = $user->id;
 
+        // Track dashboard visits
+        $user->increment('dashboard_visits');
+
         // Cache everything expensive for 5 minutes
         $dashboardData = Cache::remember("user:{$userId}:dashboard", 300, function () use ($userId) {
             // Rep counts using JOINs

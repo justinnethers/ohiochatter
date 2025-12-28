@@ -32,6 +32,16 @@
                                 </a>
                             </div>
                         </div>
+                        <div class="mt-4 pt-4 border-t border-steel-700/50 grid grid-cols-2 gap-4 text-center">
+                            <div>
+                                <div class="text-lg font-bold text-white">{{ number_format($user->profile_views) }}</div>
+                                <div class="text-steel-400 text-xs">Profile Views</div>
+                            </div>
+                            <div>
+                                <div class="text-lg font-bold text-white">{{ number_format($user->dashboard_visits) }}</div>
+                                <div class="text-steel-400 text-xs">Dashboard Visits</div>
+                            </div>
+                        </div>
                     </div>
 
                     {{-- Reputation Score --}}

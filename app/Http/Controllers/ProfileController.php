@@ -21,6 +21,11 @@ class ProfileController extends Controller
      */
     public function show(User $user): View
     {
+        // Track profile views (don't count if viewing own profile)
+        if (auth()->id() !== $user->id) {
+            $user->increment('profile_views');
+        }
+
         // Get user's recent posts (replies)
         $recentPosts = $user->replies()
             ->with(['thread', 'thread.forum'])

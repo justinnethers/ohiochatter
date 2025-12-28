@@ -97,7 +97,7 @@
                                     <dd class="text-white font-medium">{{ $user->last_activity->diffForHumans() }}</dd>
                                 </div>
                             @endif
-                            <div class="flex justify-between items-center py-2">
+                            <div class="flex justify-between items-center py-2 border-b border-steel-700/50">
                                 <dt class="text-steel-400">Last Post</dt>
                                 <dd class="text-white font-medium">
                                     @if($lastPostDate)
@@ -106,6 +106,10 @@
                                         Never
                                     @endif
                                 </dd>
+                            </div>
+                            <div class="flex justify-between items-center py-2">
+                                <dt class="text-steel-400">Profile Views</dt>
+                                <dd class="text-white font-medium">{{ number_format($user->profile_views) }}</dd>
                             </div>
                         </dl>
                     </div>

@@ -215,19 +215,7 @@
 
                             <div class="space-y-4">
                                 @foreach($threads as $thread)
-                                    <a href="{{ $thread->path() }}"
-                                       class="block p-4 rounded-lg bg-steel-900/50 border border-steel-700/30 hover:border-steel-600 hover:bg-steel-900 transition-all duration-200 group">
-                                        <span class="font-medium text-white group-hover:text-accent-400 transition-colors">
-                                            {{ $thread->title }}
-                                        </span>
-                                        <div class="flex items-center gap-3 mt-2 text-sm text-steel-400">
-                                            <span class="inline-flex items-center px-3 py-1 bg-{{ $thread->forum->color }}-500 rounded-full text-xs font-semibold text-white">
-                                                {{ $thread->forum->name }}
-                                            </span>
-                                            <span>{{ $thread->created_at->diffForHumans() }}</span>
-                                            <span>{{ $thread->replyCount() }} {{ Str::plural('reply', $thread->replyCount()) }}</span>
-                                        </div>
-                                    </a>
+                                    <x-thread.card :thread="$thread" :reply-count="$thread->replyCount()" />
                                 @endforeach
                             </div>
                         </div>
@@ -241,21 +229,12 @@
                             <div class="space-y-4">
                                 @foreach($recentPosts as $post)
                                     @if($post->thread)
-                                        <a href="{{ $post->thread->path() }}#reply-{{ $post->id }}"
-                                           class="block p-4 rounded-lg bg-steel-900/50 border border-steel-700/30 hover:border-steel-600 hover:bg-steel-900 transition-all duration-200 group">
-                                            <span class="font-medium text-white group-hover:text-accent-400 transition-colors">
-                                                {{ $post->thread->title }}
-                                            </span>
-                                            <div class="flex items-center gap-3 mt-2 text-sm text-steel-400">
-                                                <span class="inline-flex items-center px-3 py-1 bg-{{ $post->thread->forum->color }}-500 rounded-full text-xs font-semibold text-white">
-                                                    {{ $post->thread->forum->name }}
-                                                </span>
-                                                <span>{{ $post->created_at->diffForHumans() }}</span>
-                                            </div>
-                                            <div class="mt-2 text-steel-300 text-sm line-clamp-2">
-                                                {{ Str::limit(strip_tags($post->body), 200) }}
-                                            </div>
-                                        </a>
+                                        <x-thread.card
+                                            :thread="$post->thread"
+                                            :href="$post->thread->path() . '#reply-' . $post->id"
+                                            :timestamp="$post->created_at"
+                                            :excerpt="Str::limit(strip_tags($post->body), 200)"
+                                        />
                                     @else
                                         <div class="p-4 rounded-lg bg-steel-900/50 border border-steel-700/30">
                                             <span class="font-medium text-steel-500 italic">Deleted thread</span>

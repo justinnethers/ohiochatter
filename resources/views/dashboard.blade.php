@@ -239,25 +239,7 @@
 
                             <div class="space-y-4">
                                 @foreach($userThreads as $thread)
-                                    <div class="group p-4 rounded-xl bg-steel-900/50 border border-steel-700/30 hover:border-steel-600 hover:bg-steel-900 transition-all duration-200">
-                                        <a href="{{ $thread->path() }}" class="text-lg text-white font-semibold group-hover:text-accent-400 transition-colors block mb-3">
-                                            {{ $thread->title }}
-                                        </a>
-                                        <div class="flex items-center justify-between">
-                                            <div class="flex items-center gap-3">
-                                                <a href="{{ route('forum.show', $thread->forum) }}" class="inline-flex items-center px-3 py-1 bg-{{ $thread->forum->color ?? 'steel' }}-500 rounded-full text-sm font-semibold text-white shadow-lg shadow-black/20 hover:bg-{{ $thread->forum->color ?? 'steel' }}-600 transition-all duration-200">
-                                                    {{ $thread->forum->name }}
-                                                </a>
-                                                <span class="text-sm text-steel-400">{{ $thread->created_at->diffForHumans() }}</span>
-                                            </div>
-                                            <div class="inline-flex items-center gap-2 px-3 py-1 bg-steel-900/70 rounded-full border border-steel-700/50">
-                                                <svg class="w-4 h-4 text-steel-400" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zm-4 0H9v2h2V9z" clip-rule="evenodd"/>
-                                                </svg>
-                                                <span class="font-bold text-steel-100">{{ number_format($thread->replies_count) }}</span>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <x-thread.card :thread="$thread" :reply-count="$thread->replies_count" />
                                 @endforeach
                             </div>
                         </div>

@@ -24,8 +24,8 @@
 
     <a class="group/title text-lg md:text-xl font-semibold transition-colors duration-200 block" href="/forums/{{ $thread->forum->slug }}/{{ $thread->slug }}">
         @if (auth()->check() && $thread->hasUpdatesFor(auth()->user()))
-            <span class="font-bold {{ $thread->locked ? 'text-steel-400 group-hover/title:text-steel-300' : 'text-white group-hover/title:text-accent-400' }} transition-colors duration-200">
-                <span class="inline-block w-2 h-2 bg-accent-400 rounded-full mr-2 animate-pulse"></span>
+            <span class="font-bold {{ $thread->locked ? 'text-steel-400 group-hover/title:text-steel-300' : 'text-white group-hover/title:text-accent-400' }} transition-colors duration-200 inline-flex items-center">
+                <span class="w-2.5 h-2.5 bg-accent-400 rounded-full mr-2.5 flex-shrink-0"></span>
                 @if ($thread->poll)
                     <span class="text-amber-400">Poll:</span>
                 @endif{{ $thread->title }}

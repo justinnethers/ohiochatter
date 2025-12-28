@@ -51,10 +51,13 @@ class SearchMegaMenu extends Component
         // Use direct queries with LIKE instead of Scout for better performance
         // Single query batch to reduce round trips
 
-        // Threads - direct query
-        $threads = Thread::where('title', 'like', $likeQuery)
-            ->orWhere('body', 'like', $likeQuery)
+        // Threads - direct query, ordered by most recent activity
+        $threads = Thread::where(function ($q) use ($likeQuery) {
+                $q->where('title', 'like', $likeQuery)
+                  ->orWhere('body', 'like', $likeQuery);
+            })
             ->with('forum')
+            ->latest('updated_at')
             ->limit(5)
             ->get();
 
@@ -64,6 +67,7 @@ class SearchMegaMenu extends Component
 
         // Users - direct query (fast, just username)
         $users = User::where('username', 'like', $likeQuery)
+            ->latest()
             ->limit(5)
             ->get();
 
@@ -74,6 +78,7 @@ class SearchMegaMenu extends Component
         // Archive Threads - direct query
         $archiveThreads = VbThread::where('title', 'like', $likeQuery)
             ->with('forum')
+            ->orderByDesc('threadid')
             ->limit(5)
             ->get();
 

@@ -57,7 +57,7 @@
                                 <div class="flex items-center justify-end space-x-2 py-2 px-3">
                                     <div class="text-right">
                                         <span class="text-steel-400 text-sm">Latest:</span>
-                                        <a href="{{ route('archive.thread', $forum->latest_thread_id) }}"
+                                        <a href="{{ url('archive/thread/' . $forum->latest_thread_id . '-' . Str::slug($forum->latest_thread_title)) }}"
                                            class="text-accent-400 hover:text-accent-300 transition-colors duration-200">
                                             {{ Str::limit($forum->latest_thread_title, 40) }}
                                         </a>

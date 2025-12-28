@@ -99,7 +99,7 @@ Route::get('/privacy', function () {
     return view('privacy');
 })->name('privacy');
 
-Route::get('forum/showthread', function () {
+Route::get('forum/showthread.php', function () {
     // Grab the entire query string after the "?"
     // For example, if the URL is:
     //    https://ohiochatter.com/forum/showthread.php?48553-2017-OC-Mock-NFL-Draft-Round-1
@@ -118,10 +118,13 @@ Route::get('forum/showthread', function () {
     $parts = explode('-', $queryString, 2);
 
     $threadId = $parts[0];
-    $titlePart = $parts[1] ?? '';
+    $titleSlug = $parts[1] ?? '';
 
-    // Replace dashes with spaces for a more readable title
-    $title = str_replace('-', ' ', $titlePart);
+    // If we have a title slug from the old URL, use it directly
+    // Otherwise, let the controller redirect to the canonical URL
+    if ($titleSlug) {
+        return redirect('/archive/thread/' . $threadId . '-' . $titleSlug, 301);
+    }
 
     return redirect()->route('archive.thread', $threadId, 301);
 });

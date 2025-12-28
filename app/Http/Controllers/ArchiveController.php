@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\VbForum;
 use App\Models\VbThread;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class ArchiveController extends Controller
 {
@@ -62,15 +64,31 @@ class ArchiveController extends Controller
         return view('archive/index', compact('groupedForums'));
     }
 
-    public function forum(VbForum $forum)
+    public function forum(Request $request, VbForum $forum)
     {
+        // Redirect to canonical URL if slug is missing or incorrect
+        $canonicalKey = $forum->getRouteKey();
+        $currentKey = $request->segment(3); // Get raw URL segment: /archive/forum/{this}
+
+        if ($currentKey !== $canonicalKey) {
+            return redirect('/archive/forum/' . $canonicalKey, 301);
+        }
+
         $threads = $forum->threads()->with(['creator.avatar'])->paginate(50);
 
         return view('archive/forum', compact('forum', 'threads'));
     }
 
-    public function thread(VbThread $thread)
+    public function thread(Request $request, VbThread $thread)
     {
+        // Redirect to canonical URL if slug is missing or incorrect
+        $canonicalKey = $thread->getRouteKey();
+        $currentKey = $request->segment(3); // Get raw URL segment: /archive/thread/{this}
+
+        if ($currentKey !== $canonicalKey) {
+            return redirect('/archive/thread/' . $canonicalKey, 301);
+        }
+
         $thread->load('forum');
         $posts = $thread->posts()->with(['creator.avatar'])->orderBy('dateline')->paginate(25);
 

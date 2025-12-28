@@ -62,19 +62,21 @@ class DashboardController extends Controller
         $totalNegs = $dashboardData['totalNegs'];
         $repScore = $totalReps - $totalNegs;
 
-        // Recent rep activity - just get 5 most recent, no fancy joins
+        // Recent rep activity - single query with JOINs to get thread info
         $reps = DB::table('reps')
             ->join('replies', function ($join) use ($userId) {
                 $join->on('reps.repped_id', '=', 'replies.id')
                     ->where('reps.repped_type', '=', Reply::class)
                     ->where('replies.user_id', '=', $userId);
             })
+            ->join('threads', 'replies.thread_id', '=', 'threads.id')
+            ->join('forums', 'threads.forum_id', '=', 'forums.id')
             ->join('users', 'reps.user_id', '=', 'users.id')
-            ->select('reps.created_at', 'users.username', 'users.id as user_id', 'users.avatar_path')
+            ->select('reps.created_at', 'users.username', 'threads.title as thread_title', 'threads.slug as thread_slug', 'forums.slug as forum_slug')
             ->orderByDesc('reps.created_at')
             ->limit(5)
             ->get()
-            ->map(fn($r) => ['type' => 'rep', 'username' => $r->username, 'user_id' => $r->user_id, 'avatar_path' => $r->avatar_path, 'created_at' => $r->created_at]);
+            ->map(fn($r) => ['type' => 'rep', 'username' => $r->username, 'thread_title' => $r->thread_title, 'thread_slug' => $r->thread_slug, 'forum_slug' => $r->forum_slug, 'created_at' => $r->created_at]);
 
         $negs = DB::table('negs')
             ->join('replies', function ($join) use ($userId) {
@@ -82,12 +84,14 @@ class DashboardController extends Controller
                     ->where('negs.negged_type', '=', Reply::class)
                     ->where('replies.user_id', '=', $userId);
             })
+            ->join('threads', 'replies.thread_id', '=', 'threads.id')
+            ->join('forums', 'threads.forum_id', '=', 'forums.id')
             ->join('users', 'negs.user_id', '=', 'users.id')
-            ->select('negs.created_at', 'users.username', 'users.id as user_id', 'users.avatar_path')
+            ->select('negs.created_at', 'users.username', 'threads.title as thread_title', 'threads.slug as thread_slug', 'forums.slug as forum_slug')
             ->orderByDesc('negs.created_at')
             ->limit(5)
             ->get()
-            ->map(fn($n) => ['type' => 'neg', 'username' => $n->username, 'user_id' => $n->user_id, 'avatar_path' => $n->avatar_path, 'created_at' => $n->created_at]);
+            ->map(fn($n) => ['type' => 'neg', 'username' => $n->username, 'thread_title' => $n->thread_title, 'thread_slug' => $n->thread_slug, 'forum_slug' => $n->forum_slug, 'created_at' => $n->created_at]);
 
         $recentRepActivity = $reps->merge($negs)
             ->sortByDesc('created_at')

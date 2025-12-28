@@ -219,6 +219,9 @@
                                                     gave you a {{ $activity['type'] === 'rep' ? 'rep' : 'neg' }}
                                                 </span>
                                             </p>
+                                            <a href="{{ route('thread.show', ['forum' => $activity['forum_slug'], 'thread' => $activity['thread_slug']]) }}" class="text-steel-400 text-xs hover:text-accent-400 transition-colors truncate block">
+                                                in {{ $activity['thread_title'] }}
+                                            </a>
                                         </div>
                                         <div class="text-steel-500 text-xs flex-shrink-0">
                                             {{ \Carbon\Carbon::parse($activity['created_at'])->diffForHumans() }}
@@ -234,27 +237,27 @@
                         <div class="bg-gradient-to-br from-steel-800 to-steel-850 p-6 rounded-xl shadow-lg shadow-black/20 border border-steel-700/50">
                             <h3 class="text-lg font-semibold text-white mb-4">Your Threads</h3>
 
-                            <div class="space-y-3">
+                            <div class="space-y-4">
                                 @foreach($userThreads as $thread)
-                                    <a href="{{ $thread->path() }}"
-                                       class="block p-4 rounded-lg bg-steel-900/50 border border-steel-700/30 hover:border-steel-600 hover:bg-steel-900 transition-all duration-200 group">
-                                        <div class="flex items-start justify-between gap-4">
-                                            <div class="flex-1 min-w-0">
-                                                <span class="font-medium text-white group-hover:text-accent-400 transition-colors">
-                                                    {{ $thread->title }}
-                                                </span>
-                                                <div class="flex items-center gap-3 mt-2 text-sm text-steel-400">
-                                                    <span class="inline-flex items-center px-2 py-0.5 bg-{{ $thread->forum->color ?? 'steel' }}-500/20 text-{{ $thread->forum->color ?? 'steel' }}-400 rounded text-xs font-medium">
-                                                        {{ $thread->forum->name }}
-                                                    </span>
-                                                    <span>{{ $thread->created_at->diffForHumans() }}</span>
-                                                </div>
+                                    <div class="group p-4 rounded-xl bg-steel-900/50 border border-steel-700/30 hover:border-steel-600 hover:bg-steel-900 transition-all duration-200">
+                                        <a href="{{ $thread->path() }}" class="text-lg text-white font-semibold group-hover:text-accent-400 transition-colors block mb-3">
+                                            {{ $thread->title }}
+                                        </a>
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center gap-3">
+                                                <a href="{{ route('forum.show', $thread->forum) }}" class="inline-flex items-center px-3 py-1 bg-{{ $thread->forum->color ?? 'steel' }}-500 rounded-full text-sm font-semibold text-white shadow-lg shadow-black/20 hover:bg-{{ $thread->forum->color ?? 'steel' }}-600 transition-all duration-200">
+                                                    {{ $thread->forum->name }}
+                                                </a>
+                                                <span class="text-sm text-steel-400">{{ $thread->created_at->diffForHumans() }}</span>
                                             </div>
-                                            <span class="flex-shrink-0 px-2 py-1 bg-steel-700 rounded text-steel-300 text-xs font-medium">
-                                                {{ $thread->replies_count }} {{ Str::plural('reply', $thread->replies_count) }}
-                                            </span>
+                                            <div class="inline-flex items-center gap-2 px-3 py-1 bg-steel-900/70 rounded-full border border-steel-700/50">
+                                                <svg class="w-4 h-4 text-steel-400" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zm-4 0H9v2h2V9z" clip-rule="evenodd"/>
+                                                </svg>
+                                                <span class="font-bold text-steel-100">{{ number_format($thread->replies_count) }}</span>
+                                            </div>
                                         </div>
-                                    </a>
+                                    </div>
                                 @endforeach
                             </div>
                         </div>

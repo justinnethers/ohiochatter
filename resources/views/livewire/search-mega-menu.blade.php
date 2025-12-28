@@ -16,15 +16,21 @@
             if (saved) {
                 try {
                     this.enabledTypes = JSON.parse(saved);
-                } catch (e) {}
+                } catch (e) {
+                    console.warn('Failed to parse saved search types', e);
+                }
             }
-            // Sync to Livewire
-            $wire.enabledTypes = this.enabledTypes;
+            // Sync to Livewire (with safety check)
+            if (this.$wire) {
+                this.$wire.set('enabledTypes', this.enabledTypes);
+            }
 
             // Watch for changes and persist
-            $watch('enabledTypes', (value) => {
+            this.$watch('enabledTypes', (value) => {
                 localStorage.setItem('searchEnabledTypes', JSON.stringify(value));
-                $wire.enabledTypes = value;
+                if (this.$wire) {
+                    this.$wire.set('enabledTypes', value);
+                }
             });
         },
         toggleType(type) {

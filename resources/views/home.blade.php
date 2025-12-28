@@ -6,7 +6,7 @@
         <x-home.welcome />
 
         {{-- Main Content Grid --}}
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6 relative z-0">
             {{-- Main Column - Recent Threads --}}
             <div class="lg:col-span-2">
                 <div class="md:rounded-2xl md:bg-gradient-to-br md:from-steel-800/50 md:to-steel-900/50 md:backdrop-blur-sm md:border md:border-steel-700/30 p-2 md:p-6">

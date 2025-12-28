@@ -72,18 +72,11 @@ class Content extends Model
 
     public function toSearchableArray()
     {
+        // Only include actual database columns for database driver compatibility
         return [
             'title' => $this->title,
             'body' => $this->body,
             'excerpt' => $this->excerpt,
-            'content_type' => $this->contentType->name,
-            'category' => $this->contentCategory->name,
-            'location_type' => $this->locatable_type,
-            'location_name' => $this->locatable?->name,
-            'metadata' => $this->metadata,
-            'published' => !is_null($this->published_at),
-            'featured' => $this->featured,
-            'author' => $this->author->username
         ];
     }
 }

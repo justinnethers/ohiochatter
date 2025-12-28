@@ -46,10 +46,10 @@ class Region extends Model
 
     public function toSearchableArray()
     {
+        // Only include actual database columns for database driver compatibility
         return [
             'name' => $this->name,
             'description' => $this->description,
-            'type' => 'region'
         ];
     }
 }

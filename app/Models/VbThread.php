@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Laravel\Scout\Searchable;
 
 class VbThread extends Model
 {
-    use HasFactory;
+    use HasFactory, Searchable;
 
     protected $table = 'vb_threads';
 
@@ -56,5 +57,31 @@ class VbThread extends Model
         $id = (int) $value;
 
         return $this->where('threadid', $id)->first();
+    }
+
+    /**
+     * Get the indexable data array for the model.
+     */
+    public function toSearchableArray(): array
+    {
+        return [
+            'title' => $this->title,
+        ];
+    }
+
+    /**
+     * Get the key name for Scout indexing.
+     */
+    public function getScoutKeyName(): string
+    {
+        return 'threadid';
+    }
+
+    /**
+     * Get the key for Scout indexing.
+     */
+    public function getScoutKey(): mixed
+    {
+        return $this->threadid;
     }
 }

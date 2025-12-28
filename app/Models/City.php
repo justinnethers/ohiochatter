@@ -35,13 +35,10 @@ class City extends Model
 
     public function toSearchableArray()
     {
+        // Only include actual database columns for database driver compatibility
         return [
             'name' => $this->name,
             'description' => $this->description,
-            'type' => 'city',
-            'county' => $this->county->name,
-            'region' => $this->county->region->name,
-            'is_major' => $this->is_major
         ];
     }
 }

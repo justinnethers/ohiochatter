@@ -1,0 +1,143 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Neg;
+use App\Models\Rep;
+use App\Models\Reply;
+use App\Models\Thread;
+use Cmgmyr\Messenger\Models\Thread as MessageThread;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+
+class DashboardController extends Controller
+{
+    public function __invoke()
+    {
+        $user = auth()->user();
+        $userId = $user->id;
+
+        // Cache everything expensive for 5 minutes
+        $dashboardData = Cache::remember("user:{$userId}:dashboard", 300, function () use ($userId) {
+            // Rep counts using JOINs
+            $replyReps = DB::table('reps')
+                ->join('replies', function ($join) use ($userId) {
+                    $join->on('reps.repped_id', '=', 'replies.id')
+                        ->where('reps.repped_type', '=', Reply::class)
+                        ->where('replies.user_id', '=', $userId);
+                })
+                ->count();
+
+            $threadReps = DB::table('reps')
+                ->join('threads', function ($join) use ($userId) {
+                    $join->on('reps.repped_id', '=', 'threads.id')
+                        ->where('reps.repped_type', '=', Thread::class)
+                        ->where('threads.user_id', '=', $userId);
+                })
+                ->count();
+
+            $replyNegs = DB::table('negs')
+                ->join('replies', function ($join) use ($userId) {
+                    $join->on('negs.negged_id', '=', 'replies.id')
+                        ->where('negs.negged_type', '=', Reply::class)
+                        ->where('replies.user_id', '=', $userId);
+                })
+                ->count();
+
+            $threadNegs = DB::table('negs')
+                ->join('threads', function ($join) use ($userId) {
+                    $join->on('negs.negged_id', '=', 'threads.id')
+                        ->where('negs.negged_type', '=', Thread::class)
+                        ->where('threads.user_id', '=', $userId);
+                })
+                ->count();
+
+            return [
+                'totalReps' => $replyReps + $threadReps,
+                'totalNegs' => $replyNegs + $threadNegs,
+            ];
+        });
+
+        $totalReps = $dashboardData['totalReps'];
+        $totalNegs = $dashboardData['totalNegs'];
+        $repScore = $totalReps - $totalNegs;
+
+        // Recent rep activity - just get 5 most recent, no fancy joins
+        $reps = DB::table('reps')
+            ->join('replies', function ($join) use ($userId) {
+                $join->on('reps.repped_id', '=', 'replies.id')
+                    ->where('reps.repped_type', '=', Reply::class)
+                    ->where('replies.user_id', '=', $userId);
+            })
+            ->join('users', 'reps.user_id', '=', 'users.id')
+            ->select('reps.created_at', 'users.username', 'users.id as user_id', 'users.avatar_path')
+            ->orderByDesc('reps.created_at')
+            ->limit(5)
+            ->get()
+            ->map(fn($r) => ['type' => 'rep', 'username' => $r->username, 'user_id' => $r->user_id, 'avatar_path' => $r->avatar_path, 'created_at' => $r->created_at]);
+
+        $negs = DB::table('negs')
+            ->join('replies', function ($join) use ($userId) {
+                $join->on('negs.negged_id', '=', 'replies.id')
+                    ->where('negs.negged_type', '=', Reply::class)
+                    ->where('replies.user_id', '=', $userId);
+            })
+            ->join('users', 'negs.user_id', '=', 'users.id')
+            ->select('negs.created_at', 'users.username', 'users.id as user_id', 'users.avatar_path')
+            ->orderByDesc('negs.created_at')
+            ->limit(5)
+            ->get()
+            ->map(fn($n) => ['type' => 'neg', 'username' => $n->username, 'user_id' => $n->user_id, 'avatar_path' => $n->avatar_path, 'created_at' => $n->created_at]);
+
+        $recentRepActivity = $reps->merge($negs)
+            ->sortByDesc('created_at')
+            ->take(5);
+
+        // User's recent threads
+        $userThreads = Thread::where('user_id', $userId)
+            ->with('forum')
+            ->withCount('replies')
+            ->latest()
+            ->limit(5)
+            ->get();
+
+        // Threads with activity - simplified
+        $threadIds = DB::table('replies')
+            ->where('user_id', $userId)
+            ->select('thread_id', DB::raw('MAX(created_at) as last_reply'))
+            ->groupBy('thread_id')
+            ->orderByDesc('last_reply')
+            ->limit(10)
+            ->pluck('thread_id');
+
+        $threadsWithActivity = Thread::whereIn('id', $threadIds)
+            ->with(['lastReply.owner', 'forum'])
+            ->get()
+            ->filter(fn($t) => $t->lastReply && $t->lastReply->user_id !== $userId)
+            ->sortByDesc(fn($t) => $t->lastReply->created_at)
+            ->take(5);
+
+        // Game stats
+        $gameStats = $user->gameStats;
+
+        // Messages
+        $unreadMessageCount = $user->unreadMessagesCount();
+        $messageThreads = MessageThread::forUser($userId)
+            ->latest('updated_at')
+            ->limit(3)
+            ->get();
+
+        return view('dashboard', compact(
+            'user',
+            'threadsWithActivity',
+            'recentRepActivity',
+            'userThreads',
+            'gameStats',
+            'unreadMessageCount',
+            'messageThreads',
+            'repScore',
+            'totalReps',
+            'totalNegs'
+        ));
+    }
+}

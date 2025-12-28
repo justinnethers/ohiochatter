@@ -115,9 +115,10 @@
                         <h3 class="text-lg font-semibold text-white mb-4">Reputation</h3>
 
                         {{-- Reputation Score --}}
+                        @php $repScore = $totalReps - $totalNegs; @endphp
                         <div class="text-center py-4 mb-4 rounded-lg bg-steel-900/50">
-                            <div class="text-4xl font-bold {{ $user->reputation >= 0 ? 'text-emerald-400' : 'text-red-400' }}">
-                                {{ $user->reputation >= 0 ? '+' : '' }}{{ number_format($user->reputation, 0) }}
+                            <div class="text-4xl font-bold {{ $repScore >= 0 ? 'text-emerald-400' : 'text-red-400' }}">
+                                {{ $repScore >= 0 ? '+' : '' }}{{ number_format($repScore) }}
                             </div>
                             <div class="text-steel-400 text-sm mt-1">Reputation Score</div>
                         </div>

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ArchiveController;
 use App\Http\Controllers\BuckEyeGameController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ForumController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReplyController;
@@ -45,9 +46,9 @@ Route::middleware('auth')->group(function () {
     });
 });
 
-Route::get('dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('dashboard', DashboardController::class)
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 Route::get('profiles/{user:username}', [ProfileController::class, 'show'])->name('profile.show');
 

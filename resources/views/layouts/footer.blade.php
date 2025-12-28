@@ -80,8 +80,13 @@
                                     </a>
                                 </li>
                                 <li>
+                                    <a href="{{ route('profile.show', auth()->user()) }}" class="text-steel-400 hover:text-white hover:pl-2 transition-all duration-200">
+                                        My Profile
+                                    </a>
+                                </li>
+                                <li>
                                     <a href="{{ route('profile.edit') }}" class="text-steel-400 hover:text-white hover:pl-2 transition-all duration-200">
-                                        Profile
+                                        Settings
                                     </a>
                                 </li>
                             @else

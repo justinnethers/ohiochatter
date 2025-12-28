@@ -1,5 +1,10 @@
+@php
+    $isOwner = auth()->check() && $thread->owner && auth()->id() === $thread->owner->id;
+    $hasReplied = auth()->check() && auth()->user()->hasRepliedTo($thread);
+    $hasParticipated = $isOwner || $hasReplied;
+@endphp
 <article class="group {{ $thread->locked ? 'bg-steel-850/80 border-steel-700/30' : 'bg-gradient-to-br from-steel-800 to-steel-850 border-steel-700/50 hover:border-steel-600 hover:shadow-xl hover:-translate-y-0.5' }} p-4 text-steel-100 font-body rounded-xl mb-3 md:mb-5 shadow-lg shadow-black/20 border transition-all duration-300 relative overflow-hidden">
-    {{-- Locked state overlay --}}
+    {{-- Locked state --}}
     @if ($thread->locked)
         <div class="absolute inset-0 bg-gradient-to-br from-steel-900/30 to-steel-950/40 pointer-events-none"></div>
         <div class="absolute top-3 right-3 flex items-center gap-1.5 text-steel-500 text-xs font-medium bg-steel-900/60 px-2 py-1 rounded-full">
@@ -10,22 +15,23 @@
         </div>
     @endif
 
-    {{-- Accent stripe on left --}}
-    <div class="absolute left-0 top-0 bottom-0 w-1 {{ $thread->locked ? 'bg-steel-600/50' : 'bg-gradient-to-b from-accent-400 to-accent-600 opacity-0 group-hover:opacity-100' }} transition-opacity duration-300"></div>
+    {{-- Left edge indicator --}}
+    @if ($thread->locked)
+        <div class="absolute left-0 top-0 bottom-0 w-1 bg-steel-600/50"></div>
+    @elseif ($hasParticipated)
+        <div class="absolute left-0 top-4 bottom-4 w-1 bg-accent-500 rounded-r-full"></div>
+    @endif
 
-    <a class="text-lg md:text-xl {{ $thread->locked ? 'text-steel-400 hover:text-steel-300' : 'text-white hover:text-accent-400' }} font-semibold transition-colors duration-200 block" href="/forums/{{ $thread->forum->slug }}/{{ $thread->slug }}">
-        @if (auth()->check() && auth()->user()->hasRepliedTo($thread))
-            <span class="text-accent-400 mr-1">&raquo;</span>
-        @endif
+    <a class="group/title text-lg md:text-xl font-semibold transition-colors duration-200 block" href="/forums/{{ $thread->forum->slug }}/{{ $thread->slug }}">
         @if (auth()->check() && $thread->hasUpdatesFor(auth()->user()))
-            <span class="font-bold text-white">
+            <span class="font-bold {{ $thread->locked ? 'text-steel-400 group-hover/title:text-steel-300' : 'text-white group-hover/title:text-accent-400' }} transition-colors duration-200">
                 <span class="inline-block w-2 h-2 bg-accent-400 rounded-full mr-2 animate-pulse"></span>
                 @if ($thread->poll)
                     <span class="text-amber-400">Poll:</span>
                 @endif{{ $thread->title }}
             </span>
         @else
-            <span class="font-normal text-steel-300">
+            <span class="font-normal {{ $thread->locked ? 'text-steel-500 group-hover/title:text-steel-400' : 'text-steel-300 group-hover/title:text-accent-400' }} transition-colors duration-200">
                 @if ($thread->poll)
                     <span class="text-amber-400/70">Poll:</span>
                 @endif{{ $thread->title }}

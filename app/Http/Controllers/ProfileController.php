@@ -11,6 +11,7 @@ use App\Services\ReplyPaginationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
@@ -21,9 +22,15 @@ class ProfileController extends Controller
      */
     public function show(User $user): View
     {
-        // Track profile views (don't count if viewing own profile)
+        // Track profile views (throttled to once per 10 minutes per viewer)
         if (auth()->id() !== $user->id) {
-            $user->increment('profile_views');
+            $viewerId = auth()->id() ?? request()->ip();
+            $cacheKey = "profile_view:{$viewerId}:{$user->id}";
+
+            if (!Cache::has($cacheKey)) {
+                $user->increment('profile_views');
+                Cache::put($cacheKey, true, now()->addMinutes(10));
+            }
         }
 
         // Get user's recent posts (replies) with position for pagination

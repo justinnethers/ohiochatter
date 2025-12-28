@@ -9,6 +9,8 @@ use Illuminate\Support\Str;
 
 class VbForum extends Model
 {
+    use HasFactory;
+
     protected $table = 'vb_forums';
 
     protected $primaryKey = 'forumid';

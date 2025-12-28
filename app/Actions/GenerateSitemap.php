@@ -43,30 +43,39 @@ class GenerateSitemap
 
         // Add regions
         Region::where('is_active', true)->each(function ($region) use ($sitemap) {
-            $sitemap->add(
-                Url::create("/ohio/{$region->slug}")
-                    ->setPriority(0.8)
-                    ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
-                    ->setLastModificationDate($region->updated_at)
-            );
+            $url = Url::create("/ohio/{$region->slug}")
+                ->setPriority(0.8)
+                ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY);
+
+            if ($region->updated_at) {
+                $url->setLastModificationDate($region->updated_at);
+            }
+
+            $sitemap->add($url);
 
             // Add counties for this region
             $region->counties->each(function ($county) use ($sitemap, $region) {
-                $sitemap->add(
-                    Url::create("/ohio/{$region->slug}/{$county->slug}")
-                        ->setPriority(0.7)
-                        ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
-                        ->setLastModificationDate($county->updated_at)
-                );
+                $url = Url::create("/ohio/{$region->slug}/{$county->slug}")
+                    ->setPriority(0.7)
+                    ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY);
+
+                if ($county->updated_at) {
+                    $url->setLastModificationDate($county->updated_at);
+                }
+
+                $sitemap->add($url);
 
                 // Add cities for this county
                 $county->cities->each(function ($city) use ($sitemap, $region, $county) {
-                    $sitemap->add(
-                        Url::create("/ohio/{$region->slug}/{$county->slug}/{$city->slug}")
-                            ->setPriority(0.6)
-                            ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
-                            ->setLastModificationDate($city->updated_at)
-                    );
+                    $url = Url::create("/ohio/{$region->slug}/{$county->slug}/{$city->slug}")
+                        ->setPriority(0.6)
+                        ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY);
+
+                    if ($city->updated_at) {
+                        $url->setLastModificationDate($city->updated_at);
+                    }
+
+                    $sitemap->add($url);
                 });
             });
         });
@@ -91,12 +100,15 @@ class GenerateSitemap
 
         // Add individual content/guide articles
         Content::published()->each(function ($content) use ($sitemap) {
-            $sitemap->add(
-                Url::create("/ohio/guide/article/{$content->slug}")
-                    ->setPriority(0.7)
-                    ->setChangeFrequency(Url::CHANGE_FREQUENCY_MONTHLY)
-                    ->setLastModificationDate($content->updated_at)
-            );
+            $url = Url::create("/ohio/guide/article/{$content->slug}")
+                ->setPriority(0.7)
+                ->setChangeFrequency(Url::CHANGE_FREQUENCY_MONTHLY);
+
+            if ($content->updated_at) {
+                $url->setLastModificationDate($content->updated_at);
+            }
+
+            $sitemap->add($url);
         });
 
         // Add region guide pages
@@ -159,22 +171,22 @@ class GenerateSitemap
         $sitemap = Sitemap::create()
             ->add(Url::create('/archive')->setPriority(0.5)->setChangeFrequency(Url::CHANGE_FREQUENCY_NEVER));
 
-        // Add archive forums
+        // Add archive forums with SEO-friendly slugs
         VbForum::where('parentid', '>', 0)
             ->where('displayorder', '>', 0)
             ->each(function ($forum) use ($sitemap) {
                 $sitemap->add(
-                    Url::create("/archive/forum/{$forum->forumid}")
+                    Url::create("/archive/forum/{$forum->getRouteKey()}")
                         ->setPriority(0.4)
                         ->setChangeFrequency(Url::CHANGE_FREQUENCY_NEVER)
                 );
             });
 
-        // Add archive threads
+        // Add archive threads with SEO-friendly slugs
         VbThread::where('visible', 1)
             ->each(function ($thread) use ($sitemap) {
                 $sitemap->add(
-                    Url::create("/archive/thread/{$thread->threadid}")
+                    Url::create("/archive/thread/{$thread->getRouteKey()}")
                         ->setPriority(0.3)
                         ->setChangeFrequency(Url::CHANGE_FREQUENCY_NEVER)
                 );

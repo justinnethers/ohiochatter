@@ -112,6 +112,9 @@ Route::get('forum/showthread.php', function () {
         return redirect('/archive', 301);
     }
 
+    // Remove trailing = that PHP adds when query string has no value
+    $queryString = rtrim($queryString, '=');
+
     // Split at the first dash to separate the thread ID from the rest
     // parts[0] = 48553
     // parts[1] = 2017-OC-Mock-NFL-Draft-Round-1

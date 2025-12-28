@@ -1,42 +1,5 @@
 <div
-    x-data="{
-        open: false,
-        enabledTypes: {
-            threads: true,
-            posts: true,
-            users: true,
-            archive: true,
-            guides: true,
-            locations: true,
-        },
-        showFilters: false,
-        init() {
-            // Load from localStorage
-            const saved = localStorage.getItem('searchEnabledTypes');
-            if (saved) {
-                try {
-                    this.enabledTypes = JSON.parse(saved);
-                } catch (e) {
-                    console.warn('Failed to parse saved search types', e);
-                }
-            }
-            // Sync to Livewire (with safety check)
-            if (this.$wire) {
-                this.$wire.set('enabledTypes', this.enabledTypes);
-            }
-
-            // Watch for changes and persist
-            this.$watch('enabledTypes', (value) => {
-                localStorage.setItem('searchEnabledTypes', JSON.stringify(value));
-                if (this.$wire) {
-                    this.$wire.set('enabledTypes', value);
-                }
-            });
-        },
-        toggleType(type) {
-            this.enabledTypes[type] = !this.enabledTypes[type];
-        }
-    }"
+    x-data="{ open: false, showFilters: false }"
     @click.away="open = false"
     class="relative"
 >
@@ -48,7 +11,7 @@
             @focus="open = true"
             @input="open = true"
             placeholder="Search discussions, users, the archive..."
-            class="w-full px-4 py-2.5 pl-10 pr-10 bg-steel-950 border border-steel-600 rounded-lg text-white placeholder-steel-400 focus:outline-none focus:border-accent-500 focus:ring-1 focus:ring-accent-500"
+            class="w-full px-4 py-2.5 pl-10 bg-steel-950 border border-steel-600 rounded-lg text-white placeholder-steel-400 focus:outline-none focus:border-accent-500 focus:ring-1 focus:ring-accent-500"
         >
         <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-steel-500" fill="none" stroke="currentColor"
              viewBox="0 0 24 24">
@@ -56,50 +19,6 @@
                   d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
         </svg>
 
-        {{-- Filter Toggle Button --}}
-        <button
-            type="button"
-            @click.stop="showFilters = !showFilters"
-            class="absolute right-3 top-1/2 -translate-y-1/2 text-steel-400 hover:text-steel-200 transition-colors"
-            title="Filter search types"
-        >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
-            </svg>
-        </button>
-    </div>
-
-    {{-- Filter Toggles --}}
-    <div
-        x-show="showFilters"
-        x-transition:enter="transition ease-out duration-100"
-        x-transition:enter-start="opacity-0 -translate-y-1"
-        x-transition:enter-end="opacity-100 translate-y-0"
-        x-transition:leave="transition ease-in duration-75"
-        x-transition:leave-start="opacity-100 translate-y-0"
-        x-transition:leave-end="opacity-0 -translate-y-1"
-        class="absolute z-[100] mt-1 w-full bg-gradient-to-b from-steel-800 to-steel-850 rounded-lg shadow-xl shadow-black/30 border border-steel-700/50 p-3"
-    >
-        <div class="text-xs text-steel-400 mb-2 font-medium uppercase tracking-wide">Search in:</div>
-        <div class="flex flex-wrap gap-2">
-            <template
-                x-for="[type, label] in [['threads', 'Threads'], ['posts', 'Posts'], ['users', 'Users'], ['archive', 'Archive'], ['guides', 'Guides'], ['locations', 'Locations']]">
-                <label class="inline-flex items-center cursor-pointer">
-                    <input
-                        type="checkbox"
-                        :checked="enabledTypes[type]"
-                        @change="toggleType(type)"
-                        class="sr-only"
-                    >
-                    <span
-                        :class="enabledTypes[type] ? 'bg-accent-500/20 border-accent-500 text-accent-300' : 'bg-steel-900/50 border-steel-600 text-steel-400'"
-                        class="px-2.5 py-1 text-xs font-medium rounded-full border transition-colors"
-                        x-text="label"
-                    ></span>
-                </label>
-            </template>
-        </div>
     </div>
 
     {{-- Results Mega Menu --}}

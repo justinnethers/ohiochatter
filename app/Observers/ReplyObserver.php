@@ -2,10 +2,8 @@
 
 namespace App\Observers;
 
-use App\Actions\Threads\CacheThreads;
+use App\Actions\Threads\InvalidateThreadCaches;
 use App\Models\Reply;
-use App\Models\Thread;
-use Illuminate\Support\Facades\Cache;
 
 class ReplyObserver
 {
@@ -16,7 +14,7 @@ class ReplyObserver
             'replies_count' => $reply->thread->replies()->whereNull('deleted_at')->count()
         ]);
 
-        app(CacheThreads::class)->execute($reply->thread->forum_id);
+        app(InvalidateThreadCaches::class)->execute($reply->thread->forum_id);
     }
 
     public function deleted(Reply $reply)
@@ -25,7 +23,7 @@ class ReplyObserver
             'replies_count' => $reply->thread->replies()->whereNull('deleted_at')->count()
         ]);
 
-        app(CacheThreads::class)->execute($reply->thread->forum_id);
+        app(InvalidateThreadCaches::class)->execute($reply->thread->forum_id);
     }
 
     public function restored(Reply $reply)
@@ -34,6 +32,6 @@ class ReplyObserver
             'replies_count' => $reply->thread->replies()->whereNull('deleted_at')->count()
         ]);
 
-        app(CacheThreads::class)->execute($reply->thread->forum_id);
+        app(InvalidateThreadCaches::class)->execute($reply->thread->forum_id);
     }
 }

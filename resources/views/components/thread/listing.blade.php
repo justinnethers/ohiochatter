@@ -1,11 +1,19 @@
-<article class="group bg-gradient-to-br from-steel-800 to-steel-850 p-4 text-steel-100 font-body rounded-xl mb-3 md:mb-5 shadow-lg shadow-black/20 border border-steel-700/50 hover:border-steel-600 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden">
-    {{-- Accent stripe on left --}}
-    <div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-accent-400 to-accent-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+<article class="group {{ $thread->locked ? 'bg-steel-850/80 border-steel-700/30' : 'bg-gradient-to-br from-steel-800 to-steel-850 border-steel-700/50 hover:border-steel-600 hover:shadow-xl hover:-translate-y-0.5' }} p-4 text-steel-100 font-body rounded-xl mb-3 md:mb-5 shadow-lg shadow-black/20 border transition-all duration-300 relative overflow-hidden">
+    {{-- Locked state overlay --}}
+    @if ($thread->locked)
+        <div class="absolute inset-0 bg-gradient-to-br from-steel-900/30 to-steel-950/40 pointer-events-none"></div>
+        <div class="absolute top-3 right-3 flex items-center gap-1.5 text-steel-500 text-xs font-medium bg-steel-900/60 px-2 py-1 rounded-full">
+            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+            </svg>
+            <span>Locked</span>
+        </div>
+    @endif
 
-    <a class="text-lg md:text-xl hover:text-accent-400 text-white font-semibold transition-colors duration-200 block" href="/forums/{{ $thread->forum->slug }}/{{ $thread->slug }}">
-        @if ($thread->locked)
-            <span class="text-steel-400 mr-1">🔒</span>
-        @endif
+    {{-- Accent stripe on left --}}
+    <div class="absolute left-0 top-0 bottom-0 w-1 {{ $thread->locked ? 'bg-steel-600/50' : 'bg-gradient-to-b from-accent-400 to-accent-600 opacity-0 group-hover:opacity-100' }} transition-opacity duration-300"></div>
+
+    <a class="text-lg md:text-xl {{ $thread->locked ? 'text-steel-400 hover:text-steel-300' : 'text-white hover:text-accent-400' }} font-semibold transition-colors duration-200 block" href="/forums/{{ $thread->forum->slug }}/{{ $thread->slug }}">
         @if (auth()->check() && auth()->user()->hasRepliedTo($thread))
             <span class="text-accent-400 mr-1">&raquo;</span>
         @endif

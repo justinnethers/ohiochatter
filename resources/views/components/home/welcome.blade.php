@@ -8,7 +8,7 @@
                 </h1>
             @else
                 <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">
-                    Welcome to OhioChatter
+                    Welcome to Ohio Chatter
                 </h1>
                 <p class="text-steel-300">
                     Ohio's community forum for sports, politics, and local discussion.

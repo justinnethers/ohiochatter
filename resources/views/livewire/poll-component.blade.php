@@ -17,18 +17,24 @@
 
     @if($hasVoted)
         {{-- Results View (Answered State) - Sorted by votes --}}
+        @php
+            $maxVotes = $poll->pollOptions->max(fn($o) => $o->votes->count());
+        @endphp
         <div class="rounded-lg bg-steel-900/50 shadow-inner p-4 space-y-4">
             @foreach($this->rankedOptions as $index => $option)
                 @php
                     $rank = $index + 1;
                     $percentage = $this->getPercentage($option);
-                    // Only show medal colors if there are actual votes
-                    $hasVotes = $option->votes->count() > 0;
+                    $voteCount = $option->votes->count();
+                    // Show leader styling for all options tied for first place
+                    $isLeader = $voteCount === $maxVotes && $maxVotes > 0;
+                    // Only show medal colors for 2nd/3rd if not tied with leader
+                    $hasVotes = $voteCount > 0;
                 @endphp
                 <div class="relative">
                     <div class="flex flex-col sm:flex-row sm:justify-between mb-2">
                         <span class="break-words text-steel-100 font-medium flex items-center gap-2">
-                            @if($rank === 1 && $hasVotes)
+                            @if($isLeader)
                                 <span class="text-amber-400">
                                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                                         <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
@@ -37,22 +43,22 @@
                             @endif
                             {{ $option->label }}
                         </span>
-                        <span class="text-sm font-semibold @if($rank === 1 && $hasVotes) text-amber-400 @elseif($rank === 2 && $hasVotes) text-slate-300 @elseif($rank === 3 && $hasVotes) text-orange-400 @else text-steel-400 @endif">
+                        <span class="text-sm font-semibold @if($isLeader) text-amber-400 @elseif($rank === 2 && $hasVotes && !$isLeader) text-slate-300 @elseif($rank === 3 && $hasVotes && !$isLeader) text-orange-400 @else text-steel-400 @endif">
                             {{ $percentage }}%
                         </span>
                     </div>
                     <div class="w-full bg-steel-950 rounded-full overflow-hidden h-3">
-                        @if($rank === 1 && $hasVotes)
+                        @if($isLeader)
                             <div class="bg-gradient-to-r from-amber-400 to-yellow-500 rounded-full h-full transition-all duration-500 ease-out" style="width: {{ $percentage }}%"></div>
-                        @elseif($rank === 2 && $hasVotes)
+                        @elseif($rank === 2 && $hasVotes && !$isLeader)
                             <div class="bg-gradient-to-r from-slate-300 to-slate-400 rounded-full h-full transition-all duration-500 ease-out" style="width: {{ $percentage }}%"></div>
-                        @elseif($rank === 3 && $hasVotes)
+                        @elseif($rank === 3 && $hasVotes && !$isLeader)
                             <div class="bg-gradient-to-r from-orange-400 to-orange-500 rounded-full h-full transition-all duration-500 ease-out" style="width: {{ $percentage }}%"></div>
                         @else
                             <div class="bg-gradient-to-r from-steel-500 to-steel-600 rounded-full h-full transition-all duration-500 ease-out" style="width: {{ $percentage }}%"></div>
                         @endif
                     </div>
-                    <span class="text-sm text-steel-400 mt-1.5 block"><span class="font-bold text-steel-300">{{ $option->votes->count() }}</span> {{ \Illuminate\Support\Str::plural('vote', $option->votes->count()) }}</span>
+                    <span class="text-sm text-steel-400 mt-1.5 block"><span class="font-bold text-steel-300">{{ $voteCount }}</span> {{ \Illuminate\Support\Str::plural('vote', $voteCount) }}</span>
                 </div>
             @endforeach
         </div>

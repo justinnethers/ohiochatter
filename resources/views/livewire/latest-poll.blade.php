@@ -36,26 +36,29 @@
                 </a>
             @elseif($hasVoted)
                 {{-- Voted view - show results --}}
+                @php
+                    $maxVotes = $poll->pollOptions->max(fn($o) => $o->votes->count());
+                @endphp
                 <div class="space-y-2 mb-3">
                     @foreach($poll->pollOptions->sortByDesc(fn($o) => $o->votes->count())->take(4) as $option)
                         @php
                             $percentage = $this->getPercentage($option);
-                            $isFirst = $loop->first && $option->votes->count() > 0;
+                            $isLeader = $option->votes->count() === $maxVotes && $maxVotes > 0;
                         @endphp
                         <div>
                             <div class="flex justify-between text-xs mb-1">
                                 <span class="text-steel-300 truncate mr-2 flex items-center gap-1">
-                                    @if($isFirst)
+                                    @if($isLeader)
                                         <svg class="w-3 h-3 text-amber-400" fill="currentColor" viewBox="0 0 24 24">
                                             <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
                                         </svg>
                                     @endif
                                     {{ $option->label }}
                                 </span>
-                                <span class="@if($isFirst) text-amber-400 @else text-steel-400 @endif">{{ $percentage }}%</span>
+                                <span class="@if($isLeader) text-amber-400 @else text-steel-400 @endif">{{ $percentage }}%</span>
                             </div>
                             <div class="w-full bg-steel-950 rounded-full h-1.5">
-                                <div class="@if($isFirst) bg-amber-400 @else bg-steel-500 @endif rounded-full h-full" style="width: {{ $percentage }}%"></div>
+                                <div class="@if($isLeader) bg-amber-400 @else bg-steel-500 @endif rounded-full h-full" style="width: {{ $percentage }}%"></div>
                             </div>
                         </div>
                     @endforeach

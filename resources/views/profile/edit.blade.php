@@ -1,22 +1,24 @@
 <x-app-layout>
+    <x-slot name="title">Profile Settings</x-slot>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-200 dark:text-gray-200 leading-tight">
-            {{ __('Profile') }}
+        <h2 class="font-bold text-xl text-white leading-tight flex items-center gap-3">
+            <span class="hidden md:inline-block w-1 h-6 bg-accent-500 rounded-full"></span>
+            {{ __('Profile Settings') }}
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-profile-information-form')
-                </div>
+    <div class="container mx-auto">
+        <div class="max-w-2xl mx-auto space-y-6 p-4 md:p-0 md:py-6">
+            <div class="bg-gradient-to-br from-steel-800 to-steel-850 p-6 md:p-8 rounded-xl shadow-lg shadow-black/20 border border-steel-700/50">
+                @include('profile.partials.update-profile-information-form')
             </div>
 
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-password-form')
-                </div>
+            <div class="bg-gradient-to-br from-steel-800 to-steel-850 p-6 md:p-8 rounded-xl shadow-lg shadow-black/20 border border-steel-700/50">
+                @include('profile.partials.update-password-form')
+            </div>
+
+            <div class="bg-gradient-to-br from-steel-800 to-steel-850 p-6 md:p-8 rounded-xl shadow-lg shadow-black/20 border border-steel-700/50">
+                @include('profile.partials.delete-user-form')
             </div>
         </div>
     </div>

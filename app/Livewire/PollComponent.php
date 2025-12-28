@@ -95,6 +95,22 @@ class PollComponent extends Component
         return round(($option->votes->count() / $this->voteCount) * 100);
     }
 
+    public function getRankedOptionsProperty()
+    {
+        return $this->poll->pollOptions->sortByDesc(fn($option) => $option->votes->count())->values();
+    }
+
+    public function getOptionRank($option)
+    {
+        $ranked = $this->rankedOptions;
+        foreach ($ranked as $index => $rankedOption) {
+            if ($rankedOption->id === $option->id) {
+                return $index + 1;
+            }
+        }
+        return count($ranked);
+    }
+
     public function updatedSelectedOption($value)
     {
         \Log::info('Selected option updated:', ['value' => $value]);

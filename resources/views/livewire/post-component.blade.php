@@ -3,10 +3,13 @@
 @endif
 <article
     id="reply-{{ $post->id }}"
-    class="bg-gray-800 text-white mb-4 md:flex rounded md:rounded-lg relative"
+    class="bg-gradient-to-br from-steel-800 to-steel-850 text-white mb-5 md:flex rounded-xl relative border border-steel-700/50 shadow-xl shadow-black/20 overflow-hidden"
     wire:ignore.self
     x-data
     @removed-post-{{ $post->id }}.window="$el.remove()">
+    {{-- Subtle top accent line --}}
+    <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-steel-600/50 to-transparent"></div>
+
     <x-post.owner :owner="$post->owner" />
     <div class="flex-1 flex flex-col relative">
         <x-post.header :date="$post->created_at">
@@ -16,11 +19,13 @@
                         @if($post instanceof \App\Models\Reply)
                             <livewire:delete-post-button :post="$post" />
                         @endif
-                        <button wire:click.prevent="save" class="text-green-950 hover:text-white bg-green-500 hover:bg-green-700 py-1 px-2 rounded">
+                        <button wire:click.prevent="save"
+                                class="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-lg text-white shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:from-emerald-600 hover:to-emerald-700 transition-all duration-200">
                             Save
                         </button>
                     @endif
-                    <button wire:click.prevent="toggleEditMode" class="text-yellow-950 hover:text-white bg-yellow-500 hover:bg-yellow-700 py-1 px-2 rounded">
+                    <button wire:click.prevent="toggleEditMode"
+                            class="inline-flex items-center px-3 py-1.5 bg-steel-700 border border-steel-600 rounded-lg text-steel-200 hover:bg-steel-600 hover:text-white transition-all duration-200">
                         {{ $editMode ? 'Cancel' : 'Edit' }}
                     </button>
                 </div>
@@ -82,7 +87,7 @@
                 </div>
             @endif
         </div>
-        <div class="flex justify-end items-center p-4 space-x-4">
+        <div class="flex justify-end items-center p-4 space-x-4 border-t border-steel-700/30">
             <livewire:quote-button :post="$post" />
             <livewire:reputation :post="$post" />
         </div>

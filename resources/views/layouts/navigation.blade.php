@@ -1,19 +1,22 @@
 <nav x-data="{ open: false }"
      x-init="$store.scroll.init()"
-     :class="{ 'h-16': !$store.scroll.scrolled, 'h-10': $store.scroll.scrolled }"
-     class="fixed top-0 left-0 right-0 z-50 bg-gray-800 dark:bg-gray-800 border-b border-gray-700 dark:border-gray-700 transition-all duration-300">
+     :class="{ 'h-16': !$store.scroll.scrolled, 'h-12': $store.scroll.scrolled }"
+     class="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-steel-900 via-steel-800 to-steel-900 backdrop-blur-md border-b border-steel-700/50 shadow-lg shadow-black/20 transition-all duration-300">
+    {{-- Blue accent line at top --}}
+    <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-accent-500 to-transparent"></div>
+
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
         <div class="flex justify-between h-full transition-all duration-300">
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a class="text-gray-100 font-bold text-xl" href="{{ route('thread.index') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-200 dark:text-gray-200"/>
+                    <a class="text-white font-bold text-xl flex items-center gap-2 group" href="{{ route('thread.index') }}">
+                        <x-application-logo class="block h-9 w-auto fill-current text-white group-hover:text-accent-400 transition-colors duration-200"/>
                     </a>
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                <div class="hidden space-x-6 sm:-my-px sm:ml-10 sm:flex">
                     <x-nav-link :href="route('thread.index')" :active="request()->routeIs('thread.index')">
                         {{ __('All Threads') }}
                     </x-nav-link>
@@ -38,7 +41,7 @@
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
                             <button
-                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-400 dark:text-gray-400 bg-gray-800 dark:bg-gray-800 hover:text-gray-300 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150 hover:bg-gray-900 hover:shadow-lg"
+                                class="inline-flex items-center px-3 py-2 border border-steel-600/50 text-sm leading-4 font-medium rounded-lg text-steel-200 bg-steel-800/80 hover:text-white hover:bg-steel-700 hover:border-steel-500 focus:outline-none focus:ring-2 focus:ring-accent-500/20 transition-all duration-200 hover:shadow-lg"
                                 :class="{ 'py-2': !$store.scroll.scrolled, 'py-1': $store.scroll.scrolled }"
                             >
                                 <div class="mr-2">{{ Auth::user()->username }}</div>
@@ -47,14 +50,13 @@
                                     <x-avatar size="6" :avatar-path="Auth::user()->avatar_path"/>
                                     @auth
                                         @if($count = Auth::user()->newThreadsCount() > 0)
-                                            <span
-                                                class="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-red-500"></span>
+                                            <span class="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-red-500 ring-2 ring-steel-800"></span>
                                         @endif
                                     @endauth
                                 </div>
 
                                 <div class="ml-1">
-                                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
+                                    <svg class="fill-current h-4 w-4 text-steel-400" xmlns="http://www.w3.org/2000/svg"
                                          viewBox="0 0 20 20">
                                         <path fill-rule="evenodd"
                                               d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
@@ -114,7 +116,7 @@
             <!-- Hamburger -->
             <div class="-mr-2 flex items-center sm:hidden">
                 <button @click="open = ! open"
-                        class="inline-flex items-center justify-center p-2 rounded-md text-gray-500 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-900 focus:text-gray-500 dark:focus:text-gray-400 transition duration-150 ease-in-out">
+                        class="inline-flex items-center justify-center p-2 rounded-lg text-steel-400 hover:text-white hover:bg-steel-700/50 focus:outline-none focus:bg-steel-700/50 focus:text-white transition duration-150 ease-in-out">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                         <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex"
                               stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -136,7 +138,7 @@
          x-transition:leave="transition ease-in duration-150"
          x-transition:leave-start="opacity-100 translate-y-0"
          x-transition:leave-end="opacity-0 -translate-y-1"
-         class="absolute w-full left-0 top-full bg-white dark:bg-gray-800 sm:hidden min-h-screen">
+         class="absolute w-full left-0 top-full bg-gradient-to-b from-steel-800 to-steel-900 border-t border-steel-700/50 sm:hidden min-h-screen">
 
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('thread.index')" :active="request()->routeIs('thread.index')">
@@ -194,10 +196,10 @@
 
         <!-- Responsive Settings Options -->
         @if (Auth::check())
-            <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
-                <div class="px-4">
-                    <div
-                        class="font-medium text-base text-gray-800 dark:text-gray-200">{{ Auth::user()->username }}</div>
+            <div class="pt-4 pb-1 border-t border-steel-700/50">
+                <div class="px-4 flex items-center gap-3">
+                    <x-avatar size="8" :avatar-path="Auth::user()->avatar_path"/>
+                    <div class="font-medium text-base text-white">{{ Auth::user()->username }}</div>
                 </div>
 
                 <div class="mt-3 space-y-1">
@@ -218,7 +220,7 @@
                 </div>
             </div>
         @else
-            <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+            <div class="pt-4 pb-1 border-t border-steel-700/50 space-y-1">
                 <x-responsive-nav-link href="{{ route('register') }}" :active="request()->routeIs('register')">
                     {{ __('Register') }}
                 </x-responsive-nav-link>

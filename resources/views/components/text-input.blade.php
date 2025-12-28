@@ -2,4 +2,4 @@
 
 <input
     {{ $disabled ? 'disabled' : '' }}
-    {!! $attributes->merge(['class' => 'border-gray-600 dark:border-gray-600 bg-gray-700 dark:bg-gray-700 text-gray-200 dark:text-gray-200 focus:border-indigo-500 dark:focus:border-indigo-500 focus:ring-indigo-500 dark:focus:ring-indigo-500 rounded-md shadow-sm p-1.5 px-3 text-lg w-full font-medium']) !!}>
+    {!! $attributes->merge(['class' => 'border border-steel-600 bg-steel-950 text-steel-100 placeholder-steel-500 focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 rounded-lg shadow-inner p-2.5 px-4 text-base w-full transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed']) !!}>

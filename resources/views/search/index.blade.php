@@ -1,14 +1,17 @@
 <x-app-layout>
     <x-slot name="title">Search</x-slot>
     <x-slot name="header">
-        <h2 class="font-semibold text-3xl text-gray-200 dark:text-gray-200 leading-tight">
-            Search
-        </h2>
+        <div class="flex justify-between items-center">
+            <h2 class="font-bold text-xl text-white leading-tight flex items-center gap-3">
+                <span class="hidden md:inline-block w-1 h-6 bg-accent-500 rounded-full"></span>
+                Search
+            </h2>
+        </div>
     </x-slot>
-    <div>
-        <form method="POST" action="/search">
-            @csrf
-            <input type="text" name="search" value="{{ request('search') }}" placeholder="Search for threads, posts, or users..." class="w-full p-2 rounded border border-gray-300">
-        </form>
+
+    <div class="container mx-auto">
+        <div class="md:rounded-2xl md:bg-gradient-to-br md:from-steel-800/50 md:to-steel-900/50 md:backdrop-blur-sm md:border md:border-steel-700/30 p-2 md:p-8 md:mt-4">
+            <x-search-form />
+        </div>
     </div>
 </x-app-layout>

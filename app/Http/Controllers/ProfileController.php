@@ -3,14 +3,73 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\Rep;
+use App\Models\Neg;
+use App\Models\Thread;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
+    /**
+     * Display a user's public profile.
+     */
+    public function show(User $user): View
+    {
+        // Get user's recent posts (replies)
+        $recentPosts = $user->replies()
+            ->with(['thread', 'thread.forum'])
+            ->latest()
+            ->take(10)
+            ->get();
+
+        // Get user's threads
+        $threads = Thread::where('user_id', $user->id)
+            ->with('forum')
+            ->latest()
+            ->take(5)
+            ->get();
+
+        // Count total reps received on user's posts
+        $totalReps = Rep::whereHasMorph('repped', ['App\Models\Reply', 'App\Models\Thread'], function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->count();
+
+        // Count total negs received on user's posts
+        $totalNegs = Neg::whereHasMorph('negged', ['App\Models\Reply', 'App\Models\Thread'], function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->count();
+
+        // Get game stats if they exist
+        $gameStats = $user->gameStats;
+
+        // Get actual last post date from replies
+        $lastPostDate = $recentPosts->first()?->created_at;
+
+        // Calculate account age
+        $joinDate = $user->legacy_join_date
+            ? \Carbon\Carbon::parse($user->legacy_join_date)
+            : $user->created_at;
+        $accountAge = $joinDate->diffForHumans(null, true);
+
+        return view('profile.show', compact(
+            'user',
+            'recentPosts',
+            'threads',
+            'totalReps',
+            'totalNegs',
+            'gameStats',
+            'lastPostDate',
+            'joinDate',
+            'accountAge'
+        ));
+    }
+
     /**
      * Display the user's profile form.
      */

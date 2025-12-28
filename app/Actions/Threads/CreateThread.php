@@ -19,11 +19,14 @@ class CreateThread
         return DB::transaction(function () use ($validated) {
             $thread = $this->createThread($validated);
 
-            $this->updateCache($thread);
-
             if ($validated['has_poll'] ?? false) {
                 $this->createPoll($thread, $validated);
             }
+
+            $this->updateCache($thread);
+
+            // Clear listing caches after poll is created so the poll relationship is included
+            app(InvalidateThreadCaches::class)->execute($thread->forum_id);
 
             return $thread;
         });

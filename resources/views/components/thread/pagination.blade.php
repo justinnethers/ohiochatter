@@ -1,31 +1,20 @@
-<div class="flex space-x-1 md:ml-2 order-2">
+<div class="flex gap-2 md:ml-2 order-2">
     @php
-        $repliesPerPage = auth()->check() ? auth()->user()->repliesPerPage() : config('forum.replies_per_page')
+        $repliesPerPage = auth()->check() ? auth()->user()->repliesPerPage() : config('forum.replies_per_page');
+        $pages = $thread->replies_count > 0 ? ceil($thread->replies_count / $repliesPerPage) : 1;
     @endphp
-    @if ($thread->replies_count > $repliesPerPage)
-        @php
-            $pages = ceil($thread->replies_count / $repliesPerPage)
-        @endphp
-        @if ($pages > 1)
-            @for ($i = 1; $i <= $pages; $i++)
-                @if ($i <= 2 || $i == $pages)
-                    @if ($i == $pages && $pages > 3)
-                        <span class="" style="">...</span>
-                    @endif
-                    <a
-                        href="{{ $thread->path() }}?page={{ $i }}"
-                        class="flex items-center justify-items bg-gray-800 p-2 px-3 md:p-1 md:px-2 rounded text-gray-200 hover:shadow-lg leading-none"
-                    >
-                        {{ $i }}
-                    </a>
-                @endif
-            @endfor
-        @endif
+    @if ($pages > 1)
+        <a
+            href="{{ $thread->path() }}"
+            class="flex items-center justify-center bg-steel-800 border border-steel-700/50 py-1.5 rounded-lg text-steel-300 hover:bg-steel-700 hover:text-white hover:border-steel-600 leading-none transition-all duration-200 w-8"
+        >
+            1
+        </a>
     @endif
     <a
         href="{{ $thread->path() }}/?newestpost=true"
-        class="flex items-center justify-items bg-gray-800 p-2 px-3 md:p-1 md:px-2 rounded text-gray-200 hover:shadow-lg leading-none"
+        class="flex items-center justify-center bg-accent-500/15 border border-steel-700/50 py-1.5 px-3 rounded-lg text-accent-400 hover:bg-accent-500/25 hover:text-accent-300 leading-none transition-all duration-200"
     >
-        Latest Post &raquo;
+        Latest &raquo;
     </a>
 </div>

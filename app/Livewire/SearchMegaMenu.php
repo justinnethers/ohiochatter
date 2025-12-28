@@ -52,9 +52,13 @@ class SearchMegaMenu extends Component
         // Single query batch to reduce round trips
 
         // Threads - direct query, ordered by most recent activity
+        // Exclude threads from restricted forums
         $threads = Thread::where(function ($q) use ($likeQuery) {
                 $q->where('title', 'like', $likeQuery)
                   ->orWhere('body', 'like', $likeQuery);
+            })
+            ->whereHas('forum', function ($q) {
+                $q->where('is_restricted', false);
             })
             ->with('forum')
             ->latest('updated_at')
@@ -76,7 +80,10 @@ class SearchMegaMenu extends Component
         }
 
         // Archive Threads - direct query
+        // Only include threads from publicly displayed forums
+        $allowedArchiveForums = [6, 12, 35, 36, 8, 34, 10, 41, 7, 32, 42, 15, 16];
         $archiveThreads = VbThread::where('title', 'like', $likeQuery)
+            ->whereIn('forumid', $allowedArchiveForums)
             ->with('forum')
             ->orderByDesc('threadid')
             ->limit(5)

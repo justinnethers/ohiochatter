@@ -30,8 +30,16 @@ class SearchController extends Controller
 
         $perPage = 10;
 
-        $threads = Thread::search($query)->get();
-        $posts = Reply::search($query)->get();
+        // Exclude threads from restricted forums entirely
+        $threads = Thread::search($query)->get()->filter(function ($thread) {
+            return !$thread->forum || !$thread->forum->is_restricted;
+        });
+
+        // Exclude posts from threads in restricted forums
+        $posts = Reply::search($query)->get()->filter(function ($post) {
+            return !$post->thread || !$post->thread->forum || !$post->thread->forum->is_restricted;
+        });
+
         $users = User::search($query)->get();
 
         $result = [

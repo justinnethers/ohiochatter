@@ -222,13 +222,7 @@
                                                     gave you a {{ $activity['type'] === 'rep' ? 'rep' : 'neg' }}
                                                 </span>
                                             </p>
-                                            @php
-                                                $repPage = \App\Services\ReplyPaginationService::calculatePage(
-                                                    $activity['reply_position'],
-                                                    \App\Services\ReplyPaginationService::getPerPage()
-                                                );
-                                            @endphp
-                                            <a href="{{ route('thread.show', ['forum' => $activity['forum_slug'], 'thread' => $activity['thread_slug']]) }}?page={{ $repPage }}#reply-{{ $activity['reply_id'] }}" class="text-steel-400 text-xs hover:text-accent-400 transition-colors truncate block">
+                                            <a href="{{ route('thread.show', ['forum' => $activity['forum_slug'], 'thread' => $activity['thread_slug']]) }}" class="text-steel-400 text-xs hover:text-accent-400 transition-colors truncate block">
                                                 in {{ $activity['thread_title'] }}
                                             </a>
                                         </div>

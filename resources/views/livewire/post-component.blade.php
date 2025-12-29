@@ -33,34 +33,34 @@
         </x-post.header>
         <div class="p-4 md:p-8 flex-1">
             @if ($editMode)
-                <div x-data="{
+                <div class="trumbowyg-dark" x-data="{
                     editor: null,
                     init() {
                         if (!this.editor) {
                             this.editor = $(`#editor-{{ $post->id }}`).trumbowyg({
-                                        btns: [['viewHTML'], ['formatting'], ['strong', 'em'], ['link'], ['insertImage'],
-                                            ['justifyLeft', 'justifyCenter', 'justifyRight'], ['unorderedList', 'orderedList'],
-                                            ['horizontalRule'], ['removeformat']],
-                                        removeformatPasted: true
-                                    });
-                                    this.editor.on('tbwchange', () => {
-                                        @this.set('body', this.editor.trumbowyg('html'));
-                                    });
-                                }
-                            },
-                            destroy() {
-                                try {
-                                    if (this.editor) {
-                                        this.editor.trumbowyg('destroy');
-                                        this.editor = null;
-                                    }
-                                } catch (e) {
-                                    console.error('Editor destroy error:', e);
-                                }
+                                btns: [['viewHTML'], ['formatting'], ['strong', 'em'], ['link'], ['insertImage'],
+                                    ['justifyLeft', 'justifyCenter', 'justifyRight'], ['unorderedList', 'orderedList'],
+                                    ['horizontalRule'], ['removeformat']],
+                                removeformatPasted: true
+                            });
+                            this.editor.on('tbwchange', () => {
+                                @this.set('body', this.editor.trumbowyg('html'));
+                            });
+                        }
+                    },
+                    destroy() {
+                        try {
+                            if (this.editor) {
+                                this.editor.trumbowyg('destroy');
+                                this.editor = null;
                             }
-                        }"
-                     @destroy-editor.window="destroy"
-                     wire:ignore>
+                        } catch (e) {
+                            console.error('Editor destroy error:', e);
+                        }
+                    }
+                }"
+                @destroy-editor.window="destroy"
+                wire:ignore>
                     <textarea id="editor-{{ $post->id }}">{{ $body }}</textarea>
                 </div>
             @else

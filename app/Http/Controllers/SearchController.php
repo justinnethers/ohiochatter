@@ -31,7 +31,8 @@ class SearchController extends Controller
 
         // Search posts - exclude restricted forums, paginate at DB level
         // Include position for direct linking to the correct page
-        $posts = Reply::where('body', 'like', $likeQuery)
+        // Search searchable_body which excludes quoted content
+        $posts = Reply::where('searchable_body', 'like', $likeQuery)
             ->whereHas('thread.forum', fn($q) => $q->where('is_restricted', false))
             ->with(['thread.forum', 'owner'])
             ->select('replies.*')

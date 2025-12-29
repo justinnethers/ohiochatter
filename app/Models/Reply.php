@@ -26,6 +26,11 @@ class Reply extends Model
     {
         parent::boot();
 
+        // Update searchable_body before saving
+        static::saving(function ($reply) {
+            $reply->searchable_body = $reply->stripBlockquotes($reply->body);
+        });
+
         static::created(function ($reply) {
             Cache::forget("thread-{$reply->thread_id}-reply-count");
         });
@@ -37,6 +42,28 @@ class Reply extends Model
         static::restored(function ($reply) {
             Cache::forget("thread-{$reply->thread_id}-reply-count");
         });
+    }
+
+    /**
+     * Strip blockquote tags and their content from HTML.
+     */
+    public function stripBlockquotes(?string $html): ?string
+    {
+        if (empty($html)) {
+            return $html;
+        }
+
+        // Remove blockquote tags and their content (handles nested blockquotes too)
+        $result = $html;
+        $previous = '';
+
+        // Keep stripping until no more blockquotes remain (handles nesting)
+        while ($result !== $previous) {
+            $previous = $result;
+            $result = preg_replace('/<blockquote[^>]*>.*?<\/blockquote>/is', '', $result);
+        }
+
+        return $result;
     }
 
     public function owner()

@@ -1,6 +1,5 @@
 @props(['thread'])
 @php
-    $key = config('services.giphy.key');
     $userId = auth()->id();
     $threadId = $thread->id ?? null;
     $storageKey = "editor_draft_{$userId}_{$threadId}";
@@ -17,21 +16,39 @@
         ></div>
     </div>
 
+    <x-giphy-modal />
+
     <x-slot name="head">
         <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script>
             window.jQuery || document.write('<script src="/js/vendor/jquery-3.3.1.min.js"><\/script>')
         </script>
         <script src="https://cdn.jsdelivr.net/npm/trumbowyg@2.30.0/dist/trumbowyg.min.js" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/trumbowyg@2.30.0/dist/plugins/giphy/trumbowyg.giphy.min.js" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/trumbowyg@2.30.0/dist/plugins/table/trumbowyg.table.min.js" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/trumbowyg@2.30.0/dist/plugins/upload/trumbowyg.upload.min.js" crossorigin="anonymous"></script>
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.27.3/ui/trumbowyg.min.css">
         <link rel="stylesheet"
               href="https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.27.3/plugins/table/ui/trumbowyg.table.min.css">
-        <link rel="stylesheet"
-              href="https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.27.3/plugins/giphy/ui/trumbowyg.giphy.min.css">
+        <style>
+            .trumbowyg-giphy-button {
+                display: flex !important;
+                align-items: center;
+                justify-content: center;
+                font-size: 11px !important;
+                font-weight: 700 !important;
+                color: #94a3b8 !important;
+                text-transform: uppercase;
+                width: auto !important;
+                padding: 0 8px !important;
+            }
+            .trumbowyg-giphy-button:hover {
+                color: #e2e8f0 !important;
+            }
+            .trumbowyg-giphy-button svg {
+                display: none !important;
+            }
+        </style>
     </x-slot>
 
     <x-slot name="footer">
@@ -49,6 +66,14 @@
                         image: {
                             dropdown: ['insertImage', 'upload'],
                             ico: 'insertImage'
+                        },
+                        giphy: {
+                            fn: function() {
+                                window.dispatchEvent(new CustomEvent('open-giphy-modal'));
+                            },
+                            title: 'Insert GIF',
+                            text: 'GIF',
+                            hasIcon: false
                         }
                     },
                     btns:[
@@ -63,9 +88,6 @@
                     ],
                     defaultLinkTarget: '_blank',
                     plugins: {
-                        giphy: {
-                            apiKey: '{{ $key }}'
-                        },
                         upload: {
                             serverPath: '/upload-image?_token=' + csrfToken,
                             fileFieldName: 'image',
@@ -74,6 +96,18 @@
                                 console.log('error', error)
                             }
                         }
+                    }
+                });
+
+                // Listen for GIF selection from custom modal
+                window.addEventListener('giphy-selected', function(e) {
+                    if (e.detail && e.detail.url) {
+                        var imgHtml = '<img src="' + e.detail.url + '" alt="GIF">';
+                        editor.trumbowyg('execCmd', {
+                            cmd: 'insertHTML',
+                            param: imgHtml,
+                            forceCss: false
+                        });
                     }
                 });
 

@@ -61,8 +61,10 @@
                 x-data="{ submitting: false, error: '' }"
                 x-on:submit="
                     if(submitting) { $event.preventDefault(); return; }
-                    const content = $('.editor').trumbowyg('html').replace(/<[^>]*>/g, '').trim();
-                    if(!content) {
+                    const html = $('.editor').trumbowyg('html');
+                    const textContent = html.replace(/<[^>]*>/g, '').trim();
+                    const hasImages = /<img\s/i.test(html);
+                    if(!textContent && !hasImages) {
                         $event.preventDefault();
                         error = 'Please enter a message before posting.';
                         return;

@@ -1,6 +1,8 @@
 <div>
-    <h3 class="text-lg font-semibold text-white mb-4">{{  $this->activeUsers->count() }} {{ \Illuminate\Support\Str::plural('Member', $this->activeUsers->count()) }}
-        Online</h3>
+    <h3 class="text-lg font-semibold text-white mb-4">
+        {{ $this->activeUsers->count() }} {{ \Illuminate\Support\Str::plural('Member', $this->activeUsers->count()) }},
+        {{ $this->guestCount }} {{ \Illuminate\Support\Str::plural('Guest', $this->guestCount) }} Online
+    </h3>
 
     <div class="space-y-2">
         @forelse($this->activeUsers as $user)

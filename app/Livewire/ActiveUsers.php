@@ -21,6 +21,15 @@ class ActiveUsers extends Component
         });
     }
 
+    #[Computed]
+    public function guestCount(): int
+    {
+        $guests = Cache::get('active_guests', []);
+        $cutoff = Carbon::now()->subMinutes(30)->timestamp;
+
+        return count(array_filter($guests, fn ($time) => $time > $cutoff));
+    }
+
     public function render()
     {
         return view('livewire.active-users');

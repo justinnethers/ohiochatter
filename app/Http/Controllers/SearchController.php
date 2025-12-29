@@ -25,7 +25,7 @@ class SearchController extends Controller
                   ->orWhere('body', 'like', $likeQuery);
             })
             ->whereHas('forum', fn($q) => $q->where('is_restricted', false))
-            ->orderByDesc('updated_at')
+            ->orderByDesc('last_activity_at')
             ->paginate(5, ['*'], 'thread_page');
 
         // Search posts - exclude restricted forums, paginate at DB level

@@ -8,6 +8,7 @@
 
 <div>
     <div class="trumbowyg-dark">
+        <input type="hidden" name="body" id="body-input" value="">
         <div
             class="editor text-white bg-transparent"
             style="min-height: 300px;"
@@ -99,19 +100,12 @@
                 const form = editorElement.closest('form');
 
                 if (form) {
-                    // Add a hidden input to mark form submission
-                    const submitFlag = document.createElement('input');
-                    submitFlag.type = 'hidden';
-                    submitFlag.name = 'editor_submitted';
-                    submitFlag.value = 'true';
-                    form.appendChild(submitFlag);
-
-                    // Handle form submission
-                    // form.addEventListener('submit', function(e) {
-                    //     console.log('Form submission detected');
-                    //     localStorage.removeItem(storageKey);
-                    //     console.log('Local storage cleared for key:', storageKey);
-                    // });
+                    // Populate hidden input on form submit
+                    form.addEventListener('submit', function(e) {
+                        const content = editor.trumbowyg('html');
+                        document.getElementById('body-input').value = content;
+                        localStorage.removeItem(storageKey);
+                    });
                 } else {
                     console.warn('Form element not found for editor');
                 }

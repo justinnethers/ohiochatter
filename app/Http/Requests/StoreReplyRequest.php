@@ -22,7 +22,14 @@ class StoreReplyRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'body' => ['required', 'string', 'min:1'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'body.required' => 'Please enter a message before posting.',
         ];
     }
 }

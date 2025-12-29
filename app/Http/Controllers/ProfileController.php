@@ -49,15 +49,27 @@ class ProfileController extends Controller
             ->take(5)
             ->get();
 
-        // Count total reps received on user's posts
-        $totalReps = Rep::whereHasMorph('repped', ['App\Models\Reply', 'App\Models\Thread'], function ($query) use ($user) {
-            $query->where('user_id', $user->id);
-        })->count();
+        // Count total reps received on user's posts (cached for 5 minutes)
+        $totalReps = Cache::remember("user:{$user->id}:total_reps", 300, function () use ($user) {
+            $replyReps = Rep::where('repped_type', 'App\Models\Reply')
+                ->whereIn('repped_id', $user->replies()->select('id'))
+                ->count();
+            $threadReps = Rep::where('repped_type', 'App\Models\Thread')
+                ->whereIn('repped_id', Thread::where('user_id', $user->id)->select('id'))
+                ->count();
+            return $replyReps + $threadReps;
+        });
 
-        // Count total negs received on user's posts
-        $totalNegs = Neg::whereHasMorph('negged', ['App\Models\Reply', 'App\Models\Thread'], function ($query) use ($user) {
-            $query->where('user_id', $user->id);
-        })->count();
+        // Count total negs received on user's posts (cached for 5 minutes)
+        $totalNegs = Cache::remember("user:{$user->id}:total_negs", 300, function () use ($user) {
+            $replyNegs = Neg::where('negged_type', 'App\Models\Reply')
+                ->whereIn('negged_id', $user->replies()->select('id'))
+                ->count();
+            $threadNegs = Neg::where('negged_type', 'App\Models\Thread')
+                ->whereIn('negged_id', Thread::where('user_id', $user->id)->select('id'))
+                ->count();
+            return $replyNegs + $threadNegs;
+        });
 
         // Get game stats if they exist
         $gameStats = $user->gameStats;

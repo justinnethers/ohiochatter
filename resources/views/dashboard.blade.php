@@ -213,6 +213,13 @@
                                                 </div>
                                             @endif
                                         </div>
+                                        @php
+                                            $page = \App\Services\ReplyPaginationService::calculatePage(
+                                                $activity['reply_position'],
+                                                \App\Services\ReplyPaginationService::getPerPage()
+                                            );
+                                            $replyUrl = route('thread.show', ['forum' => $activity['forum_slug'], 'thread' => $activity['thread_slug']]) . '?page=' . $page . '#reply-' . $activity['reply_id'];
+                                        @endphp
                                         <div class="flex-1 min-w-0">
                                             <p class="text-white text-sm">
                                                 <a href="{{ route('profile.show', ['user' => $activity['username']]) }}" class="font-medium hover:text-accent-400 transition-colors">
@@ -222,7 +229,7 @@
                                                     gave you a {{ $activity['type'] === 'rep' ? 'rep' : 'neg' }}
                                                 </span>
                                             </p>
-                                            <a href="{{ route('thread.show', ['forum' => $activity['forum_slug'], 'thread' => $activity['thread_slug']]) }}" class="text-steel-400 text-xs hover:text-accent-400 transition-colors truncate block">
+                                            <a href="{{ $replyUrl }}" class="text-steel-400 text-xs hover:text-accent-400 transition-colors truncate block">
                                                 in {{ $activity['thread_title'] }}
                                             </a>
                                         </div>

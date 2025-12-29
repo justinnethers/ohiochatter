@@ -60,7 +60,7 @@ class DashboardController extends Controller
                 })
                 ->count();
 
-            // Recent rep activity (without position - calculate in view if needed)
+            // Recent rep activity with position for direct post linking
             $reps = DB::table('reps')
                 ->join('replies', function ($join) use ($userId) {
                     $join->on('reps.repped_id', '=', 'replies.id')
@@ -76,12 +76,13 @@ class DashboardController extends Controller
                     'threads.title as thread_title',
                     'threads.slug as thread_slug',
                     'forums.slug as forum_slug',
-                    'replies.id as reply_id'
+                    'replies.id as reply_id',
+                    DB::raw('(' . ReplyPaginationService::positionSubquery() . ') as reply_position')
                 )
                 ->orderByDesc('reps.created_at')
                 ->limit(5)
                 ->get()
-                ->map(fn($r) => ['type' => 'rep', 'username' => $r->username, 'thread_title' => $r->thread_title, 'thread_slug' => $r->thread_slug, 'forum_slug' => $r->forum_slug, 'reply_id' => $r->reply_id, 'created_at' => $r->created_at]);
+                ->map(fn($r) => ['type' => 'rep', 'username' => $r->username, 'thread_title' => $r->thread_title, 'thread_slug' => $r->thread_slug, 'forum_slug' => $r->forum_slug, 'reply_id' => $r->reply_id, 'reply_position' => $r->reply_position, 'created_at' => $r->created_at]);
 
             $negs = DB::table('negs')
                 ->join('replies', function ($join) use ($userId) {
@@ -98,12 +99,13 @@ class DashboardController extends Controller
                     'threads.title as thread_title',
                     'threads.slug as thread_slug',
                     'forums.slug as forum_slug',
-                    'replies.id as reply_id'
+                    'replies.id as reply_id',
+                    DB::raw('(' . ReplyPaginationService::positionSubquery() . ') as reply_position')
                 )
                 ->orderByDesc('negs.created_at')
                 ->limit(5)
                 ->get()
-                ->map(fn($n) => ['type' => 'neg', 'username' => $n->username, 'thread_title' => $n->thread_title, 'thread_slug' => $n->thread_slug, 'forum_slug' => $n->forum_slug, 'reply_id' => $n->reply_id, 'created_at' => $n->created_at]);
+                ->map(fn($n) => ['type' => 'neg', 'username' => $n->username, 'thread_title' => $n->thread_title, 'thread_slug' => $n->thread_slug, 'forum_slug' => $n->forum_slug, 'reply_id' => $n->reply_id, 'reply_position' => $n->reply_position, 'created_at' => $n->created_at]);
 
             $recentRepActivity = $reps->merge($negs)
                 ->sortByDesc('created_at')

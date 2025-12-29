@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Thread;
 use App\Models\Reply;
 use App\Models\User;
+use App\Services\ReplyPaginationService;
 use Illuminate\Http\Request;
 
 class SearchController extends Controller
@@ -29,9 +30,12 @@ class SearchController extends Controller
             ->paginate(5, ['*'], 'thread_page');
 
         // Search posts - exclude restricted forums, paginate at DB level
+        // Include position for direct linking to the correct page
         $posts = Reply::where('body', 'like', $likeQuery)
             ->whereHas('thread.forum', fn($q) => $q->where('is_restricted', false))
             ->with(['thread.forum', 'owner'])
+            ->select('replies.*')
+            ->selectSub(ReplyPaginationService::positionSubquery(), 'position')
             ->orderByDesc('created_at')
             ->paginate(10, ['*'], 'post_page');
 

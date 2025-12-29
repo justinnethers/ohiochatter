@@ -31,12 +31,18 @@ class SearchController extends Controller
         $perPage = 10;
 
         // Exclude threads from restricted forums entirely
-        $threads = Thread::search($query)->get()->filter(function ($thread) {
+        // Eager load forum relationship to avoid N+1 queries
+        $threads = Thread::search($query)->get();
+        $threads->load('forum');
+        $threads = $threads->filter(function ($thread) {
             return !$thread->forum || !$thread->forum->is_restricted;
         });
 
         // Exclude posts from threads in restricted forums
-        $posts = Reply::search($query)->get()->filter(function ($post) {
+        // Eager load thread.forum relationship to avoid N+1 queries
+        $posts = Reply::search($query)->get();
+        $posts->load('thread.forum');
+        $posts = $posts->filter(function ($post) {
             return !$post->thread || !$post->thread->forum || !$post->thread->forum->is_restricted;
         });
 

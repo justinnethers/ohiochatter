@@ -95,6 +95,70 @@ describe('SearchController', function () {
     });
 });
 
+describe('Reply searchable_body', function () {
+    test('stripBlockquotes removes blockquote content', function () {
+        $reply = new Reply();
+
+        $html = '<p>Hello</p><blockquote>Quoted text</blockquote><p>World</p>';
+        $result = $reply->stripBlockquotes($html);
+
+        expect($result)
+            ->toContain('Hello')
+            ->toContain('World')
+            ->not->toContain('Quoted text')
+            ->not->toContain('blockquote');
+    });
+
+    test('stripBlockquotes handles nested blockquotes', function () {
+        $reply = new Reply();
+
+        $html = '<blockquote>Outer<blockquote>Inner</blockquote></blockquote><p>Actual content</p>';
+        $result = $reply->stripBlockquotes($html);
+
+        expect($result)
+            ->toContain('Actual content')
+            ->not->toContain('Outer')
+            ->not->toContain('Inner');
+    });
+
+    test('searchable_body is populated on reply save', function () {
+        $forum = Forum::factory()->create(['is_restricted' => false]);
+        $thread = Thread::factory()->for($forum)->create();
+
+        $reply = Reply::factory()->for($thread, 'thread')->create([
+            'body' => '<p>My reply</p><blockquote>Some quote</blockquote>',
+        ]);
+
+        expect($reply->searchable_body)
+            ->toContain('My reply')
+            ->not->toContain('Some quote');
+    });
+
+    test('post search does not match content inside blockquotes', function () {
+        $forum = Forum::factory()->create(['is_restricted' => false]);
+        $thread = Thread::factory()->for($forum)->create();
+
+        // Reply with "uniqueword" only in the blockquote
+        $replyWithQuote = Reply::factory()->for($thread, 'thread')->create([
+            'body' => '<p>Regular content here</p><blockquote>uniqueword in quote</blockquote>',
+        ]);
+
+        // Reply with "uniqueword" in actual content
+        $replyWithContent = Reply::factory()->for($thread, 'thread')->create([
+            'body' => '<p>This has uniqueword in content</p>',
+        ]);
+
+        $response = $this->get('/search?q=uniqueword');
+
+        $response->assertOk();
+        $posts = $response->viewData('posts');
+
+        expect($posts->pluck('id')->toArray())
+            ->toContain($replyWithContent->id)
+            ->not->toContain($replyWithQuote->id);
+    });
+});
+
 describe('SearchMegaMenu Livewire Component', function () {
     test('excludes threads from restricted forums', function () {
         $publicForum = Forum::factory()->create([

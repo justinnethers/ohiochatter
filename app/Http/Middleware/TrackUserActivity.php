@@ -42,6 +42,10 @@ class TrackUserActivity
         $guests = array_filter($guests, fn ($time) => $time > $cutoff);
 
         Cache::put($cacheKey, $guests, now()->addMinutes(30));
+
+        // Track page views for signup CTA
+        $pageViews = $request->session()->get('guest_page_views', 0);
+        $request->session()->put('guest_page_views', $pageViews + 1);
     }
 
     protected function isBot(Request $request): bool

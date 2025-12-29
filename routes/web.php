@@ -98,6 +98,11 @@ Route::get('/privacy', function () {
     return view('privacy');
 })->name('privacy');
 
+Route::post('/dismiss-signup-modal', function () {
+    session(['signup_modal_dismissed' => true]);
+    return response()->json(['success' => true]);
+})->name('dismiss-signup-modal');
+
 Route::get('forum/showthread.php', function () {
     // Grab the entire query string after the "?"
     // For example, if the URL is:

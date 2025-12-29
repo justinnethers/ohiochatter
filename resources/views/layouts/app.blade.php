@@ -170,5 +170,7 @@
     {{ $footer }}
 @endif
 @stack('footer')
+
+<x-guest-signup-modal />
 </body>
 </html>

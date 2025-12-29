@@ -27,6 +27,10 @@ class TrackUserActivity
 
     protected function trackGuest(Request $request): void
     {
+        if ($this->isBot($request)) {
+            return;
+        }
+
         $sessionId = $request->session()->getId();
         $cacheKey = 'active_guests';
 
@@ -38,5 +42,27 @@ class TrackUserActivity
         $guests = array_filter($guests, fn ($time) => $time > $cutoff);
 
         Cache::put($cacheKey, $guests, now()->addMinutes(30));
+    }
+
+    protected function isBot(Request $request): bool
+    {
+        $userAgent = strtolower($request->userAgent() ?? '');
+
+        $botPatterns = [
+            'bot', 'crawl', 'spider', 'slurp', 'googlebot', 'bingbot',
+            'yandex', 'baidu', 'duckduck', 'semrush', 'ahrefs', 'mj12bot',
+            'dotbot', 'rogerbot', 'facebookexternalhit', 'linkedinbot',
+            'twitterbot', 'applebot', 'pingdom', 'uptimerobot', 'headlesschrome',
+            'phantomjs', 'curl', 'wget', 'python', 'java/', 'go-http',
+            'scrapy', 'httpclient', 'apache-httpclient', 'nutch',
+        ];
+
+        foreach ($botPatterns as $pattern) {
+            if (str_contains($userAgent, $pattern)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

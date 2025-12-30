@@ -33,7 +33,8 @@ Route::middleware('web')->prefix('ohio')->group(function () {
         // User Guide Creation (requires auth)
         Route::middleware('auth')->group(function () {
             Route::get('/create', fn () => view('guides.create'))->name('guide.create');
-            Route::get('/drafts', fn () => view('guides.drafts'))->name('guide.drafts');
+            Route::get('/my-guides', fn () => view('guides.my-guides'))->name('guide.my-guides');
+            Route::get('/drafts', fn () => redirect()->route('guide.my-guides')); // Redirect old URL
             Route::get('/edit/{draft}', fn (int $draft) => view('guides.create', ['draft' => $draft]))->name('guide.edit');
         });
 

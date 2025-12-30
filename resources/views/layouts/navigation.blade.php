@@ -82,12 +82,8 @@
 
                             <div class="border-t border-steel-700/50 my-1"></div>
 
-                            <x-dropdown-link :href="route('guide.create')">
-                                {{ __('Create Guide') }}
-                            </x-dropdown-link>
-
-                            <x-dropdown-link :href="route('guide.drafts')">
-                                {{ __('My Drafts') }}
+                            <x-dropdown-link :href="route('guide.my-guides')">
+                                {{ __('My Guides') }}
                             </x-dropdown-link>
 
                             @if (Auth::user()->isAdmin())
@@ -217,12 +213,8 @@
                         {{ __('Profile') }}
                     </x-responsive-nav-link>
 
-                    <x-responsive-nav-link :href="route('guide.create')">
-                        {{ __('Create Guide') }}
-                    </x-responsive-nav-link>
-
-                    <x-responsive-nav-link :href="route('guide.drafts')">
-                        {{ __('My Drafts') }}
+                    <x-responsive-nav-link :href="route('guide.my-guides')">
+                        {{ __('My Guides') }}
                     </x-responsive-nav-link>
 
                     <!-- Authentication -->

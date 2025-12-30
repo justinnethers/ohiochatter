@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Modules\Geography\Actions\Content\CreateContent;
 use App\Modules\Geography\DTOs\CreateContentData;
 use App\Notifications\NewGuideSubmitted;
+use App\Services\ContentAIService;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Locked;
@@ -44,6 +45,8 @@ class CreateGuide extends Component
     // List builder
     public bool $listEnabled = false;
     public bool $listIsRanked = true;
+    public string $listTitle = '';
+    public bool $listCountdown = false;
     public array $listItems = [];
     public array $listItemImages = []; // Temporary upload storage keyed by item id
 
@@ -86,13 +89,15 @@ class CreateGuide extends Component
         $settings = $draft->list_settings ?? [];
         $this->listEnabled = ! empty($this->listItems) || ($settings['enabled'] ?? false);
         $this->listIsRanked = $settings['ranked'] ?? true;
+        $this->listTitle = $settings['title'] ?? '';
+        $this->listCountdown = $settings['countdown'] ?? false;
     }
 
     protected function rules(): array
     {
         $rules = [
             'title' => 'required|string|min:10|max:255',
-            'excerpt' => 'required|string|min:50|max:500',
+            'excerpt' => 'nullable|string|max:500',
             'body' => 'required|string|min:200',
             'categoryId' => 'required|exists:content_categories,id',
             'locatableType' => 'required|in:App\Models\Region,App\Models\County,App\Models\City',
@@ -124,8 +129,7 @@ class CreateGuide extends Component
         return [
             'title.required' => 'Please enter a title for your guide.',
             'title.min' => 'Title must be at least 10 characters.',
-            'excerpt.required' => 'Please provide a summary of your guide.',
-            'excerpt.min' => 'Summary must be at least 50 characters.',
+            'excerpt.max' => 'Summary must be less than 500 characters.',
             'body.required' => 'Please write the content for your guide.',
             'body.min' => 'Guide content must be at least 200 characters.',
             'categoryId.required' => 'Please select a category.',
@@ -308,6 +312,8 @@ class CreateGuide extends Component
             'list_settings' => [
                 'enabled' => $this->listEnabled,
                 'ranked' => $this->listIsRanked,
+                'title' => $this->listTitle ?: null,
+                'countdown' => $this->listCountdown,
             ],
         ];
 
@@ -338,9 +344,26 @@ class CreateGuide extends Component
         $this->savedDraft = true;
     }
 
-    public function submit(CreateContent $createContent): void
+    public function submit(CreateContent $createContent, ContentAIService $aiService): void
     {
         $this->validate();
+
+        // Generate excerpt with AI if not provided
+        $excerpt = $this->excerpt;
+        if (empty(trim($excerpt))) {
+            try {
+                $excerpt = $aiService->generateSummary(
+                    $this->title,
+                    $this->body,
+                    $this->listEnabled ? $this->listTitle : null,
+                    $this->listEnabled ? $this->listItems : []
+                );
+            } catch (\Exception $e) {
+                // Fallback: use first 200 chars of body stripped of HTML
+                $excerpt = Str::limit(strip_tags($this->body), 200);
+                \Log::warning('Failed to generate AI summary: '.$e->getMessage());
+            }
+        }
 
         // Store new images
         $featuredImagePath = $this->existingFeaturedImage;
@@ -365,6 +388,8 @@ class CreateGuide extends Component
             $metadata['list_items'] = $processedListItems;
             $metadata['list_settings'] = [
                 'ranked' => $this->listIsRanked,
+                'title' => $this->listTitle ?: null,
+                'countdown' => $this->listCountdown,
             ];
         }
 
@@ -376,7 +401,7 @@ class CreateGuide extends Component
             body: $this->body,
             locatableType: $this->locatableType,
             locatableId: $this->locatableId,
-            excerpt: $this->excerpt,
+            excerpt: $excerpt,
             featuredImage: $featuredImagePath,
             gallery: ! empty($galleryPaths) ? $galleryPaths : null,
             metadata: $metadata,
@@ -426,6 +451,8 @@ class CreateGuide extends Component
             'existingGallery',
             'listEnabled',
             'listIsRanked',
+            'listTitle',
+            'listCountdown',
             'listItems',
             'listItemImages',
             'submitted',

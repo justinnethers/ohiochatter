@@ -27,8 +27,8 @@ describe('route access', function () {
             ->assertRedirect(route('login'));
     });
 
-    it('requires authentication for drafts page', function () {
-        $this->get(route('guide.drafts'))
+    it('requires authentication for my guides page', function () {
+        $this->get(route('guide.my-guides'))
             ->assertRedirect(route('login'));
     });
 
@@ -45,9 +45,9 @@ describe('route access', function () {
             ->assertOk();
     });
 
-    it('allows authenticated users to access drafts page', function () {
+    it('allows authenticated users to access my guides page', function () {
         $this->actingAs($this->user)
-            ->get(route('guide.drafts'))
+            ->get(route('guide.my-guides'))
             ->assertOk();
     });
 });
@@ -193,17 +193,16 @@ describe('submitting guides', function () {
         Livewire::actingAs($this->user)
             ->test(CreateGuide::class)
             ->call('submit')
-            ->assertHasErrors(['title', 'excerpt', 'body', 'categoryId', 'locatableType']);
+            ->assertHasErrors(['title', 'body', 'categoryId', 'locatableType']);
     });
 
     it('validates minimum lengths', function () {
         Livewire::actingAs($this->user)
             ->test(CreateGuide::class)
             ->set('title', 'Short')
-            ->set('excerpt', 'Too short')
             ->set('body', 'Too short')
             ->call('submit')
-            ->assertHasErrors(['title', 'excerpt', 'body']);
+            ->assertHasErrors(['title', 'body']);
     });
 
     it('creates content on valid submit', function () {

@@ -33,7 +33,7 @@
                     </svg>
                     <span>Draft saved! You can close this page and continue later.</span>
                 </div>
-                <a href="{{ route('guide.drafts') }}" class="text-sm text-green-300 hover:text-green-200 underline">View My Drafts</a>
+                <a href="{{ route('guide.my-guides') }}" class="text-sm text-green-300 hover:text-green-200 underline">View My Guides</a>
             </div>
         @endif
 
@@ -100,11 +100,11 @@
 
             {{-- Excerpt/Summary --}}
             <div>
-                <x-input-label for="excerpt" class="mb-2">Summary <span class="text-red-400">*</span></x-input-label>
+                <x-input-label for="excerpt" class="mb-2">Summary <span class="text-steel-500">(optional)</span></x-input-label>
                 <textarea wire:model="excerpt" id="excerpt" rows="3"
                     placeholder="A brief summary of your guide that will appear in search results and previews..."
                     class="border border-steel-600 bg-steel-950 text-steel-100 placeholder-steel-500 focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 rounded-lg shadow-inner p-2.5 px-4 text-base w-full transition-colors duration-200"></textarea>
-                <p class="mt-1 text-sm text-steel-500">50-500 characters</p>
+                <p class="mt-1 text-sm text-steel-500">Leave blank to auto-generate with AI</p>
                 @error('excerpt') <x-input-error :messages="$message" class="mt-1" /> @enderror
             </div>
 
@@ -229,11 +229,22 @@
                     </label>
 
                     @if($listEnabled)
-                        <label class="flex items-center gap-2 cursor-pointer text-sm">
-                            <input type="checkbox" wire:model.live="listIsRanked"
-                                class="w-4 h-4 rounded border-steel-600 bg-steel-800 text-accent-500 focus:ring-accent-500/20 focus:ring-offset-0">
-                            <span class="text-steel-300">Ranked list</span>
-                        </label>
+                        <div class="flex flex-wrap items-center gap-4">
+                            <label class="flex items-center gap-2 cursor-pointer text-sm">
+                                <input type="checkbox" wire:model.live="listIsRanked"
+                                    class="w-4 h-4 rounded border-steel-600 bg-steel-800 text-accent-500 focus:ring-accent-500/20 focus:ring-offset-0">
+                                <span class="text-steel-300">Ranked list</span>
+                            </label>
+
+                            @if($listIsRanked)
+                                <label class="flex items-center gap-2 cursor-pointer text-sm">
+                                    <input type="checkbox" wire:model.live="listCountdown"
+                                        class="w-4 h-4 rounded border-steel-600 bg-steel-800 text-accent-500 focus:ring-accent-500/20 focus:ring-offset-0">
+                                    <span class="text-steel-300">Countdown order</span>
+                                    <span class="text-steel-500 text-xs">(#5 → #1)</span>
+                                </label>
+                            @endif
+                        </div>
                     @endif
                 </div>
 
@@ -241,6 +252,17 @@
                     <p class="text-sm text-steel-400 mb-4">
                         Create a list of items (e.g., "Top 5 Restaurants"). Drag to reorder.
                     </p>
+
+                    {{-- List Title --}}
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-steel-300 mb-1">
+                            List Title <span class="text-steel-500">(optional)</span>
+                        </label>
+                        <input type="text" wire:model="listTitle"
+                            placeholder="e.g., My Favorite Beers, Must-Try Dishes, Top Breweries..."
+                            class="w-full border border-steel-600 bg-steel-950 text-steel-100 placeholder-steel-500 focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 rounded-lg p-2.5 text-sm">
+                        <p class="text-xs text-steel-500 mt-1">Header shown above your list items.</p>
+                    </div>
 
                     {{-- List Items --}}
                     <div class="space-y-3"
@@ -270,8 +292,13 @@
 
                                     {{-- Rank Number --}}
                                     @if($listIsRanked)
+                                        @php
+                                            $displayNumber = $listCountdown
+                                                ? count($listItems) - $index
+                                                : $index + 1;
+                                        @endphp
                                         <span class="flex items-center justify-center w-8 h-8 rounded-full bg-accent-500/20 text-accent-400 font-bold text-sm">
-                                            #{{ $index + 1 }}
+                                            #{{ $displayNumber }}
                                         </span>
                                     @endif
 

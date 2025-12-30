@@ -2,12 +2,31 @@
 
 @php
     $isRanked = $settings['ranked'] ?? true;
+    $listTitle = $settings['title'] ?? null;
+    $isCountdown = $settings['countdown'] ?? false;
+    $displayItems = $isCountdown ? array_reverse($items) : $items;
+    $totalItems = count($items);
 @endphp
 
 @if(!empty($items))
     <div class="my-8">
+        {{-- Optional List Title --}}
+        @if($listTitle)
+            <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                @if($isRanked)
+                    <span class="w-1 h-8 bg-accent-500 rounded-full"></span>
+                @endif
+                {{ $listTitle }}
+            </h2>
+        @endif
+
         <div class="space-y-6">
-            @foreach($items as $index => $item)
+            @foreach($displayItems as $index => $item)
+                @php
+                    $rankNumber = $isCountdown
+                        ? $totalItems - $index
+                        : $index + 1;
+                @endphp
                 <div class="bg-gradient-to-br from-steel-800 to-steel-850 rounded-xl overflow-hidden border border-steel-700/50 shadow-lg shadow-black/20">
                     <div class="flex flex-col md:flex-row">
                         {{-- Image --}}
@@ -25,7 +44,7 @@
                                 {{-- Rank Number --}}
                                 @if($isRanked)
                                     <div class="shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-accent-500/20 border border-accent-500/30">
-                                        <span class="text-accent-400 font-bold text-lg">#{{ $index + 1 }}</span>
+                                        <span class="text-accent-400 font-bold text-lg">#{{ $rankNumber }}</span>
                                     </div>
                                 @endif
 

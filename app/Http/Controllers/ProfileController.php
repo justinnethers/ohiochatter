@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\Content;
 use App\Models\Rep;
 use App\Models\Neg;
 use App\Models\Thread;
@@ -74,6 +75,14 @@ class ProfileController extends Controller
         // Get game stats if they exist
         $gameStats = $user->gameStats;
 
+        // Get user's published guides
+        $guides = Content::where('user_id', $user->id)
+            ->whereNotNull('published_at')
+            ->with(['contentCategory', 'locatable'])
+            ->latest('published_at')
+            ->take(5)
+            ->get();
+
         // Get actual last post date from replies
         $lastPostDate = $recentPosts->first()?->created_at;
 
@@ -87,6 +96,7 @@ class ProfileController extends Controller
             'user',
             'recentPosts',
             'threads',
+            'guides',
             'totalReps',
             'totalNegs',
             'gameStats',

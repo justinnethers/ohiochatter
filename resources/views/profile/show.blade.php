@@ -225,6 +225,50 @@
                         </div>
                     @endif
 
+                    {{-- Guides --}}
+                    @if($guides->count() > 0)
+                        <div class="bg-gradient-to-br from-steel-800 to-steel-850 p-6 rounded-xl shadow-lg shadow-black/20 border border-steel-700/50">
+                            <h3 class="text-lg font-semibold text-white mb-4">Guides</h3>
+
+                            <div class="space-y-4">
+                                @foreach($guides as $guide)
+                                    <a href="{{ route('guide.show', $guide) }}" class="group block p-4 rounded-xl bg-steel-900/50 border border-steel-700/30 hover:border-steel-600 hover:bg-steel-900 transition-all duration-200">
+                                        <span class="text-lg text-white font-semibold group-hover:text-accent-400 transition-colors block mb-3">
+                                            {{ $guide->title }}
+                                        </span>
+
+                                        <span class="flex items-center justify-between flex-wrap gap-2">
+                                            <span class="flex items-center gap-3">
+                                                @if($guide->contentCategory)
+                                                    <span class="inline-flex items-center px-3 py-1 bg-accent-500 rounded-full text-sm font-semibold text-white shadow-lg shadow-black/20">
+                                                        {{ $guide->contentCategory->name }}
+                                                    </span>
+                                                @endif
+                                                <span class="text-sm text-steel-400">{{ ($guide->published_at ?? $guide->created_at)->diffForHumans() }}</span>
+                                            </span>
+
+                                            @if($guide->locatable)
+                                                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-steel-900/70 rounded-full border border-steel-700/50 text-sm text-steel-300">
+                                                    <svg class="w-4 h-4 text-steel-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                    </svg>
+                                                    {{ $guide->locatable->name }}
+                                                </span>
+                                            @endif
+                                        </span>
+
+                                        @if($guide->excerpt)
+                                            <span class="mt-3 text-steel-300 text-sm line-clamp-2 block">
+                                                {{ $guide->excerpt }}
+                                            </span>
+                                        @endif
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
                     {{-- Recent Posts --}}
                     <div class="bg-gradient-to-br from-steel-800 to-steel-850 p-6 rounded-xl shadow-lg shadow-black/20 border border-steel-700/50">
                         <h3 class="text-lg font-semibold text-white mb-4">Recent Posts</h3>

@@ -1,0 +1,49 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+
+class GuideDraft extends Model
+{
+    use HasFactory;
+    protected $fillable = [
+        'user_id',
+        'title',
+        'excerpt',
+        'body',
+        'content_category_id',
+        'content_type_id',
+        'locatable_type',
+        'locatable_id',
+        'featured_image',
+        'gallery',
+    ];
+
+    protected $casts = [
+        'gallery' => 'array',
+    ];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function contentCategory(): BelongsTo
+    {
+        return $this->belongsTo(ContentCategory::class);
+    }
+
+    public function contentType(): BelongsTo
+    {
+        return $this->belongsTo(ContentType::class);
+    }
+
+    public function locatable(): MorphTo
+    {
+        return $this->morphTo();
+    }
+}

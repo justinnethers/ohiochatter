@@ -80,6 +80,16 @@
                                 {{ __('Profile') }}
                             </x-dropdown-link>
 
+                            <div class="border-t border-steel-700/50 my-1"></div>
+
+                            <x-dropdown-link :href="route('guide.create')">
+                                {{ __('Create Guide') }}
+                            </x-dropdown-link>
+
+                            <x-dropdown-link :href="route('guide.drafts')">
+                                {{ __('My Drafts') }}
+                            </x-dropdown-link>
+
                             @if (Auth::user()->isAdmin())
                                 <x-dropdown-link :href="route('pulse')" target="_blank">
                                     {{ __('Pulse') }}
@@ -205,6 +215,14 @@
                 <div class="mt-3 space-y-1">
                     <x-responsive-nav-link :href="route('profile.edit')">
                         {{ __('Profile') }}
+                    </x-responsive-nav-link>
+
+                    <x-responsive-nav-link :href="route('guide.create')">
+                        {{ __('Create Guide') }}
+                    </x-responsive-nav-link>
+
+                    <x-responsive-nav-link :href="route('guide.drafts')">
+                        {{ __('My Drafts') }}
                     </x-responsive-nav-link>
 
                     <!-- Authentication -->

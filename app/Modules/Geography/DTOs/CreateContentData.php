@@ -7,7 +7,7 @@ use Carbon\Carbon;
 readonly class CreateContentData
 {
     public function __construct(
-        public int $contentTypeId,
+        public ?int $contentTypeId,
         public int $categoryId,
         public string $title,
         public string $body,
@@ -27,7 +27,7 @@ readonly class CreateContentData
     public static function fromArray(array $data): self
     {
         return new self(
-            contentTypeId: $data['content_type_id'],
+            contentTypeId: $data['content_type_id'] ?? null,
             categoryId: $data['content_category_id'],
             title: $data['title'],
             body: $data['body'],

@@ -67,17 +67,12 @@
                     {!! Str::markdown($content->body) !!}
                 </div>
 
-                @if($content->metadata && $content->contentType && $content->contentType->slug === 'list' && isset($content->metadata['items']))
-                    <div class="mt-8 pt-8 border-t border-steel-700">
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            @foreach($content->metadata['items'] as $item)
-                                <div class="bg-steel-900/50 rounded-lg p-4 border border-steel-700/50">
-                                    <h3 class="text-lg font-semibold text-white mb-2">{{ $item['name'] ?? '' }}</h3>
-                                    <p class="text-steel-300">{{ $item['description'] ?? '' }}</p>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
+                {{-- List Items (from list builder) --}}
+                @if(!empty($content->metadata['list_items']))
+                    <x-guide-list
+                        :items="$content->metadata['list_items']"
+                        :settings="$content->metadata['list_settings'] ?? []"
+                    />
                 @endif
             </article>
 

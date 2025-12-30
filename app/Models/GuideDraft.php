@@ -21,10 +21,14 @@ class GuideDraft extends Model
         'locatable_id',
         'featured_image',
         'gallery',
+        'list_items',
+        'list_settings',
     ];
 
     protected $casts = [
         'gallery' => 'array',
+        'list_items' => 'array',
+        'list_settings' => 'array',
     ];
 
     public function user(): BelongsTo

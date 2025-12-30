@@ -3,7 +3,6 @@
 use App\Livewire\CreateGuide;
 use App\Models\City;
 use App\Models\ContentCategory;
-use App\Models\ContentType;
 use App\Models\County;
 use App\Models\GuideDraft;
 use App\Models\Region;
@@ -20,7 +19,6 @@ beforeEach(function () {
     $this->county = County::factory()->for($this->region)->create();
     $this->city = City::factory()->for($this->county)->create();
     $this->category = ContentCategory::factory()->create();
-    $this->contentType = ContentType::factory()->create();
 });
 
 describe('route access', function () {
@@ -62,11 +60,10 @@ describe('CreateGuide component', function () {
             ->assertViewIs('livewire.create-guide');
     });
 
-    it('loads categories and content types', function () {
+    it('loads categories', function () {
         Livewire::actingAs($this->user)
             ->test(CreateGuide::class)
-            ->assertSee($this->category->name)
-            ->assertSee($this->contentType->name);
+            ->assertSee($this->category->name);
     });
 });
 
@@ -92,8 +89,7 @@ describe('saving drafts', function () {
             ->set('excerpt', 'This is the excerpt')
             ->set('body', 'This is the body content')
             ->set('categoryId', $this->category->id)
-            ->set('contentTypeId', $this->contentType->id)
-            ->set('locatableType', Region::class)
+                        ->set('locatableType', Region::class)
             ->set('locatableId', $this->region->id)
             ->call('saveDraft');
 
@@ -103,7 +99,6 @@ describe('saving drafts', function () {
             'excerpt' => 'This is the excerpt',
             'body' => 'This is the body content',
             'content_category_id' => $this->category->id,
-            'content_type_id' => $this->contentType->id,
             'locatable_type' => Region::class,
             'locatable_id' => $this->region->id,
         ]);
@@ -165,7 +160,6 @@ describe('loading drafts', function () {
             'excerpt' => 'Draft excerpt',
             'body' => 'Draft body content',
             'content_category_id' => $this->category->id,
-            'content_type_id' => $this->contentType->id,
             'locatable_type' => City::class,
             'locatable_id' => $this->city->id,
         ]);
@@ -177,7 +171,6 @@ describe('loading drafts', function () {
             ->assertSet('excerpt', 'Draft excerpt')
             ->assertSet('body', 'Draft body content')
             ->assertSet('categoryId', $this->category->id)
-            ->assertSet('contentTypeId', $this->contentType->id)
             ->assertSet('locatableType', City::class)
             ->assertSet('locatableId', $this->city->id);
     });
@@ -200,7 +193,7 @@ describe('submitting guides', function () {
         Livewire::actingAs($this->user)
             ->test(CreateGuide::class)
             ->call('submit')
-            ->assertHasErrors(['title', 'excerpt', 'body', 'categoryId', 'contentTypeId', 'locatableType']);
+            ->assertHasErrors(['title', 'excerpt', 'body', 'categoryId', 'locatableType']);
     });
 
     it('validates minimum lengths', function () {
@@ -220,8 +213,7 @@ describe('submitting guides', function () {
             ->set('excerpt', str_repeat('This is a longer excerpt that meets the minimum character requirement. ', 3))
             ->set('body', str_repeat('This is the body content that needs to be at least 200 characters long. ', 5))
             ->set('categoryId', $this->category->id)
-            ->set('contentTypeId', $this->contentType->id)
-            ->set('locatableType', Region::class)
+                        ->set('locatableType', Region::class)
             ->set('locatableId', $this->region->id)
             ->call('submit')
             ->assertSet('submitted', true);
@@ -243,8 +235,7 @@ describe('submitting guides', function () {
             ->set('excerpt', str_repeat('This is a longer excerpt that meets the minimum character requirement. ', 3))
             ->set('body', str_repeat('This is the body content that needs to be at least 200 characters long. ', 5))
             ->set('categoryId', $this->category->id)
-            ->set('contentTypeId', $this->contentType->id)
-            ->set('locatableType', Region::class)
+                        ->set('locatableType', Region::class)
             ->set('locatableId', $this->region->id)
             ->call('submit');
 
@@ -271,5 +262,200 @@ describe('location picker integration', function () {
             ->dispatch('locationSelected', type: null, id: null)
             ->assertSet('locatableType', null)
             ->assertSet('locatableId', null);
+    });
+});
+
+describe('list builder', function () {
+    it('can enable list builder', function () {
+        Livewire::actingAs($this->user)
+            ->test(CreateGuide::class)
+            ->assertSet('listEnabled', false)
+            ->set('listEnabled', true)
+            ->assertSet('listEnabled', true);
+    });
+
+    it('can toggle ranked list option', function () {
+        Livewire::actingAs($this->user)
+            ->test(CreateGuide::class)
+            ->set('listEnabled', true)
+            ->assertSet('listIsRanked', true)
+            ->set('listIsRanked', false)
+            ->assertSet('listIsRanked', false);
+    });
+
+    it('can add list items', function () {
+        Livewire::actingAs($this->user)
+            ->test(CreateGuide::class)
+            ->set('listEnabled', true)
+            ->assertCount('listItems', 0)
+            ->call('addListItem')
+            ->assertCount('listItems', 1)
+            ->call('addListItem')
+            ->assertCount('listItems', 2);
+    });
+
+    it('adds items with required fields', function () {
+        $component = Livewire::actingAs($this->user)
+            ->test(CreateGuide::class)
+            ->set('listEnabled', true)
+            ->call('addListItem');
+
+        $items = $component->get('listItems');
+        expect($items[0])->toHaveKeys(['id', 'title', 'description', 'image', 'address', 'rating', 'expanded']);
+    });
+
+    it('can remove list items', function () {
+        Livewire::actingAs($this->user)
+            ->test(CreateGuide::class)
+            ->set('listEnabled', true)
+            ->call('addListItem')
+            ->call('addListItem')
+            ->assertCount('listItems', 2)
+            ->call('removeListItem', 0)
+            ->assertCount('listItems', 1);
+    });
+
+    it('can toggle list item expansion', function () {
+        $component = Livewire::actingAs($this->user)
+            ->test(CreateGuide::class)
+            ->set('listEnabled', true)
+            ->call('addListItem');
+
+        // New items start expanded
+        $items = $component->get('listItems');
+        expect($items[0]['expanded'])->toBeTrue();
+
+        $component->call('toggleListItem', 0);
+        $items = $component->get('listItems');
+        expect($items[0]['expanded'])->toBeFalse();
+    });
+
+    it('can set list item rating', function () {
+        $component = Livewire::actingAs($this->user)
+            ->test(CreateGuide::class)
+            ->set('listEnabled', true)
+            ->call('addListItem')
+            ->call('setListItemRating', 0, 4);
+
+        $items = $component->get('listItems');
+        expect($items[0]['rating'])->toBe(4);
+    });
+
+    it('can clear list item rating', function () {
+        $component = Livewire::actingAs($this->user)
+            ->test(CreateGuide::class)
+            ->set('listEnabled', true)
+            ->call('addListItem')
+            ->call('setListItemRating', 0, 4)
+            ->call('setListItemRating', 0, null);
+
+        $items = $component->get('listItems');
+        expect($items[0]['rating'])->toBeNull();
+    });
+
+    it('can reorder list items', function () {
+        $component = Livewire::actingAs($this->user)
+            ->test(CreateGuide::class)
+            ->set('listEnabled', true)
+            ->call('addListItem')
+            ->call('addListItem');
+
+        $items = $component->get('listItems');
+        $firstId = $items[0]['id'];
+        $secondId = $items[1]['id'];
+
+        // Reorder - swap positions
+        $component->call('reorderListItems', [$secondId, $firstId]);
+
+        $reorderedItems = $component->get('listItems');
+        expect($reorderedItems[0]['id'])->toBe($secondId);
+        expect($reorderedItems[1]['id'])->toBe($firstId);
+    });
+
+    it('saves list items with draft', function () {
+        Livewire::actingAs($this->user)
+            ->test(CreateGuide::class)
+            ->set('title', 'Draft with list')
+            ->set('listEnabled', true)
+            ->call('addListItem')
+            ->set('listItems.0.title', 'Best Restaurant')
+            ->set('listItems.0.description', 'Amazing food here')
+            ->call('saveDraft');
+
+        $draft = GuideDraft::where('user_id', $this->user->id)->first();
+        expect($draft->list_items)->toHaveCount(1);
+        expect($draft->list_items[0]['title'])->toBe('Best Restaurant');
+        expect($draft->list_settings['enabled'])->toBeTrue();
+        expect($draft->list_settings['ranked'])->toBeTrue();
+    });
+
+    it('loads list items from draft', function () {
+        $draft = GuideDraft::factory()->forUser($this->user)->create([
+            'title' => 'Draft with list',
+            'list_items' => [
+                [
+                    'id' => 'test-id-1',
+                    'title' => 'Loaded Item',
+                    'description' => 'Loaded description',
+                    'image' => null,
+                    'address' => '123 Main St',
+                    'rating' => 5,
+                ],
+            ],
+            'list_settings' => [
+                'enabled' => true,
+                'ranked' => false,
+            ],
+        ]);
+
+        $component = Livewire::actingAs($this->user)
+            ->test(CreateGuide::class, ['draft' => $draft->id])
+            ->assertSet('listEnabled', true)
+            ->assertSet('listIsRanked', false)
+            ->assertCount('listItems', 1);
+
+        $items = $component->get('listItems');
+        expect($items[0]['title'])->toBe('Loaded Item');
+        expect($items[0]['rating'])->toBe(5);
+    });
+
+    it('validates list items on submit', function () {
+        Livewire::actingAs($this->user)
+            ->test(CreateGuide::class)
+            ->set('title', 'A Complete Guide Title Here')
+            ->set('excerpt', str_repeat('This is a longer excerpt that meets the minimum. ', 3))
+            ->set('body', str_repeat('This is body content that meets the minimum. ', 5))
+            ->set('categoryId', $this->category->id)
+                        ->set('locatableType', Region::class)
+            ->set('locatableId', $this->region->id)
+            ->set('listEnabled', true)
+            ->call('addListItem')
+            // Leave title and description empty
+            ->call('submit')
+            ->assertHasErrors(['listItems.0.title', 'listItems.0.description']);
+    });
+
+    it('includes list in content metadata on submit', function () {
+        Livewire::actingAs($this->user)
+            ->test(CreateGuide::class)
+            ->set('title', 'A Complete Guide Title Here')
+            ->set('excerpt', str_repeat('This is a longer excerpt that meets the minimum. ', 3))
+            ->set('body', str_repeat('This is body content that meets the minimum. ', 5))
+            ->set('categoryId', $this->category->id)
+                        ->set('locatableType', Region::class)
+            ->set('locatableId', $this->region->id)
+            ->set('listEnabled', true)
+            ->set('listIsRanked', true)
+            ->call('addListItem')
+            ->set('listItems.0.title', 'Top Restaurant')
+            ->set('listItems.0.description', 'The best place to eat in town with amazing service.')
+            ->call('submit')
+            ->assertSet('submitted', true);
+
+        $content = \App\Models\Content::where('title', 'A Complete Guide Title Here')->first();
+        expect($content->metadata)->toHaveKey('list_items');
+        expect($content->metadata['list_items'])->toHaveCount(1);
+        expect($content->metadata['list_items'][0]['title'])->toBe('Top Restaurant');
+        expect($content->metadata['list_settings']['ranked'])->toBeTrue();
     });
 });

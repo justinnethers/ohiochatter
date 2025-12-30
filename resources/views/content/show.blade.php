@@ -22,6 +22,14 @@
             {!! Str::markdown($content->body) !!}
         </div>
 
+        {{-- List Items (if present) --}}
+        @if(!empty($content->metadata['list_items']))
+            <x-guide-list
+                :items="$content->metadata['list_items']"
+                :settings="$content->metadata['list_settings'] ?? []"
+            />
+        @endif
+
         {{-- Related Content --}}
         @if($relatedContent->isNotEmpty())
             <section class="mt-12 pt-8 border-t">

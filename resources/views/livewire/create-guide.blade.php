@@ -86,29 +86,16 @@
                 @error('locatableType') <x-input-error :messages="$message" class="mt-2" /> @enderror
             </div>
 
-            {{-- Category & Type --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <x-input-label for="categoryId" class="mb-2">Category <span class="text-red-400">*</span></x-input-label>
-                    <x-select wire:model="categoryId" id="categoryId">
-                        <option value="">Select a category...</option>
-                        @foreach($categories as $category)
-                            <option value="{{ $category->id }}">{{ $category->name }}</option>
-                        @endforeach
-                    </x-select>
-                    @error('categoryId') <x-input-error :messages="$message" class="mt-1" /> @enderror
-                </div>
-
-                <div>
-                    <x-input-label for="contentTypeId" class="mb-2">Guide Type <span class="text-red-400">*</span></x-input-label>
-                    <x-select wire:model="contentTypeId" id="contentTypeId">
-                        <option value="">Select a type...</option>
-                        @foreach($contentTypes as $type)
-                            <option value="{{ $type->id }}">{{ $type->name }}</option>
-                        @endforeach
-                    </x-select>
-                    @error('contentTypeId') <x-input-error :messages="$message" class="mt-1" /> @enderror
-                </div>
+            {{-- Category --}}
+            <div>
+                <x-input-label for="categoryId" class="mb-2">Category <span class="text-red-400">*</span></x-input-label>
+                <x-select wire:model="categoryId" id="categoryId">
+                    <option value="">Select a category...</option>
+                    @foreach($categories as $category)
+                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                    @endforeach
+                </x-select>
+                @error('categoryId') <x-input-error :messages="$message" class="mt-1" /> @enderror
             </div>
 
             {{-- Excerpt/Summary --}}
@@ -227,10 +214,201 @@
                 </div>
             </div>
 
+            {{-- List Builder Section --}}
+            <div class="bg-steel-900/50 rounded-xl p-4 border border-steel-700/50">
+                <div class="flex items-center justify-between mb-4">
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" wire:model.live="listEnabled"
+                            class="w-5 h-5 rounded border-steel-600 bg-steel-800 text-accent-500 focus:ring-accent-500/20 focus:ring-offset-0">
+                        <span class="font-semibold text-steel-200 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-accent-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+                            </svg>
+                            Include a List
+                        </span>
+                    </label>
+
+                    @if($listEnabled)
+                        <label class="flex items-center gap-2 cursor-pointer text-sm">
+                            <input type="checkbox" wire:model.live="listIsRanked"
+                                class="w-4 h-4 rounded border-steel-600 bg-steel-800 text-accent-500 focus:ring-accent-500/20 focus:ring-offset-0">
+                            <span class="text-steel-300">Ranked list</span>
+                        </label>
+                    @endif
+                </div>
+
+                @if($listEnabled)
+                    <p class="text-sm text-steel-400 mb-4">
+                        Create a list of items (e.g., "Top 5 Restaurants"). Drag to reorder.
+                    </p>
+
+                    {{-- List Items --}}
+                    <div class="space-y-3"
+                        x-data="{}"
+                        x-init="
+                            Sortable.create($el, {
+                                handle: '.drag-handle',
+                                animation: 150,
+                                ghostClass: 'opacity-50',
+                                onEnd: function(evt) {
+                                    let items = Array.from($el.children).map(el => el.dataset.itemId);
+                                    $wire.reorderListItems(items);
+                                }
+                            });
+                        ">
+                        @foreach($listItems as $index => $item)
+                            <div wire:key="list-item-{{ $item['id'] }}" data-item-id="{{ $item['id'] }}"
+                                class="bg-steel-800/50 rounded-lg border border-steel-700/50 overflow-hidden">
+                                {{-- Item Header --}}
+                                <div class="flex items-center gap-3 p-3 cursor-pointer" wire:click="toggleListItem({{ $index }})">
+                                    {{-- Drag Handle --}}
+                                    <div class="drag-handle cursor-grab text-steel-500 hover:text-steel-300">
+                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M7 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM7 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM7 14a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM13 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM13 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM13 14a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/>
+                                        </svg>
+                                    </div>
+
+                                    {{-- Rank Number --}}
+                                    @if($listIsRanked)
+                                        <span class="flex items-center justify-center w-8 h-8 rounded-full bg-accent-500/20 text-accent-400 font-bold text-sm">
+                                            #{{ $index + 1 }}
+                                        </span>
+                                    @endif
+
+                                    {{-- Title Preview --}}
+                                    <span class="flex-1 text-white font-medium truncate">
+                                        {{ $item['title'] ?: 'Untitled Item' }}
+                                    </span>
+
+                                    {{-- Expand/Collapse Icon --}}
+                                    <svg class="w-5 h-5 text-steel-400 transition-transform {{ ($item['expanded'] ?? false) ? 'rotate-180' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+
+                                    {{-- Delete Button --}}
+                                    <button type="button" wire:click.stop="removeListItem({{ $index }})"
+                                        class="p-1.5 text-red-400 hover:text-red-300 hover:bg-red-500/20 rounded transition-colors">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                {{-- Item Body (Expanded) --}}
+                                @if($item['expanded'] ?? false)
+                                    <div class="p-4 pt-0 space-y-4 border-t border-steel-700/50">
+                                        {{-- Title --}}
+                                        <div>
+                                            <label class="block text-sm font-medium text-steel-300 mb-1">Title <span class="text-red-400">*</span></label>
+                                            <input type="text" wire:model="listItems.{{ $index }}.title"
+                                                placeholder="e.g., Best Pizza Place"
+                                                class="w-full border border-steel-600 bg-steel-950 text-steel-100 placeholder-steel-500 focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 rounded-lg p-2.5 text-sm">
+                                            @error("listItems.{$index}.title") <span class="text-red-400 text-xs mt-1">{{ $message }}</span> @enderror
+                                        </div>
+
+                                        {{-- Description --}}
+                                        <div>
+                                            <label class="block text-sm font-medium text-steel-300 mb-1">Description <span class="text-red-400">*</span></label>
+                                            <textarea wire:model="listItems.{{ $index }}.description" rows="3"
+                                                placeholder="Describe why this made the list..."
+                                                class="w-full border border-steel-600 bg-steel-950 text-steel-100 placeholder-steel-500 focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 rounded-lg p-2.5 text-sm"></textarea>
+                                            @error("listItems.{$index}.description") <span class="text-red-400 text-xs mt-1">{{ $message }}</span> @enderror
+                                        </div>
+
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            {{-- Image --}}
+                                            <div>
+                                                <label class="block text-sm font-medium text-steel-300 mb-1">Image</label>
+                                                @if($item['image'])
+                                                    <div class="relative inline-block mb-2">
+                                                        <img src="{{ Storage::url($item['image']) }}" class="h-20 w-auto rounded-lg border border-steel-700" alt="Item image">
+                                                        <button type="button" wire:click="removeListItemImage({{ $index }})"
+                                                            class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors">
+                                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                @elseif(isset($listItemImages[$item['id']]) && $listItemImages[$item['id']])
+                                                    <div class="relative inline-block mb-2">
+                                                        <img src="{{ $listItemImages[$item['id']]->temporaryUrl() }}" class="h-20 w-auto rounded-lg border border-steel-700" alt="Preview">
+                                                        <button type="button" wire:click="removeListItemImage({{ $index }})"
+                                                            class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors">
+                                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                @else
+                                                    <input type="file" wire:model="listItemImages.{{ $item['id'] }}" accept="image/*"
+                                                        class="block w-full text-xs text-steel-400
+                                                            file:mr-2 file:py-1.5 file:px-3
+                                                            file:rounded-lg file:border-0
+                                                            file:text-xs file:font-medium
+                                                            file:bg-steel-700 file:text-steel-200
+                                                            hover:file:bg-steel-600 file:cursor-pointer">
+                                                @endif
+                                            </div>
+
+                                            {{-- Address/Link --}}
+                                            <div>
+                                                <label class="block text-sm font-medium text-steel-300 mb-1">Address or Link</label>
+                                                <input type="text" wire:model="listItems.{{ $index }}.address"
+                                                    placeholder="123 Main St or https://..."
+                                                    class="w-full border border-steel-600 bg-steel-950 text-steel-100 placeholder-steel-500 focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 rounded-lg p-2.5 text-sm">
+                                            </div>
+                                        </div>
+
+                                        {{-- Rating --}}
+                                        <div>
+                                            <label class="block text-sm font-medium text-steel-300 mb-2">Rating</label>
+                                            <div class="flex items-center gap-1">
+                                                @for($star = 1; $star <= 5; $star++)
+                                                    <button type="button" wire:click="setListItemRating({{ $index }}, {{ ($item['rating'] ?? 0) === $star ? 'null' : $star }})"
+                                                        class="text-2xl transition-colors {{ ($item['rating'] ?? 0) >= $star ? 'text-amber-400' : 'text-steel-600 hover:text-steel-500' }}">
+                                                        ★
+                                                    </button>
+                                                @endfor
+                                                @if($item['rating'])
+                                                    <span class="ml-2 text-sm text-steel-400">{{ $item['rating'] }}/5</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+
+                    {{-- Add Item Button --}}
+                    <button type="button" wire:click="addListItem"
+                        class="mt-4 w-full py-3 border-2 border-dashed border-steel-600 rounded-lg text-steel-400 hover:text-steel-300 hover:border-steel-500 transition-colors flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        Add Item
+                    </button>
+                @endif
+            </div>
+
             {{-- Submit / Save Draft --}}
-            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-4 border-t border-steel-700/50">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-4 border-t border-steel-700/50"
+                x-data="{
+                    syncAndSave() {
+                        if (typeof $ !== 'undefined' && $('#body').data('trumbowyg')) {
+                            $wire.set('body', $('#body').trumbowyg('html'));
+                        }
+                        $wire.saveDraft();
+                    },
+                    syncAndSubmit() {
+                        if (typeof $ !== 'undefined' && $('#body').data('trumbowyg')) {
+                            $wire.set('body', $('#body').trumbowyg('html'));
+                        }
+                        $wire.submit();
+                    }
+                }">
                 <div class="flex items-center gap-3">
-                    <button type="button" wire:click="saveDraft" wire:loading.attr="disabled" wire:target="saveDraft,featuredImage,gallery"
+                    <button type="button" @click="syncAndSave()" wire:loading.attr="disabled" wire:target="saveDraft,featuredImage,gallery"
                         class="inline-flex items-center px-4 py-2 bg-steel-700 text-steel-200 rounded-lg hover:bg-steel-600 transition-colors font-semibold disabled:opacity-50">
                         <span wire:loading.remove wire:target="saveDraft">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -249,7 +427,8 @@
                     <span class="text-sm text-steel-500">Save and continue later</span>
                 </div>
 
-                <x-primary-button wire:loading.attr="disabled" wire:target="submit,featuredImage,gallery">
+                <button type="button" @click="syncAndSubmit()" wire:loading.attr="disabled" wire:target="submit,featuredImage,gallery"
+                    class="inline-flex items-center px-4 py-2 bg-accent-500 text-white rounded-lg hover:bg-accent-600 transition-colors font-semibold disabled:opacity-50 shadow-lg shadow-accent-500/20">
                     <span wire:loading.remove wire:target="submit">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
@@ -263,11 +442,15 @@
                         </svg>
                         Submitting...
                     </span>
-                </x-primary-button>
+                </button>
             </div>
         </form>
     @endif
 </div>
+
+@assets
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+@endassets
 
 @script
 <script>

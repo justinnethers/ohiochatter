@@ -4,13 +4,13 @@ namespace App\Livewire;
 
 use App\Models\Content;
 use App\Models\ContentCategory;
-use App\Models\ContentType;
 use App\Models\GuideDraft;
 use App\Models\User;
 use App\Modules\Geography\Actions\Content\CreateContent;
 use App\Modules\Geography\DTOs\CreateContentData;
 use App\Notifications\NewGuideSubmitted;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Str;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -28,7 +28,6 @@ class CreateGuide extends Component
     public string $excerpt = '';
     public string $body = '';
     public ?int $categoryId = null;
-    public ?int $contentTypeId = null;
 
     // Location (set via LocationPicker child component)
     public ?string $locatableType = null;
@@ -42,12 +41,18 @@ class CreateGuide extends Component
     public ?string $existingFeaturedImage = null;
     public array $existingGallery = [];
 
+    // List builder
+    public bool $listEnabled = false;
+    public bool $listIsRanked = true;
+    public array $listItems = [];
+    public array $listItemImages = []; // Temporary upload storage keyed by item id
+
     // UI state
     public bool $submitted = false;
     public bool $savedDraft = false;
     public ?Content $createdContent = null;
 
-    protected $listeners = ['locationSelected'];
+    protected $listeners = ['locationSelected', 'reorderListItems'];
 
     public function mount(?int $draft = null): void
     {
@@ -71,26 +76,38 @@ class CreateGuide extends Component
         $this->excerpt = $draft->excerpt ?? '';
         $this->body = $draft->body ?? '';
         $this->categoryId = $draft->content_category_id;
-        $this->contentTypeId = $draft->content_type_id;
         $this->locatableType = $draft->locatable_type;
         $this->locatableId = $draft->locatable_id;
         $this->existingFeaturedImage = $draft->featured_image;
         $this->existingGallery = $draft->gallery ?? [];
+
+        // Load list data
+        $this->listItems = $draft->list_items ?? [];
+        $settings = $draft->list_settings ?? [];
+        $this->listEnabled = ! empty($this->listItems) || ($settings['enabled'] ?? false);
+        $this->listIsRanked = $settings['ranked'] ?? true;
     }
 
     protected function rules(): array
     {
-        return [
+        $rules = [
             'title' => 'required|string|min:10|max:255',
             'excerpt' => 'required|string|min:50|max:500',
             'body' => 'required|string|min:200',
             'categoryId' => 'required|exists:content_categories,id',
-            'contentTypeId' => 'required|exists:content_types,id',
             'locatableType' => 'required|in:App\Models\Region,App\Models\County,App\Models\City',
             'locatableId' => 'required|integer',
             'featuredImage' => 'nullable|image|max:5120',
             'gallery.*' => 'nullable|image|max:5120',
         ];
+
+        // Add list item validation if list is enabled
+        if ($this->listEnabled && ! empty($this->listItems)) {
+            $rules['listItems.*.title'] = 'required|string|max:255';
+            $rules['listItems.*.description'] = 'required|string|max:2000';
+        }
+
+        return $rules;
     }
 
     protected function draftRules(): array
@@ -112,13 +129,14 @@ class CreateGuide extends Component
             'body.required' => 'Please write the content for your guide.',
             'body.min' => 'Guide content must be at least 200 characters.',
             'categoryId.required' => 'Please select a category.',
-            'contentTypeId.required' => 'Please select a guide type.',
             'locatableType.required' => 'Please select a location for your guide.',
             'locatableType.in' => 'Please select a valid location.',
             'featuredImage.image' => 'Featured image must be an image file.',
             'featuredImage.max' => 'Featured image must be less than 5MB.',
             'gallery.*.image' => 'Gallery images must be image files.',
             'gallery.*.max' => 'Each gallery image must be less than 5MB.',
+            'listItems.*.title.required' => 'Each list item needs a title.',
+            'listItems.*.description.required' => 'Each list item needs a description.',
         ];
     }
 
@@ -160,6 +178,103 @@ class CreateGuide extends Component
         $this->existingGallery = array_values($this->existingGallery);
     }
 
+    // List Builder Methods
+
+    public function addListItem(): void
+    {
+        $this->listItems[] = [
+            'id' => Str::uuid()->toString(),
+            'title' => '',
+            'description' => '',
+            'image' => null,
+            'address' => '',
+            'rating' => null,
+            'expanded' => true,
+        ];
+    }
+
+    public function removeListItem(int $index): void
+    {
+        if (isset($this->listItems[$index])) {
+            $itemId = $this->listItems[$index]['id'] ?? null;
+            if ($itemId && isset($this->listItemImages[$itemId])) {
+                unset($this->listItemImages[$itemId]);
+            }
+            unset($this->listItems[$index]);
+            $this->listItems = array_values($this->listItems);
+        }
+    }
+
+    public function reorderListItems(array $orderedIds): void
+    {
+        $reordered = [];
+        foreach ($orderedIds as $id) {
+            foreach ($this->listItems as $item) {
+                if (($item['id'] ?? '') === $id) {
+                    $reordered[] = $item;
+                    break;
+                }
+            }
+        }
+        $this->listItems = $reordered;
+    }
+
+    public function toggleListItem(int $index): void
+    {
+        if (isset($this->listItems[$index])) {
+            $this->listItems[$index]['expanded'] = ! ($this->listItems[$index]['expanded'] ?? false);
+        }
+    }
+
+    public function setListItemRating(int $index, ?int $rating): void
+    {
+        if (isset($this->listItems[$index])) {
+            $this->listItems[$index]['rating'] = $rating;
+        }
+    }
+
+    public function updatedListItemImages($value, $key): void
+    {
+        // $key is the item ID
+        if ($value && isset($this->listItemImages[$key])) {
+            // Validate the image
+            $this->validateOnly("listItemImages.{$key}", [
+                "listItemImages.{$key}" => 'image|max:5120',
+            ]);
+        }
+    }
+
+    public function removeListItemImage(int $index): void
+    {
+        if (isset($this->listItems[$index])) {
+            $itemId = $this->listItems[$index]['id'] ?? null;
+            $this->listItems[$index]['image'] = null;
+            if ($itemId && isset($this->listItemImages[$itemId])) {
+                unset($this->listItemImages[$itemId]);
+            }
+        }
+    }
+
+    protected function processListItemImages(): array
+    {
+        $items = $this->listItems;
+
+        foreach ($items as $index => $item) {
+            $itemId = $item['id'] ?? null;
+
+            // Check for new upload
+            if ($itemId && isset($this->listItemImages[$itemId]) && $this->listItemImages[$itemId]) {
+                $path = $this->listItemImages[$itemId]->store('guides/list-items', 'public');
+                $items[$index]['image'] = $path;
+            }
+
+            // Remove UI-only fields before saving
+            unset($items[$index]['expanded']);
+        }
+
+        return $items;
+    }
+
     public function saveDraft(): void
     {
         $this->validate($this->draftRules());
@@ -177,16 +292,23 @@ class CreateGuide extends Component
             $galleryPaths[] = $image->store('guides/gallery', 'public');
         }
 
+        // Process list item images
+        $processedListItems = $this->listEnabled ? $this->processListItemImages() : null;
+
         $data = [
             'title' => $this->title ?: null,
             'body' => $this->body ?: null,
             'excerpt' => $this->excerpt ?: null,
             'content_category_id' => $this->categoryId,
-            'content_type_id' => $this->contentTypeId,
             'locatable_type' => $this->locatableType,
             'locatable_id' => $this->locatableId,
             'featured_image' => $featuredImagePath,
             'gallery' => ! empty($galleryPaths) ? $galleryPaths : null,
+            'list_items' => $processedListItems,
+            'list_settings' => [
+                'enabled' => $this->listEnabled,
+                'ranked' => $this->listIsRanked,
+            ],
         ];
 
         if ($this->draftId) {
@@ -203,8 +325,15 @@ class CreateGuide extends Component
         // Clear new file uploads since they're now saved
         $this->featuredImage = null;
         $this->gallery = [];
+        $this->listItemImages = [];
         $this->existingFeaturedImage = $draft->featured_image;
         $this->existingGallery = $draft->gallery ?? [];
+        $this->listItems = $draft->list_items ?? [];
+
+        // Re-add expanded state for UI
+        foreach ($this->listItems as $index => $item) {
+            $this->listItems[$index]['expanded'] = false;
+        }
 
         $this->savedDraft = true;
     }
@@ -224,9 +353,24 @@ class CreateGuide extends Component
             $galleryPaths[] = $image->store('guides/gallery', 'public');
         }
 
+        // Process list item images
+        $processedListItems = $this->listEnabled ? $this->processListItemImages() : null;
+
+        // Build metadata with list data
+        $metadata = [
+            'status' => 'pending_review',
+        ];
+
+        if ($this->listEnabled && ! empty($processedListItems)) {
+            $metadata['list_items'] = $processedListItems;
+            $metadata['list_settings'] = [
+                'ranked' => $this->listIsRanked,
+            ];
+        }
+
         // Create content
         $data = new CreateContentData(
-            contentTypeId: $this->contentTypeId,
+            contentTypeId: null,
             categoryId: $this->categoryId,
             title: $this->title,
             body: $this->body,
@@ -235,7 +379,7 @@ class CreateGuide extends Component
             excerpt: $this->excerpt,
             featuredImage: $featuredImagePath,
             gallery: ! empty($galleryPaths) ? $galleryPaths : null,
-            metadata: ['status' => 'pending_review'],
+            metadata: $metadata,
             publishedAt: null,
         );
 
@@ -254,10 +398,15 @@ class CreateGuide extends Component
 
     protected function notifyAdmins(): void
     {
-        $admins = User::where('is_admin', true)->get();
+        try {
+            $admins = User::where('is_admin', true)->get();
 
-        if ($admins->isNotEmpty()) {
-            Notification::send($admins, new NewGuideSubmitted($this->createdContent));
+            if ($admins->isNotEmpty()) {
+                Notification::send($admins, new NewGuideSubmitted($this->createdContent));
+            }
+        } catch (\Exception $e) {
+            // Log the error but don't block the submission
+            \Log::warning('Failed to notify admins of new guide submission: ' . $e->getMessage());
         }
     }
 
@@ -269,13 +418,16 @@ class CreateGuide extends Component
             'excerpt',
             'body',
             'categoryId',
-            'contentTypeId',
             'locatableType',
             'locatableId',
             'featuredImage',
             'gallery',
             'existingFeaturedImage',
             'existingGallery',
+            'listEnabled',
+            'listIsRanked',
+            'listItems',
+            'listItemImages',
             'submitted',
             'savedDraft',
             'createdContent',
@@ -286,7 +438,6 @@ class CreateGuide extends Component
     {
         return view('livewire.create-guide', [
             'categories' => ContentCategory::whereNull('parent_id')->orderBy('display_order')->orderBy('name')->get(),
-            'contentTypes' => ContentType::orderBy('name')->get(),
         ]);
     }
 }

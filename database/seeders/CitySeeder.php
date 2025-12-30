@@ -488,10 +488,12 @@ class CitySeeder extends Seeder
 
             $countyId = $counties[$countySlug] ?? null;
 
-            if (! $countyId) {
+            if (!$countyId) {
                 $this->command->warn("County not found: {$countySlug}");
                 continue;
             }
+
+            $countyName = Str::ucfirst($countySlug);
 
             $slug = Str::slug($name);
 
@@ -508,8 +510,8 @@ class CitySeeder extends Seeder
                 'name' => $name,
                 'slug' => $slug,
                 'description' => $isCountySeat
-                    ? "{$name} is the county seat of {$countySlug} County, Ohio."
-                    : "{$name} is a city in {$countySlug} County, Ohio.",
+                    ? "{$name} is the county seat of {$countyName} County, Ohio."
+                    : "{$name} is a city in {$countyName} County, Ohio.",
                 'meta_title' => "{$name}, Ohio - Local Guide & Community",
                 'meta_description' => "Explore {$name}, Ohio. Find local businesses, events, and community information.",
                 'is_major' => $isMajor,

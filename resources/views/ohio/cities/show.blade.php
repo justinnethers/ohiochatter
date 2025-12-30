@@ -11,7 +11,8 @@
     </x-slot>
 
     <div class="container mx-auto">
-        <div class="md:rounded-2xl md:bg-gradient-to-br md:from-steel-800/50 md:to-steel-900/50 md:backdrop-blur-sm md:border md:border-steel-700/30 p-2 md:p-8 md:mt-4">
+        <div
+            class="md:rounded-2xl md:bg-gradient-to-br md:from-steel-800/50 md:to-steel-900/50 md:backdrop-blur-sm md:border md:border-steel-700/30 p-2 md:p-8 md:mt-4">
             <x-breadcrumbs :items="[
                 ['title' => 'Ohio', 'url' => route('ohio.index')],
                 ['title' => $region->name, 'url' => route('region.show', $region)],
@@ -20,16 +21,19 @@
             ]"/>
 
             {{-- Hero Section --}}
-            <div class="bg-gradient-to-br from-steel-800 to-steel-850 rounded-xl p-6 md:p-8 mb-6 shadow-lg shadow-black/20 border border-steel-700/50 relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-64 h-64 bg-accent-500/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+            <div
+                class="bg-gradient-to-br from-steel-800 to-steel-850 rounded-xl p-6 md:p-8 mb-6 shadow-lg shadow-black/20 border border-steel-700/50 relative overflow-hidden">
+                <div
+                    class="absolute top-0 right-0 w-64 h-64 bg-accent-500/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
                 <div class="relative">
                     <div class="flex items-center gap-2 text-sm text-steel-400 mb-2">
-                        <a href="{{ route('county.show', ['region' => $region, 'county' => $county]) }}" class="hover:text-accent-400 transition-colors">{{ $county->name }} County</a>
+                        <a href="{{ route('county.show', ['region' => $region, 'county' => $county]) }}"
+                           class="hover:text-accent-400 transition-colors">{{ $county->name }} County</a>
                         <span class="text-steel-600">&bull;</span>
-                        <a href="{{ route('region.show', $region) }}" class="hover:text-accent-400 transition-colors">{{ $region->name }}</a>
+                        <a href="{{ route('region.show', $region) }}"
+                           class="hover:text-accent-400 transition-colors">{{ $region->name }}</a>
                     </div>
                     <h1 class="text-3xl md:text-4xl font-bold text-white mb-1">{{ $city->name }}</h1>
-                    <p class="text-steel-400 mb-4">Ohio, United States</p>
 
                     @if($city->description)
                         <p class="text-steel-300 text-lg max-w-3xl">{{ $city->description }}</p>
@@ -38,10 +42,10 @@
                     {{-- City Stats --}}
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
                         @if($city->population)
-                        <div class="bg-steel-900/50 rounded-lg p-4">
-                            <div class="text-xs text-steel-500 uppercase tracking-wide mb-1">Population</div>
-                            <div class="text-xl font-bold text-white">{{ number_format($city->population) }}</div>
-                        </div>
+                            <div class="bg-steel-900/50 rounded-lg p-4">
+                                <div class="text-xs text-steel-500 uppercase tracking-wide mb-1">Population</div>
+                                <div class="text-xl font-bold text-white">{{ number_format($city->population) }}</div>
+                            </div>
                         @endif
                         <div class="bg-steel-900/50 rounded-lg p-4">
                             <div class="text-xs text-steel-500 uppercase tracking-wide mb-1">County</div>
@@ -52,23 +56,12 @@
                             <div class="text-lg font-semibold text-white">{{ $region->name }}</div>
                         </div>
                         @if($featuredContent->isNotEmpty())
-                        <div class="bg-steel-900/50 rounded-lg p-4">
-                            <div class="text-xs text-steel-500 uppercase tracking-wide mb-1">Local Guides</div>
-                            <div class="text-xl font-bold text-accent-400">{{ $featuredContent->count() }}</div>
-                        </div>
+                            <div class="bg-steel-900/50 rounded-lg p-4">
+                                <div class="text-xs text-steel-500 uppercase tracking-wide mb-1">Local Guides</div>
+                                <div class="text-xl font-bold text-accent-400">{{ $featuredContent->count() }}</div>
+                            </div>
                         @endif
                     </div>
-
-                    @if($city->is_major)
-                        <div class="mt-4">
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-accent-500/20 text-accent-400 border border-accent-500/30">
-                                <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                </svg>
-                                Major City
-                            </span>
-                        </div>
-                    @endif
                 </div>
             </div>
 
@@ -91,26 +84,34 @@
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-lg font-semibold text-white flex items-center gap-2">
                             <svg class="w-5 h-5 text-accent-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                             </svg>
                             Local Guides
                         </h2>
-                        <a href="{{ route('guide.city', ['region' => $region, 'county' => $county, 'city' => $city]) }}" class="text-accent-400 hover:text-accent-300 text-sm font-medium transition-colors">View all &rarr;</a>
+                        <a href="{{ route('guide.city', ['region' => $region, 'county' => $county, 'city' => $city]) }}"
+                           class="text-accent-400 hover:text-accent-300 text-sm font-medium transition-colors">View all
+                            &rarr;</a>
                     </div>
                     @foreach($featuredContent as $content)
-                        <x-guide.card :content="$content" />
+                        <x-guide.card :content="$content"/>
                     @endforeach
                 </section>
             @else
                 {{-- Empty State with CTA --}}
-                <div class="bg-gradient-to-br from-steel-800 to-steel-850 p-8 text-center rounded-xl shadow-lg shadow-black/20 border border-steel-700/50">
-                    <svg class="w-16 h-16 mx-auto mb-4 text-steel-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                <div
+                    class="bg-gradient-to-br from-steel-800 to-steel-850 p-8 text-center rounded-xl shadow-lg shadow-black/20 border border-steel-700/50">
+                    <svg class="w-16 h-16 mx-auto mb-4 text-steel-600" fill="none" stroke="currentColor"
+                         viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                              d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                     </svg>
                     <h3 class="text-xl font-semibold text-white mb-2">No guides yet for {{ $city->name }}</h3>
-                    <p class="text-steel-400 mb-6 max-w-md mx-auto">Be the first to share your knowledge about this area. Help others discover what makes {{ $city->name }} special.</p>
+                    <p class="text-steel-400 mb-6 max-w-md mx-auto">Be the first to share your knowledge about this
+                        area. Help others discover what makes {{ $city->name }} special.</p>
                     <div class="flex flex-col sm:flex-row gap-3 justify-center">
-                        <a href="{{ route('guide.county', ['region' => $region, 'county' => $county]) }}" class="inline-flex items-center justify-center px-4 py-2 rounded-lg text-steel-300 bg-steel-700/50 hover:bg-steel-700 border border-steel-600 transition-colors">
+                        <a href="{{ route('guide.county', ['region' => $region, 'county' => $county]) }}"
+                           class="inline-flex items-center justify-center px-4 py-2 rounded-lg text-steel-300 bg-steel-700/50 hover:bg-steel-700 border border-steel-600 transition-colors">
                             Browse {{ $county->name }} County Guides
                         </a>
                     </div>
@@ -123,10 +124,12 @@
                     <h2 class="text-lg font-semibold text-white mb-4">Nearby Cities</h2>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                         @foreach($nearbyCities as $nearbyCity)
-                            <a href="{{ route('city.show', ['region' => $region, 'county' => $county, 'city' => $nearbyCity]) }}" class="bg-steel-800/50 hover:bg-steel-800 border border-steel-700/50 hover:border-steel-600 rounded-lg p-3 text-center transition-all">
+                            <a href="{{ route('city.show', ['region' => $region, 'county' => $county, 'city' => $nearbyCity]) }}"
+                               class="bg-steel-800/50 hover:bg-steel-800 border border-steel-700/50 hover:border-steel-600 rounded-lg p-3 text-center transition-all">
                                 <div class="font-medium text-white">{{ $nearbyCity->name }}</div>
                                 @if($nearbyCity->population)
-                                    <div class="text-xs text-steel-500">Pop. {{ number_format($nearbyCity->population) }}</div>
+                                    <div class="text-xs text-steel-500">
+                                        Pop. {{ number_format($nearbyCity->population) }}</div>
                                 @endif
                             </a>
                         @endforeach

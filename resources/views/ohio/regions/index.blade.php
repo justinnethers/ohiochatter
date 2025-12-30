@@ -1,35 +1,67 @@
 {{-- resources/views/ohio/regions/index.blade.php --}}
 <x-app-layout>
-    <x-slot name="title">Ohio Regions</x-slot>
+    <x-slot name="title">Explore Ohio</x-slot>
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-bold text-xl text-white leading-tight flex items-center gap-3">
                 <span class="hidden md:inline-block w-1 h-6 bg-accent-500 rounded-full"></span>
-                Ohio Regions
+                Explore Ohio
             </h2>
         </div>
     </x-slot>
 
     <div class="container mx-auto">
         <div class="md:rounded-2xl md:bg-gradient-to-br md:from-steel-800/50 md:to-steel-900/50 md:backdrop-blur-sm md:border md:border-steel-700/30 p-2 md:p-8 md:mt-4">
+            {{-- Hero Section --}}
+            <div class="bg-gradient-to-br from-steel-800 to-steel-850 rounded-xl p-6 md:p-8 mb-6 shadow-lg shadow-black/20 border border-steel-700/50 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-96 h-96 bg-accent-500/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+                <div class="relative">
+                    <h1 class="text-3xl md:text-4xl font-bold text-white mb-3">Discover Ohio</h1>
+                    <p class="text-steel-300 text-lg max-w-2xl mb-6">From the shores of Lake Erie to the hills of Appalachia, explore communities across the Buckeye State.</p>
+
+                    {{-- Quick Stats --}}
+                    <div class="grid grid-cols-3 gap-4 max-w-lg">
+                        <div class="bg-steel-900/50 rounded-lg p-4 text-center">
+                            <div class="text-2xl md:text-3xl font-bold text-accent-400">{{ $regions->count() }}</div>
+                            <div class="text-sm text-steel-400">Regions</div>
+                        </div>
+                        <div class="bg-steel-900/50 rounded-lg p-4 text-center">
+                            <div class="text-2xl md:text-3xl font-bold text-accent-400">88</div>
+                            <div class="text-sm text-steel-400">Counties</div>
+                        </div>
+                        <div class="bg-steel-900/50 rounded-lg p-4 text-center">
+                            <div class="text-2xl md:text-3xl font-bold text-accent-400">900+</div>
+                            <div class="text-sm text-steel-400">Cities</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Regions Grid --}}
+            <h2 class="text-lg font-semibold text-white mb-4">Ohio Regions</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 @foreach($regions as $region)
-                    <a href="{{ route('region.show', $region) }}" class="group bg-gradient-to-br from-steel-800 to-steel-850 p-5 text-steel-100 rounded-xl shadow-lg shadow-black/20 border border-steel-700/50 hover:border-steel-600 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden">
+                    <a href="{{ route('region.show', $region) }}" class="group bg-gradient-to-br from-steel-800 to-steel-850 p-6 text-steel-100 rounded-xl shadow-lg shadow-black/20 border border-steel-700/50 hover:border-steel-600 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden">
                         <div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-accent-400 to-accent-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
-                        <h3 class="text-xl font-semibold text-white group-hover:text-accent-400 transition-colors mb-2">
+                        <h3 class="text-xl font-bold text-white group-hover:text-accent-400 transition-colors mb-2">
                             {{ $region->name }}
                         </h3>
 
                         @if($region->description)
-                            <p class="text-steel-400 text-sm line-clamp-2 mb-3">{{ $region->description }}</p>
+                            <p class="text-steel-400 text-sm line-clamp-2 mb-4">{{ $region->description }}</p>
                         @endif
 
-                        @if($region->content->count() > 0)
-                            <span class="text-sm text-accent-400">
-                                {{ $region->content->count() }} {{ Str::plural('guide', $region->content->count()) }}
-                            </span>
-                        @endif
+                        <div class="flex items-center justify-between text-sm">
+                            <div class="flex items-center gap-4 text-steel-500">
+                                <span>{{ $region->counties_count ?? $region->counties->count() }} counties</span>
+                            </div>
+                            @if($region->content->count() > 0)
+                                <span class="text-accent-400 font-medium">
+                                    {{ $region->content->count() }} {{ Str::plural('guide', $region->content->count()) }}
+                                </span>
+                            @endif
+                        </div>
                     </a>
                 @endforeach
             </div>

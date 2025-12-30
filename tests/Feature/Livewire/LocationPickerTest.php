@@ -12,6 +12,10 @@ beforeEach(function () {
     $this->region = Region::factory()->create(['name' => 'Central Ohio']);
     $this->county = County::factory()->for($this->region)->create(['name' => 'Franklin']);
     $this->city = City::factory()->for($this->county)->create(['name' => 'Columbus']);
+
+    // Second region and county for testing region changes
+    $this->region2 = Region::factory()->create(['name' => 'Northeast Ohio']);
+    $this->county2 = County::factory()->for($this->region2)->create(['name' => 'Cuyahoga']);
 });
 
 it('renders successfully', function () {
@@ -25,17 +29,21 @@ it('loads regions on mount', function () {
         ->assertSee('Central Ohio');
 });
 
-it('loads counties when region is selected', function () {
+it('loads all counties on mount', function () {
     Livewire::test(LocationPicker::class)
-        ->set('regionId', $this->region->id)
-        ->assertSet('counties', fn ($counties) => $counties->contains('id', $this->county->id));
+        ->assertSet('allCounties', fn ($counties) => $counties->contains('id', $this->county->id) && $counties->contains('id', $this->county2->id));
 });
 
 it('loads cities when county is selected', function () {
     Livewire::test(LocationPicker::class)
-        ->set('regionId', $this->region->id)
         ->set('countyId', $this->county->id)
         ->assertSet('cities', fn ($cities) => $cities->contains('id', $this->city->id));
+});
+
+it('auto-sets region when county is selected', function () {
+    Livewire::test(LocationPicker::class)
+        ->set('countyId', $this->county->id)
+        ->assertSet('regionId', $this->region->id);
 });
 
 it('dispatches event when region is selected', function () {
@@ -59,14 +67,20 @@ it('dispatches event when city is selected', function () {
         ->assertDispatched('locationSelected', type: City::class, id: $this->city->id);
 });
 
-it('clears county and city when region changes', function () {
+it('clears county and city when region changes to incompatible region', function () {
     Livewire::test(LocationPicker::class)
-        ->set('regionId', $this->region->id)
         ->set('countyId', $this->county->id)
         ->set('cityId', $this->city->id)
-        ->set('regionId', null)
+        ->set('regionId', $this->region2->id) // Different region than county belongs to
         ->assertSet('countyId', null)
         ->assertSet('cityId', null);
+});
+
+it('keeps county when region is cleared', function () {
+    Livewire::test(LocationPicker::class)
+        ->set('countyId', $this->county->id)
+        ->set('regionId', null)
+        ->assertSet('countyId', $this->county->id);
 });
 
 it('clears city when county changes', function () {

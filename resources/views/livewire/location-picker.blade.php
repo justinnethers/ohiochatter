@@ -1,27 +1,28 @@
 <div class="space-y-4">
-    {{-- Region Select --}}
-    <div>
-        <x-input-label class="mb-2">Region <span class="text-red-400">*</span></x-input-label>
-        <x-select wire:model.live="regionId">
-            <option value="">Select a region...</option>
-            @foreach($regions as $region)
-                <option value="{{ $region->id }}">{{ $region->name }}</option>
-            @endforeach
-        </x-select>
-    </div>
-
-    {{-- County Select (shown after region selected) --}}
-    @if($counties->count() > 0)
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {{-- County Select (primary choice) --}}
         <div>
-            <x-input-label class="mb-2">County <span class="text-steel-500">(optional - for county-specific guide)</span></x-input-label>
+            <x-input-label class="mb-2">County</x-input-label>
             <x-select wire:model.live="countyId">
-                <option value="">Region-wide guide</option>
-                @foreach($counties as $county)
-                    <option value="{{ $county->id }}">{{ $county->name }}</option>
+                <option value="">Select a county...</option>
+                @foreach($allCounties as $county)
+                    <option value="{{ $county->id }}">{{ $county->name }} ({{ $county->region->name }})</option>
+                @endforeach
+            </x-select>
+            <p class="mt-1 text-xs text-steel-500">Region auto-selects based on county</p>
+        </div>
+
+        {{-- Region Select (for region-wide guides) --}}
+        <div>
+            <x-input-label class="mb-2">Region <span class="text-steel-500">(for region-wide guides)</span></x-input-label>
+            <x-select wire:model.live="regionId">
+                <option value="">Select a region...</option>
+                @foreach($regions as $region)
+                    <option value="{{ $region->id }}">{{ $region->name }}</option>
                 @endforeach
             </x-select>
         </div>
-    @endif
+    </div>
 
     {{-- City Select (shown after county selected) --}}
     @if($cities->count() > 0)

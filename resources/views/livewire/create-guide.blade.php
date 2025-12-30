@@ -436,15 +436,15 @@
                 }">
                 <div class="flex items-center gap-3">
                     <button type="button" @click="syncAndSave()" wire:loading.attr="disabled" wire:target="saveDraft,featuredImage,gallery"
-                        class="inline-flex items-center px-4 py-2 bg-steel-700 text-steel-200 rounded-lg hover:bg-steel-600 transition-colors font-semibold disabled:opacity-50">
-                        <span wire:loading.remove wire:target="saveDraft">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="inline-flex items-center whitespace-nowrap px-4 py-2 bg-steel-700 text-steel-200 rounded-lg hover:bg-steel-600 transition-colors font-semibold disabled:opacity-50">
+                        <span wire:loading.remove wire:target="saveDraft" class="inline-flex items-center">
+                            <svg class="w-4 h-4 mr-2 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
                             </svg>
                             Save Draft
                         </span>
-                        <span wire:loading wire:target="saveDraft" class="flex items-center">
-                            <svg class="animate-spin -ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24">
+                        <span wire:loading wire:target="saveDraft" class="inline-flex items-center">
+                            <svg class="animate-spin mr-2 h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
                             </svg>
@@ -455,15 +455,15 @@
                 </div>
 
                 <button type="button" @click="syncAndSubmit()" wire:loading.attr="disabled" wire:target="submit,featuredImage,gallery"
-                    class="inline-flex items-center px-4 py-2 bg-accent-500 text-white rounded-lg hover:bg-accent-600 transition-colors font-semibold disabled:opacity-50 shadow-lg shadow-accent-500/20">
-                    <span wire:loading.remove wire:target="submit">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    class="inline-flex items-center whitespace-nowrap px-4 py-2 bg-accent-500 text-white rounded-lg hover:bg-accent-600 transition-colors font-semibold disabled:opacity-50 shadow-lg shadow-accent-500/20">
+                    <span wire:loading.remove wire:target="submit" class="inline-flex items-center">
+                        <svg class="w-4 h-4 mr-2 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
                         </svg>
                         Submit for Review
                     </span>
-                    <span wire:loading wire:target="submit" class="flex items-center">
-                        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                    <span wire:loading wire:target="submit" class="inline-flex items-center">
+                        <svg class="animate-spin mr-2 h-4 w-4 shrink-0 text-white" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
                         </svg>

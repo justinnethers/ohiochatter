@@ -27,18 +27,22 @@
                     </a>
 
                     {{-- Quick Stats --}}
-                    <div class="grid grid-cols-3 gap-4 max-w-lg">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl">
                         <div class="bg-steel-900/50 rounded-lg p-4 text-center">
                             <div class="text-2xl md:text-3xl font-bold text-accent-400">{{ $regions->count() }}</div>
                             <div class="text-sm text-steel-400">Regions</div>
                         </div>
                         <div class="bg-steel-900/50 rounded-lg p-4 text-center">
-                            <div class="text-2xl md:text-3xl font-bold text-accent-400">88</div>
+                            <div class="text-2xl md:text-3xl font-bold text-accent-400">{{ $countyCount }}</div>
                             <div class="text-sm text-steel-400">Counties</div>
                         </div>
                         <div class="bg-steel-900/50 rounded-lg p-4 text-center">
-                            <div class="text-2xl md:text-3xl font-bold text-accent-400">900+</div>
+                            <div class="text-2xl md:text-3xl font-bold text-accent-400">{{ $cityCount }}</div>
                             <div class="text-sm text-steel-400">Cities</div>
+                        </div>
+                        <div class="bg-steel-900/50 rounded-lg p-4 text-center">
+                            <div class="text-2xl md:text-3xl font-bold text-accent-400">{{ $guideCount }}</div>
+                            <div class="text-sm text-steel-400">Guides</div>
                         </div>
                     </div>
                 </div>

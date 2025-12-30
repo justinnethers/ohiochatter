@@ -4,6 +4,7 @@ namespace App\Modules\Geography\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\City;
+use App\Models\Content;
 use App\Models\County;
 use App\Models\Region;
 use App\Modules\Geography\Queries\FetchCityData;
@@ -25,8 +26,11 @@ class LocationController extends Controller
     {
         $regions = $query->execute();
         $seo = $this->seoService->forRegionsIndex();
+        $countyCount = County::count();
+        $cityCount = City::count();
+        $guideCount = Content::whereNotNull('published_at')->count();
 
-        return view('ohio.regions.index', compact('regions', 'seo'));
+        return view('ohio.regions.index', compact('regions', 'seo', 'countyCount', 'cityCount', 'guideCount'));
     }
 
     public function showRegion(Region $region, FetchRegionData $query): View

@@ -2,19 +2,37 @@
 <x-app-layout>
     <x-slot name="title">{{ $category->name }}</x-slot>
     <x-slot name="header">
-        <h2 class="font-semibold text-3xl text-gray-200 dark:text-gray-200 leading-tight">
-            {{ $category->name }}
-        </h2>
+        <div class="flex justify-between items-center">
+            <h2 class="font-bold text-xl text-white leading-tight flex items-center gap-3">
+                <span class="hidden md:inline-block w-1 h-6 bg-accent-500 rounded-full"></span>
+                {{ $category->name }}
+            </h2>
+        </div>
     </x-slot>
 
-    <div class="bg-gray-700 p-3 md:px-8 md:py-6 text-gray-100 rounded md:rounded-lg mb-8">
-        <h1 class="text-3xl font-bold mb-4">{{ $category->name }}</h1>
-        <p class="text-xl text-gray-300">{{ $category->description }}</p>
+    <div class="container mx-auto">
+        <div class="md:rounded-2xl md:bg-gradient-to-br md:from-steel-800/50 md:to-steel-900/50 md:backdrop-blur-sm md:border md:border-steel-700/30 p-2 md:p-8 md:mt-4">
+            <x-breadcrumbs :items="[
+                ['title' => 'Ohio Guide', 'url' => route('guide.index')],
+                ['title' => $category->name],
+            ]"/>
+
+            <div class="bg-gradient-to-br from-steel-800 to-steel-850 rounded-xl p-6 mb-6 shadow-lg shadow-black/20 border border-steel-700/50">
+                <h1 class="text-2xl md:text-3xl font-bold text-white mb-3">{{ $category->name }}</h1>
+                @if($category->description)
+                    <p class="text-steel-300 text-lg">{{ $category->description }}</p>
+                @endif
+            </div>
+
+            @forelse($content as $item)
+                <x-guide.card :content="$item" />
+            @empty
+                <div class="bg-gradient-to-br from-steel-800 to-steel-850 p-6 text-steel-300 rounded-xl shadow-lg shadow-black/20 border border-steel-700/50 text-center">
+                    No guides in this category yet.
+                </div>
+            @endforelse
+
+            <div class="mt-6">{{ $content->links() }}</div>
+        </div>
     </div>
-
-    @foreach($content as $item)
-        <x-guide.card :content="$item" />
-    @endforeach
-
-    {{ $content->links() }}
 </x-app-layout>

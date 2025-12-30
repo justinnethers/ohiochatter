@@ -2,65 +2,55 @@
 <x-app-layout>
     <x-slot name="title">{{ $content->title }}</x-slot>
     <x-slot name="header">
-        <h2 class="font-semibold text-3xl text-gray-200 dark:text-gray-200 leading-tight">
-            {{ $content->title }}
-        </h2>
+        <div class="flex justify-between items-center">
+            <h2 class="font-bold text-xl text-white leading-tight flex items-center gap-3">
+                <span class="hidden md:inline-block w-1 h-6 bg-accent-500 rounded-full"></span>
+                {{ Str::limit($content->title, 50) }}
+            </h2>
+        </div>
     </x-slot>
 
-    <div>
-        <div class="md:rounded-lg p-2 md:p-8 md:pt-4 md:mt-4">
-            <article class="bg-gray-800 p-3 md:px-8 md:py-6 text-gray-100 rounded md:rounded-lg">
+    <div class="container mx-auto">
+        <div class="md:rounded-2xl md:bg-gradient-to-br md:from-steel-800/50 md:to-steel-900/50 md:backdrop-blur-sm md:border md:border-steel-700/30 p-2 md:p-8 md:mt-4">
+            <article class="bg-gradient-to-br from-steel-800 to-steel-850 p-4 md:p-8 text-steel-100 rounded-xl shadow-lg shadow-black/20 border border-steel-700/50">
                 <header class="mb-6">
-                    <div class="flex flex-wrap gap-2 mb-3">
+                    <div class="flex flex-wrap gap-2 mb-4">
                         @php
                             $location = null;
                             if ($content->locatable_type === 'App\\Models\\Region' && $content->locatable) {
-                                $location = [
-                                    'name' => $content->locatable->name,
-                                    'url' => route('guide.region', $content->locatable)
-                                ];
+                                $location = ['name' => $content->locatable->name, 'url' => route('guide.region', $content->locatable)];
                             } elseif ($content->locatable_type === 'App\\Models\\County' && $content->locatable) {
-                                $location = [
-                                    'name' => $content->locatable->name . ' County',
-                                    'url' => route('guide.county', ['region' => $content->locatable->region, 'county' => $content->locatable])
-                                ];
+                                $location = ['name' => $content->locatable->name . ' County', 'url' => route('guide.county', ['region' => $content->locatable->region, 'county' => $content->locatable])];
                             } elseif ($content->locatable_type === 'App\\Models\\City' && $content->locatable) {
-                                $location = [
-                                    'name' => $content->locatable->name,
-                                    'url' => route('guide.city', [
-                                        'region' => $content->locatable->county->region,
-                                        'county' => $content->locatable->county,
-                                        'city' => $content->locatable
-                                    ])
-                                ];
+                                $location = ['name' => $content->locatable->name, 'url' => route('guide.city', ['region' => $content->locatable->county->region, 'county' => $content->locatable->county, 'city' => $content->locatable])];
                             }
                         @endphp
 
                         @if($location)
-                            <a href="{{ $location['url'] }}" class="text-sm font-medium px-3 py-1 rounded-full bg-blue-500 text-white hover:bg-blue-600">
+                            <a href="{{ $location['url'] }}" class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-accent-500/20 text-accent-400 hover:bg-accent-500/30 transition-colors">
                                 {{ $location['name'] }}
                             </a>
                         @endif
 
                         @if($content->contentCategory)
-                            <a href="{{ route('guide.category', $content->contentCategory) }}" class="text-sm font-medium px-3 py-1 rounded-full bg-gray-600 text-white hover:bg-gray-700">
+                            <a href="{{ route('guide.category', $content->contentCategory) }}" class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-steel-700 text-steel-300 hover:bg-steel-600 hover:text-white transition-colors">
                                 {{ $content->contentCategory->name }}
                             </a>
                         @endif
                     </div>
 
-                    <h1 class="text-3xl md:text-4xl font-bold text-white mb-4">{{ $content->title }}</h1>
+                    <h1 class="text-2xl md:text-4xl font-bold text-white mb-4">{{ $content->title }}</h1>
 
-                    <div class="flex items-center text-gray-400 text-sm">
+                    <div class="flex items-center text-steel-400 text-sm">
                         @if($content->author)
                             <div class="flex items-center">
                                 <x-avatar :avatar-path="$content->author->avatar_path" size="8" />
-                                <span class="ml-2">By <a href="{{ route('profile.show', $content->author) }}" class="text-blue-400 hover:underline">{{ $content->author->username }}</a></span>
+                                <span class="ml-2">By <a href="{{ route('profile.show', $content->author) }}" class="text-accent-400 hover:text-accent-300 transition-colors">{{ $content->author->username }}</a></span>
                             </div>
                             <span class="mx-2">&bull;</span>
                         @endif
                         <span>{{ $content->created_at->format('F j, Y') }}</span>
-                        @if($content->updated_at)
+                        @if($content->updated_at && $content->updated_at->ne($content->created_at))
                             <span class="mx-2">&bull;</span>
                             <span>Updated {{ $content->updated_at->format('F j, Y') }}</span>
                         @endif
@@ -68,7 +58,7 @@
                 </header>
 
                 @if($content->excerpt)
-                    <div class="text-xl text-gray-300 mb-6">
+                    <div class="text-lg text-steel-300 mb-6 border-l-4 border-accent-500 pl-4">
                         {{ $content->excerpt }}
                     </div>
                 @endif
@@ -77,25 +67,23 @@
                     {!! Str::markdown($content->body) !!}
                 </div>
 
-                @if($content->metadata)
-                    <div class="mt-8 pt-8 border-t border-gray-600">
-                        @if($content->contentType && $content->contentType->slug === 'list' && isset($content->metadata['items']))
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                @foreach($content->metadata['items'] as $item)
-                                    <div class="bg-gray-800 rounded-lg p-4">
-                                        <h3 class="text-lg font-semibold mb-2">{{ $item['name'] ?? '' }}</h3>
-                                        <p class="text-gray-300">{{ $item['description'] ?? '' }}</p>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @endif
+                @if($content->metadata && $content->contentType && $content->contentType->slug === 'list' && isset($content->metadata['items']))
+                    <div class="mt-8 pt-8 border-t border-steel-700">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            @foreach($content->metadata['items'] as $item)
+                                <div class="bg-steel-900/50 rounded-lg p-4 border border-steel-700/50">
+                                    <h3 class="text-lg font-semibold text-white mb-2">{{ $item['name'] ?? '' }}</h3>
+                                    <p class="text-steel-300">{{ $item['description'] ?? '' }}</p>
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
                 @endif
             </article>
 
             @if(isset($relatedContent) && $relatedContent->isNotEmpty())
                 <section class="mt-8">
-                    <h2 class="text-2xl font-bold text-gray-200 mb-4">Related Guides</h2>
+                    <h2 class="text-lg font-semibold text-white mb-4">Related Guides</h2>
                     @foreach($relatedContent as $related)
                         <x-guide.card :content="$related" />
                     @endforeach

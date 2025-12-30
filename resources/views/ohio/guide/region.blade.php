@@ -2,47 +2,52 @@
 <x-app-layout>
     <x-slot name="title">{{ $region->name }} Guides</x-slot>
     <x-slot name="header">
-        <h2 class="font-semibold text-3xl text-gray-200 dark:text-gray-200 leading-tight">
-            {{ $region->name }} Guides
-        </h2>
+        <div class="flex justify-between items-center">
+            <h2 class="font-bold text-xl text-white leading-tight flex items-center gap-3">
+                <span class="hidden md:inline-block w-1 h-6 bg-accent-500 rounded-full"></span>
+                {{ $region->name }} Guides
+            </h2>
+        </div>
     </x-slot>
 
-    <div>
-        <div class="md:rounded-lg md:bg-gray-800 p-2 md:p-8 md:pt-4 md:mt-4">
-            <div class="bg-gray-700 rounded-lg p-6 mb-8">
-                <h1 class="text-3xl font-bold text-gray-100 mb-4">{{ $region->name }} Guides</h1>
-                <p class="text-gray-300 text-lg">{{ $region->description }}</p>
+    <div class="container mx-auto">
+        <div class="md:rounded-2xl md:bg-gradient-to-br md:from-steel-800/50 md:to-steel-900/50 md:backdrop-blur-sm md:border md:border-steel-700/30 p-2 md:p-8 md:mt-4">
+            <x-breadcrumbs :items="[
+                ['title' => 'Ohio Guide', 'url' => route('guide.index')],
+                ['title' => $region->name],
+            ]"/>
+
+            <div class="bg-gradient-to-br from-steel-800 to-steel-850 rounded-xl p-6 mb-6 shadow-lg shadow-black/20 border border-steel-700/50">
+                <h1 class="text-2xl md:text-3xl font-bold text-white mb-3">{{ $region->name }} Guides</h1>
+                @if($region->description)
+                    <p class="text-steel-300 text-lg">{{ $region->description }}</p>
+                @endif
             </div>
 
             @if($categories->isNotEmpty())
                 <div class="flex flex-wrap gap-2 mb-6">
                     @foreach($categories as $category)
                         <a href="{{ route('guide.region.category', ['region' => $region, 'category' => $category]) }}"
-                           class="inline-block px-4 py-2 rounded-full text-sm font-medium
-                                  text-gray-400 hover:text-white hover:bg-gray-700
-                                  transition duration-150 ease-in-out">
+                           class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium text-steel-300 hover:text-white hover:bg-steel-700/50 border border-steel-700/50 hover:border-steel-600 transition-all duration-200">
                             {{ $category->name }}
                         </a>
                     @endforeach
                 </div>
             @endif
 
-            @if($content->count() > 0)
-                @foreach($content as $item)
-                    <x-guide.card :content="$item" />
-                @endforeach
-
-                {{ $content->links() }}
-            @else
-                <div class="text-center py-8">
-                    <p class="text-gray-400">No guides available for this region yet.</p>
+            @forelse($content as $item)
+                <x-guide.card :content="$item" />
+            @empty
+                <div class="bg-gradient-to-br from-steel-800 to-steel-850 p-6 text-steel-300 rounded-xl shadow-lg shadow-black/20 border border-steel-700/50 text-center">
+                    No guides available for this region yet.
                 </div>
-            @endif
+            @endforelse
 
-            {{-- County Content --}}
+            <div class="mt-6">{{ $content->links() }}</div>
+
             @if(isset($countyContent) && $countyContent->isNotEmpty())
                 <section class="mt-8">
-                    <h2 class="text-2xl font-bold text-gray-200 mb-4">Latest From {{ $region->name }} Counties</h2>
+                    <h2 class="text-lg font-semibold text-white mb-4">Latest From {{ $region->name }} Counties</h2>
                     @foreach($countyContent as $item)
                         <x-guide.card :content="$item" />
                     @endforeach

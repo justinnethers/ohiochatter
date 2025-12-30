@@ -17,7 +17,14 @@
                 <div class="absolute top-0 right-0 w-96 h-96 bg-accent-500/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
                 <div class="relative">
                     <h1 class="text-3xl md:text-4xl font-bold text-white mb-3">Discover Ohio</h1>
-                    <p class="text-steel-300 text-lg max-w-2xl mb-6">From the shores of Lake Erie to the hills of Appalachia, explore communities across the Buckeye State.</p>
+                    <p class="text-steel-300 text-lg max-w-2xl mb-4">From the shores of Lake Erie to the hills of Appalachia, explore communities across the Buckeye State.</p>
+
+                    <a href="{{ route('guide.index') }}" class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium bg-accent-500/10 text-accent-400 hover:bg-accent-500/20 border border-accent-500/30 hover:border-accent-500/50 transition-all duration-200 mb-6">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                        </svg>
+                        Browse All Guides
+                    </a>
 
                     {{-- Quick Stats --}}
                     <div class="grid grid-cols-3 gap-4 max-w-lg">
@@ -56,9 +63,9 @@
                             <div class="flex items-center gap-4 text-steel-500">
                                 <span>{{ $region->counties_count ?? $region->counties->count() }} counties</span>
                             </div>
-                            @if($region->content->count() > 0)
+                            @if($region->total_content_count > 0)
                                 <span class="text-accent-400 font-medium">
-                                    {{ $region->content->count() }} {{ Str::plural('guide', $region->content->count()) }}
+                                    {{ $region->total_content_count }} {{ Str::plural('guide', $region->total_content_count) }}
                                 </span>
                             @endif
                         </div>

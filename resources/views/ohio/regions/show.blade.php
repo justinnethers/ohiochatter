@@ -36,9 +36,9 @@
                             <div class="text-2xl md:text-3xl font-bold text-accent-400">{{ $counties->sum(fn($c) => $c->cities_count ?? $c->cities->count()) }}</div>
                             <div class="text-sm text-steel-400">Cities</div>
                         </div>
-                        @if($featuredContent->count() + ($countyContent?->count() ?? 0) > 0)
+                        @if($totalContentCount > 0)
                         <div class="bg-steel-900/50 rounded-lg p-4 text-center">
-                            <div class="text-2xl md:text-3xl font-bold text-accent-400">{{ $featuredContent->count() + ($countyContent?->count() ?? 0) }}</div>
+                            <div class="text-2xl md:text-3xl font-bold text-accent-400">{{ $totalContentCount }}</div>
                             <div class="text-sm text-steel-400">Guides</div>
                         </div>
                         @endif
@@ -127,10 +127,10 @@
                 </section>
             @endif
 
-            {{-- Latest from Counties --}}
+            {{-- Latest from Counties & Cities --}}
             @if(isset($countyContent) && $countyContent->isNotEmpty())
                 <section>
-                    <h2 class="text-lg font-semibold text-white mb-4">Latest From {{ $region->name }} Counties</h2>
+                    <h2 class="text-lg font-semibold text-white mb-4">Latest From {{ $region->name }}</h2>
                     @foreach($countyContent as $content)
                         <x-guide.card :content="$content" />
                     @endforeach

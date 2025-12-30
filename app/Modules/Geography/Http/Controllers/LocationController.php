@@ -40,6 +40,7 @@ class LocationController extends Controller
             'featuredContent' => $data['featuredContent'],
             'countyContent' => $data['childContent'],
             'categories' => $data['categories'],
+            'totalContentCount' => $data['totalContentCount'],
             'seo' => $seo,
         ]);
     }
@@ -58,6 +59,7 @@ class LocationController extends Controller
             'featuredContent' => $data['featuredContent'],
             'cityContent' => $data['childContent'],
             'categories' => $data['categories'],
+            'totalContentCount' => $data['totalContentCount'],
             'seo' => $seo,
         ]);
     }

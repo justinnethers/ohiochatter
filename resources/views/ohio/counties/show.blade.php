@@ -49,10 +49,10 @@
                             <div class="text-xs text-steel-500 uppercase tracking-wide mb-1">Cities</div>
                             <div class="text-lg font-semibold text-accent-400">{{ $cities->count() }}</div>
                         </div>
-                        @if($featuredContent->count() + ($cityContent?->count() ?? 0) > 0)
+                        @if($totalContentCount > 0)
                         <div class="bg-steel-900/50 rounded-lg p-4">
                             <div class="text-xs text-steel-500 uppercase tracking-wide mb-1">Local Guides</div>
-                            <div class="text-lg font-semibold text-accent-400">{{ $featuredContent->count() + ($cityContent?->count() ?? 0) }}</div>
+                            <div class="text-lg font-semibold text-accent-400">{{ $totalContentCount }}</div>
                         </div>
                         @endif
                     </div>

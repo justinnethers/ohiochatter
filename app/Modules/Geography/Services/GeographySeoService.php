@@ -328,8 +328,8 @@ class GeographySeoService
             'description' => $content->excerpt ?: Str::limit(strip_tags($content->body), 160),
             'url' => $canonical,
             'image' => $image,
-            'datePublished' => $content->published_at?->toIso8601String() ?? $content->created_at->toIso8601String(),
-            'dateModified' => $content->updated_at->toIso8601String(),
+            'datePublished' => $content->published_at?->toIso8601String() ?? $content->created_at?->toIso8601String(),
+            'dateModified' => $content->updated_at?->toIso8601String() ?? $content->created_at?->toIso8601String(),
             'publisher' => [
                 '@type' => 'Organization',
                 'name' => $this->siteName,

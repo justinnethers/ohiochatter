@@ -43,18 +43,21 @@
     <script async
             src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4406607721782655"
             crossorigin="anonymous"></script>
-    <script>
-        (adsbygoogle = window.adsbygoogle || []).push({
-            google_ad_client: "ca-pub-4406607721782655",
-            @if(request()->routeIs('archive.*') || auth()->guest())
-            {{-- Auto ads enabled for archive pages and guests --}}
-            enable_page_level_ads: true
-            @else
-            {{-- Explicitly disable auto ads for authenticated users outside archive --}}
-            enable_page_level_ads: false
-            @endif
-        });
-    </script>
+    @if(request()->routeIs('archive.*') || auth()->guest())
+        <script>
+            (adsbygoogle = window.adsbygoogle || []).push({
+                google_ad_client: "ca-pub-4406607721782655",
+                enable_page_level_ads: true
+            });
+        </script>
+    @else
+        <script>
+            (adsbygoogle = window.adsbygoogle || []).push({
+                google_ad_client: "ca-pub-4406607721782655",
+                enable_page_level_ads: false
+            });
+        </script>
+    @endif
 
     {{-- Add this to app.blade.php's <head> section --}}
     <script>

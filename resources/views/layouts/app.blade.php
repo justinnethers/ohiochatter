@@ -40,19 +40,25 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('head')
 
-    <script async
-            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4406607721782655"
-            crossorigin="anonymous"></script>
-    @auth
+    @if(request()->routeIs('archive.*') || auth()->guest())
+        {{-- Auto ads enabled for archive pages and guests --}}
+        <script async
+                src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4406607721782655"
+                crossorigin="anonymous"></script>
         <script>
             (adsbygoogle = window.adsbygoogle || []).push({
                 google_ad_client: "ca-pub-4406607721782655",
                 enable_page_level_ads: {
-                    overlays: {bottom: false}
+                    overlays: {bottom: true}
                 }
             });
         </script>
-    @endauth
+    @else
+        {{-- Manual ads only for authenticated users outside archive --}}
+        <script async
+                src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+                crossorigin="anonymous"></script>
+    @endif
 
     {{-- Add this to app.blade.php's <head> section --}}
     <script>

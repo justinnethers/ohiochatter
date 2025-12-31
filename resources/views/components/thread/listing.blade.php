@@ -39,9 +39,14 @@
         @endif
     </a>
 
-    {{-- Mobile: Simple inline metadata --}}
+    {{-- Mobile: Show latest reply info (or thread creator if no replies) --}}
     <div class="md:hidden flex items-center gap-2 mt-1.5 text-xs text-steel-400">
-        @if ($thread->owner)
+        @if ($thread->lastReply)
+            <x-avatar size="5" :avatar-path="$thread->lastReply->owner->avatar_path" class="ring-1 ring-steel-700"/>
+            <a href="/profiles/{{ $thread->lastReply->owner->username }}" class="text-accent-400 hover:text-accent-300 font-medium">{{ $thread->lastReply->owner->username }}</a>
+            <span>&middot;</span>
+            <span>{{ \Carbon\Carbon::parse($thread->lastReply->created_at)->setTimezone((auth()->check() ? auth()->user()->timezone : null))->diffForHumans() }}</span>
+        @elseif ($thread->owner)
             <x-avatar size="5" :avatar-path="$thread->owner->avatar_path" class="ring-1 ring-steel-700"/>
             <a href="/profiles/{{ $thread->owner->username }}" class="text-accent-400 hover:text-accent-300 font-medium">{{ $thread->owner->username }}</a>
             <span>&middot;</span>

@@ -40,24 +40,10 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('head')
 
-    @guest
-        {{-- Guests get auto ads everywhere --}}
-        <script async
-                src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4406607721782655"
-                crossorigin="anonymous"></script>
-    @else
-        @if(request()->routeIs('archive.*'))
-            {{-- Logged-in users get auto ads only on archive --}}
-            <script async
-                    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4406607721782655"
-                    crossorigin="anonymous"></script>
-        @else
-            {{-- Logged-in users get NO auto ads elsewhere --}}
-            <script async
-                    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
-                    crossorigin="anonymous"></script>
-        @endif
-    @endguest
+    {{-- AdSense script for manual ad units only (no auto ads) --}}
+    <script async
+            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+            crossorigin="anonymous"></script>
 
     {{-- Add this to app.blade.php's <head> section --}}
     <script>

@@ -22,6 +22,7 @@ readonly class CreateContentData
         public ?string $metaDescription = null,
         public bool $featured = false,
         public ?Carbon $publishedAt = null,
+        public ?array $blocks = null,
     ) {}
 
     public static function fromArray(array $data): self
@@ -42,6 +43,7 @@ readonly class CreateContentData
             metaDescription: $data['meta_description'] ?? null,
             featured: $data['featured'] ?? false,
             publishedAt: isset($data['published_at']) ? Carbon::parse($data['published_at']) : null,
+            blocks: $data['blocks'] ?? null,
         );
     }
 
@@ -62,6 +64,7 @@ readonly class CreateContentData
             'meta_description' => $this->metaDescription,
             'featured' => $this->featured,
             'published_at' => $this->publishedAt,
+            'blocks' => $this->blocks,
         ];
     }
 }

@@ -42,6 +42,15 @@ class CreateGuide extends Component
     public ?string $existingFeaturedImage = null;
     public array $existingGallery = [];
 
+    // Guide-level metadata
+    public ?int $guideRating = null;
+    public ?string $guideWebsite = null;
+    public ?string $guideAddress = null;
+
+    // Block system
+    public array $blocks = [];
+    public array $blockImages = []; // Temporary upload storage keyed by block id
+
     // List builder
     public bool $listEnabled = false;
     public bool $listIsRanked = true;
@@ -91,26 +100,66 @@ class CreateGuide extends Component
         $this->listIsRanked = $settings['ranked'] ?? true;
         $this->listTitle = $settings['title'] ?? '';
         $this->listCountdown = $settings['countdown'] ?? false;
+
+        // Load guide-level metadata
+        $this->guideRating = $draft->rating;
+        $this->guideWebsite = $draft->website;
+        $this->guideAddress = $draft->address;
+
+        // Load blocks
+        $this->blocks = $draft->blocks ?? [];
     }
 
     protected function rules(): array
     {
+        $hasBlocks = ! empty($this->blocks);
+
         $rules = [
             'title' => 'required|string|min:10|max:255',
             'excerpt' => 'nullable|string|max:500',
-            'body' => 'required|string|min:200',
             'categoryIds' => 'required|array|min:1',
             'categoryIds.*' => 'exists:content_categories,id',
             'locatableType' => 'required|in:App\Models\Region,App\Models\County,App\Models\City',
             'locatableId' => 'required|integer',
             'featuredImage' => 'nullable|image|max:5120',
             'gallery.*' => 'nullable|image|max:5120',
+            'guideWebsite' => 'nullable|url',
+            'guideRating' => 'nullable|integer|min:1|max:5',
         ];
 
-        // Add list item validation if list is enabled
+        // Body is required only if no blocks are present
+        if ($hasBlocks) {
+            $rules['body'] = 'nullable|string';
+        } else {
+            $rules['body'] = 'required|string|min:200';
+        }
+
+        // Add list item validation if list is enabled (legacy list system)
         if ($this->listEnabled && ! empty($this->listItems)) {
             $rules['listItems.*.title'] = 'required|string|max:255';
             $rules['listItems.*.description'] = 'required|string|max:2000';
+        }
+
+        // Add block validation
+        if ($hasBlocks) {
+            foreach ($this->blocks as $index => $block) {
+                switch ($block['type']) {
+                    case 'text':
+                        $rules["blocks.{$index}.data.content"] = 'required|string|min:200';
+                        break;
+                    case 'video':
+                        $rules["blocks.{$index}.data.url"] = 'required|url';
+                        break;
+                    case 'list':
+                        if (! empty($block['data']['items'])) {
+                            foreach ($block['data']['items'] as $itemIndex => $item) {
+                                $rules["blocks.{$index}.data.items.{$itemIndex}.title"] = 'required|string|max:255';
+                                $rules["blocks.{$index}.data.items.{$itemIndex}.description"] = 'required|string|max:2000';
+                            }
+                        }
+                        break;
+                }
+            }
         }
 
         return $rules;
@@ -143,6 +192,15 @@ class CreateGuide extends Component
             'gallery.*.max' => 'Each gallery image must be less than 5MB.',
             'listItems.*.title.required' => 'Each list item needs a title.',
             'listItems.*.description.required' => 'Each list item needs a description.',
+            'guideWebsite.url' => 'Please enter a valid website URL.',
+            'guideRating.min' => 'Rating must be between 1 and 5 stars.',
+            'guideRating.max' => 'Rating must be between 1 and 5 stars.',
+            'blocks.*.data.content.required' => 'Text block content is required.',
+            'blocks.*.data.content.min' => 'Text block content must be at least 200 characters.',
+            'blocks.*.data.url.required' => 'Video URL is required.',
+            'blocks.*.data.url.url' => 'Please enter a valid video URL.',
+            'blocks.*.data.items.*.title.required' => 'Each list item needs a title.',
+            'blocks.*.data.items.*.description.required' => 'Each list item needs a description.',
         ];
     }
 
@@ -266,6 +324,166 @@ class CreateGuide extends Component
         }
     }
 
+    // Guide-level rating (click same star to clear)
+    public function setGuideRating(?int $rating): void
+    {
+        if ($this->guideRating === $rating) {
+            $this->guideRating = null;
+        } else {
+            $this->guideRating = $rating;
+        }
+    }
+
+    // Block system methods
+
+    public function addBlock(string $type): void
+    {
+        $this->blocks[] = [
+            'id' => Str::uuid()->toString(),
+            'type' => $type,
+            'order' => count($this->blocks),
+            'data' => $this->getDefaultBlockData($type),
+            'expanded' => true,
+        ];
+    }
+
+    public function removeBlock(int $index): void
+    {
+        if (isset($this->blocks[$index])) {
+            $blockId = $this->blocks[$index]['id'] ?? null;
+            if ($blockId && isset($this->blockImages[$blockId])) {
+                unset($this->blockImages[$blockId]);
+            }
+            unset($this->blocks[$index]);
+            $this->blocks = array_values($this->blocks);
+
+            // Re-index order values
+            foreach ($this->blocks as $i => $block) {
+                $this->blocks[$i]['order'] = $i;
+            }
+        }
+    }
+
+    public function reorderBlocks(array $orderedIds): void
+    {
+        $reordered = [];
+        foreach ($orderedIds as $order => $id) {
+            foreach ($this->blocks as $block) {
+                if (($block['id'] ?? '') === $id) {
+                    $block['order'] = $order;
+                    $reordered[] = $block;
+                    break;
+                }
+            }
+        }
+        $this->blocks = $reordered;
+    }
+
+    public function toggleBlock(int $index): void
+    {
+        if (isset($this->blocks[$index])) {
+            $this->blocks[$index]['expanded'] = ! ($this->blocks[$index]['expanded'] ?? false);
+        }
+    }
+
+    protected function getDefaultBlockData(string $type): array
+    {
+        return match ($type) {
+            'text' => ['content' => ''],
+            'list' => [
+                'title' => '',
+                'ranked' => true,
+                'countdown' => false,
+                'items' => [],
+            ],
+            'video' => ['url' => '', 'caption' => ''],
+            'image' => ['path' => null, 'alt' => '', 'caption' => ''],
+            'carousel' => ['images' => []],
+            default => [],
+        };
+    }
+
+    // List block item methods
+
+    public function addListItemToBlock(int $blockIndex): void
+    {
+        if (isset($this->blocks[$blockIndex]) && $this->blocks[$blockIndex]['type'] === 'list') {
+            $this->blocks[$blockIndex]['data']['items'][] = [
+                'id' => Str::uuid()->toString(),
+                'title' => '',
+                'description' => '',
+                'image' => null,
+                'address' => '',
+                'website' => '',
+                'rating' => null,
+                'expanded' => true,
+            ];
+        }
+    }
+
+    public function removeListItemFromBlock(int $blockIndex, int $itemIndex): void
+    {
+        if (isset($this->blocks[$blockIndex]['data']['items'][$itemIndex])) {
+            unset($this->blocks[$blockIndex]['data']['items'][$itemIndex]);
+            $this->blocks[$blockIndex]['data']['items'] = array_values($this->blocks[$blockIndex]['data']['items']);
+        }
+    }
+
+    public function reorderListItemsInBlock(int $blockIndex, array $orderedIds): void
+    {
+        if (! isset($this->blocks[$blockIndex]) || $this->blocks[$blockIndex]['type'] !== 'list') {
+            return;
+        }
+
+        $items = $this->blocks[$blockIndex]['data']['items'];
+        $reordered = [];
+
+        foreach ($orderedIds as $id) {
+            foreach ($items as $item) {
+                if (($item['id'] ?? '') === $id) {
+                    $reordered[] = $item;
+                    break;
+                }
+            }
+        }
+
+        $this->blocks[$blockIndex]['data']['items'] = $reordered;
+    }
+
+    public function setListItemRatingInBlock(int $blockIndex, int $itemIndex, ?int $rating): void
+    {
+        if (isset($this->blocks[$blockIndex]['data']['items'][$itemIndex])) {
+            $this->blocks[$blockIndex]['data']['items'][$itemIndex]['rating'] = $rating;
+        }
+    }
+
+    public function toggleListItemInBlock(int $blockIndex, int $itemIndex): void
+    {
+        if (isset($this->blocks[$blockIndex]['data']['items'][$itemIndex])) {
+            $this->blocks[$blockIndex]['data']['items'][$itemIndex]['expanded'] =
+                ! ($this->blocks[$blockIndex]['data']['items'][$itemIndex]['expanded'] ?? false);
+        }
+    }
+
+    protected function processBlocksForSave(): array
+    {
+        $blocks = $this->blocks;
+
+        foreach ($blocks as $index => $block) {
+            // Remove UI-only fields
+            unset($blocks[$index]['expanded']);
+
+            // Process list block items
+            if ($block['type'] === 'list' && ! empty($block['data']['items'])) {
+                foreach ($blocks[$index]['data']['items'] as $itemIndex => $item) {
+                    unset($blocks[$index]['data']['items'][$itemIndex]['expanded']);
+                }
+            }
+        }
+
+        return $blocks;
+    }
+
     protected function processListItemImages(): array
     {
         $items = $this->listItems;
@@ -322,6 +540,10 @@ class CreateGuide extends Component
                 'title' => $this->listTitle ?: null,
                 'countdown' => $this->listCountdown,
             ],
+            'rating' => $this->guideRating,
+            'website' => $this->guideWebsite ?: null,
+            'address' => $this->guideAddress ?: null,
+            'blocks' => $this->processBlocksForSave(),
         ];
 
         if ($this->draftId) {
@@ -386,10 +608,21 @@ class CreateGuide extends Component
         // Process list item images
         $processedListItems = $this->listEnabled ? $this->processListItemImages() : null;
 
-        // Build metadata with list data
+        // Build metadata with list data and guide-level fields
         $metadata = [
             'status' => 'pending_review',
         ];
+
+        // Add guide-level metadata
+        if ($this->guideRating) {
+            $metadata['rating'] = $this->guideRating;
+        }
+        if ($this->guideWebsite) {
+            $metadata['website'] = $this->guideWebsite;
+        }
+        if ($this->guideAddress) {
+            $metadata['address'] = $this->guideAddress;
+        }
 
         if ($this->listEnabled && ! empty($processedListItems)) {
             $metadata['list_items'] = $processedListItems;
@@ -399,6 +632,9 @@ class CreateGuide extends Component
                 'countdown' => $this->listCountdown,
             ];
         }
+
+        // Process blocks for saving
+        $processedBlocks = $this->processBlocksForSave();
 
         // Create content
         $data = new CreateContentData(
@@ -413,6 +649,7 @@ class CreateGuide extends Component
             gallery: ! empty($galleryPaths) ? $galleryPaths : null,
             metadata: $metadata,
             publishedAt: null,
+            blocks: ! empty($processedBlocks) ? $processedBlocks : null,
         );
 
         $this->createdContent = $createContent->execute($data, auth()->id());
@@ -456,6 +693,9 @@ class CreateGuide extends Component
             'gallery',
             'existingFeaturedImage',
             'existingGallery',
+            'guideRating',
+            'guideWebsite',
+            'guideAddress',
             'listEnabled',
             'listIsRanked',
             'listTitle',

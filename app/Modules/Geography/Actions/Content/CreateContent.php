@@ -29,6 +29,7 @@ class CreateContent
                 'meta_description' => $data->metaDescription ?? $data->excerpt ?? '',
                 'featured' => $data->featured,
                 'published_at' => $data->publishedAt,
+                'blocks' => $data->blocks,
             ]);
 
             // Sync categories via pivot table

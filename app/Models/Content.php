@@ -19,7 +19,8 @@ class Content extends Model
         'metadata' => 'array',
         'published_at' => 'datetime',
         'featured' => 'boolean',
-        'gallery' => 'array'
+        'gallery' => 'array',
+        'blocks' => 'array',
     ];
 
     public function locatable()

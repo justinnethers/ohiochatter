@@ -24,6 +24,10 @@ class GuideDraft extends Model
         'gallery',
         'list_items',
         'list_settings',
+        'blocks',
+        'rating',
+        'website',
+        'address',
     ];
 
     protected $casts = [
@@ -31,6 +35,7 @@ class GuideDraft extends Model
         'list_items' => 'array',
         'list_settings' => 'array',
         'category_ids' => 'array',
+        'blocks' => 'array',
     ];
 
     public function user(): BelongsTo

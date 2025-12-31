@@ -45,6 +45,19 @@
                     <livewire:active-users />
                 </div>
 
+                {{-- Sidebar Ad --}}
+                <div class="bg-steel-800/50 p-3 rounded-xl shadow-lg shadow-black/20 border border-steel-700/30">
+                    <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-client="ca-pub-4406607721782655"
+                         data-ad-slot="3473533118"
+                         data-ad-format="auto"
+                         data-full-width-responsive="true"></ins>
+                    <script>
+                        (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                </div>
+
                 {{-- Latest Poll --}}
                 <livewire:latest-poll />
 

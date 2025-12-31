@@ -30,7 +30,11 @@
             </div>
 
             <section>
-                @foreach($threads as $thread)
+                @php
+                    $adSlots = ['2001567130', '2900286656', '2521012709', '5660018222', '7961041643'];
+                    $adFrequency = 5; // Show ad every 5 threads
+                @endphp
+                @foreach($threads as $index => $thread)
                     <article class="group bg-gradient-to-br from-steel-800 to-steel-850 p-4 text-steel-100 font-body rounded-xl mb-3 md:mb-5 shadow-lg shadow-black/20 border border-steel-700/50 hover:border-steel-600 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden">
                         <div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-accent-400 to-accent-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
@@ -72,6 +76,21 @@
                             <span>{{ number_format($thread->views) }} views</span>
                         </div>
                     </article>
+
+                    {{-- In-content ad every 5 threads --}}
+                    @if(($index + 1) % $adFrequency === 0 && $index < count($threads) - 1)
+                        <div class="bg-steel-800/50 p-3 rounded-xl mb-3 md:mb-5 shadow-lg shadow-black/20 border border-steel-700/30">
+                            <ins class="adsbygoogle"
+                                 style="display:block"
+                                 data-ad-client="ca-pub-4406607721782655"
+                                 data-ad-slot="{{ $adSlots[$loop->iteration % count($adSlots)] }}"
+                                 data-ad-format="auto"
+                                 data-full-width-responsive="true"></ins>
+                            <script>
+                                (adsbygoogle = window.adsbygoogle || []).push({});
+                            </script>
+                        </div>
+                    @endif
                 @endforeach
             </section>
 

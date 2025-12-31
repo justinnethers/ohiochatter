@@ -30,7 +30,11 @@
                 </script>
             </div>
 
-            @foreach($posts as $post)
+            @php
+                $adSlots = ['2001567130', '2900286656', '2521012709', '5660018222', '7961041643'];
+                $adFrequency = 5; // Show ad every 5 posts
+            @endphp
+            @foreach($posts as $index => $post)
                 <x-post.card>
                     <x-post.owner
                         :owner="null"
@@ -54,6 +58,21 @@
                         </div>
                     </div>
                 </x-post.card>
+
+                {{-- In-content ad every 5 posts --}}
+                @if(($index + 1) % $adFrequency === 0 && $index < count($posts) - 1)
+                    <div class="bg-steel-800/50 p-3 rounded-xl mb-4 shadow-lg shadow-black/20 border border-steel-700/30">
+                        <ins class="adsbygoogle"
+                             style="display:block"
+                             data-ad-client="ca-pub-4406607721782655"
+                             data-ad-slot="{{ $adSlots[$loop->iteration % count($adSlots)] }}"
+                             data-ad-format="auto"
+                             data-full-width-responsive="true"></ins>
+                        <script>
+                            (adsbygoogle = window.adsbygoogle || []).push({});
+                        </script>
+                    </div>
+                @endif
             @endforeach
         </div>
 

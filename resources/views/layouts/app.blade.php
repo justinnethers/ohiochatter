@@ -40,25 +40,21 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('head')
 
-    @if(request()->routeIs('archive.*') || auth()->guest())
-        {{-- Auto ads enabled for archive pages and guests --}}
-        <script async
-                src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4406607721782655"
-                crossorigin="anonymous"></script>
-        <script>
-            (adsbygoogle = window.adsbygoogle || []).push({
-                google_ad_client: "ca-pub-4406607721782655",
-                enable_page_level_ads: {
-                    overlays: {bottom: true}
-                }
-            });
-        </script>
-    @else
-        {{-- Manual ads only for authenticated users outside archive --}}
-        <script async
-                src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
-                crossorigin="anonymous"></script>
-    @endif
+    <script async
+            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4406607721782655"
+            crossorigin="anonymous"></script>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({
+            google_ad_client: "ca-pub-4406607721782655",
+            @if(request()->routeIs('archive.*') || auth()->guest())
+            {{-- Auto ads enabled for archive pages and guests --}}
+            enable_page_level_ads: true
+            @else
+            {{-- Explicitly disable auto ads for authenticated users outside archive --}}
+            enable_page_level_ads: false
+            @endif
+        });
+    </script>
 
     {{-- Add this to app.blade.php's <head> section --}}
     <script>

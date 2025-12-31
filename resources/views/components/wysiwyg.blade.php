@@ -1,9 +1,4 @@
 @props(['thread'])
-@php
-    $userId = auth()->id();
-    $threadId = $thread->id ?? null;
-    $storageKey = "editor_draft_{$userId}_{$threadId}";
-@endphp
 
 <div>
     <div class="trumbowyg-dark">
@@ -11,21 +6,23 @@
         <div
             class="editor text-white bg-transparent"
             style="min-height: 300px;"
-            data-storage-key="{{ $storageKey }}"
             {{ $attributes }}
         ></div>
     </div>
 
-    <x-giphy-modal />
+    <x-giphy-modal/>
 
     <x-slot name="head">
         <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script>
             window.jQuery || document.write('<script src="/js/vendor/jquery-3.3.1.min.js"><\/script>')
         </script>
-        <script src="https://cdn.jsdelivr.net/npm/trumbowyg@2.30.0/dist/trumbowyg.min.js" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/trumbowyg@2.30.0/dist/plugins/table/trumbowyg.table.min.js" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/trumbowyg@2.30.0/dist/plugins/upload/trumbowyg.upload.min.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/trumbowyg@2.30.0/dist/trumbowyg.min.js"
+                crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/trumbowyg@2.30.0/dist/plugins/table/trumbowyg.table.min.js"
+                crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/trumbowyg@2.30.0/dist/plugins/upload/trumbowyg.upload.min.js"
+                crossorigin="anonymous"></script>
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.27.3/ui/trumbowyg.min.css">
         <link rel="stylesheet"
@@ -42,9 +39,11 @@
                 width: auto !important;
                 padding: 0 8px !important;
             }
+
             .trumbowyg-giphy-button:hover {
                 color: #e2e8f0 !important;
             }
+
             .trumbowyg-giphy-button svg {
                 display: none !important;
             }
@@ -53,7 +52,7 @@
 
     <x-slot name="footer">
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('DOMContentLoaded', function () {
                 const AUTOSAVE_DELAY = 1000;
                 let saveTimeout;
                 let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -68,7 +67,7 @@
                             ico: 'insertImage'
                         },
                         giphy: {
-                            fn: function() {
+                            fn: function () {
                                 window.dispatchEvent(new CustomEvent('open-giphy-modal'));
                             },
                             title: 'Insert GIF',
@@ -76,10 +75,10 @@
                             hasIcon: false
                         }
                     },
-                    btns:[
+                    btns: [
                         ['strong', 'em', 'del'],
                         ['unorderedList', 'orderedList'],
-                        ['image','giphy'],
+                        ['image', 'giphy'],
                         ['blockquote'],
                         ['link'],
                         ['table'],
@@ -99,8 +98,14 @@
                     }
                 });
 
+                // Load initial content from data attribute if present
+                const initialContent = editorElement.dataset.initialContent;
+                if (initialContent) {
+                    editor.trumbowyg('html', initialContent);
+                }
+
                 // Listen for GIF selection from custom modal
-                window.addEventListener('giphy-selected', function(e) {
+                window.addEventListener('giphy-selected', function (e) {
                     if (e.detail && e.detail.url) {
                         var imgHtml = '<img src="' + e.detail.url + '" alt="GIF">';
                         editor.trumbowyg('execCmd', {
@@ -118,12 +123,12 @@
                 // }
 
                 // Set up auto-save functionality
-                editor.on('tbwchange', function() {
+                editor.on('tbwchange', function () {
                     if (saveTimeout) {
                         clearTimeout(saveTimeout);
                     }
 
-                    saveTimeout = setTimeout(function() {
+                    saveTimeout = setTimeout(function () {
                         const content = editor.trumbowyg('html');
                         localStorage.setItem(storageKey, content);
                         console.log('Content auto-saved');
@@ -135,7 +140,7 @@
 
                 if (form) {
                     // Populate hidden input on form submit
-                    form.addEventListener('submit', function(e) {
+                    form.addEventListener('submit', function (e) {
                         const content = editor.trumbowyg('html');
                         document.getElementById('body-input').value = content;
                         localStorage.removeItem(storageKey);
@@ -146,7 +151,40 @@
             });
         </script>
         <script>
-            !function(e){"use strict";var t={enabled:!0,endpoint:"https://noembed.com/embed?nowrap=on"};e.extend(!0,e.trumbowyg,{plugins:{pasteEmbed:{init:function(n){n.o.plugins.pasteEmbed=e.extend(!0,{},t,n.o.plugins.pasteEmbed||{}),Array.isArray(n.o.plugins.pasteEmbed.endpoints)&&(n.o.plugins.pasteEmbed.endpoint=n.o.plugins.pasteEmbed.endpoints[0]),n.o.plugins.pasteEmbed.enabled&&n.pasteHandlers.push((function(t){try{var a=(t.originalEvent||t).clipboardData.getData("Text");if(!a.startsWith("http"))return;a = a.replace(/https?:\/\/(www\.)?x\.com/g, 'https://twitter.com');var s=n.o.plugins.pasteEmbed.endpoint;t.stopPropagation(),t.preventDefault();var i=new URL(s);i.searchParams.append("url",a.trim()), fetch(i,{method:"GET",cache:"no-cache",signal:AbortSignal.timeout(2e3)}).then((e=>e.json().then((e=>e.html)))).catch((()=>{})).then((t=>{void 0===t&&(t=e("<a>",{href:a,text:a})[0].outerHTML), n.execCmd("insertHTML",t)}))}catch(e){}}))}}}})}(jQuery);
+            !function (e) {
+                "use strict";
+                var t = {enabled: !0, endpoint: "https://noembed.com/embed?nowrap=on"};
+                e.extend(!0, e.trumbowyg, {
+                    plugins: {
+                        pasteEmbed: {
+                            init: function (n) {
+                                n.o.plugins.pasteEmbed = e.extend(!0, {}, t, n.o.plugins.pasteEmbed || {}), Array.isArray(n.o.plugins.pasteEmbed.endpoints) && (n.o.plugins.pasteEmbed.endpoint = n.o.plugins.pasteEmbed.endpoints[0]), n.o.plugins.pasteEmbed.enabled && n.pasteHandlers.push((function (t) {
+                                    try {
+                                        var a = (t.originalEvent || t).clipboardData.getData("Text");
+                                        if (!a.startsWith("http")) return;
+                                        a = a.replace(/https?:\/\/(www\.)?x\.com/g, 'https://twitter.com');
+                                        var s = n.o.plugins.pasteEmbed.endpoint;
+                                        t.stopPropagation(), t.preventDefault();
+                                        var i = new URL(s);
+                                        i.searchParams.append("url", a.trim()), fetch(i, {
+                                            method: "GET",
+                                            cache: "no-cache",
+                                            signal: AbortSignal.timeout(2e3)
+                                        }).then((e => e.json().then((e => e.html)))).catch((() => {
+                                        })).then((t => {
+                                            void 0 === t && (t = e("<a>", {
+                                                href: a,
+                                                text: a
+                                            })[0].outerHTML), n.execCmd("insertHTML", t)
+                                        }))
+                                    } catch (e) {
+                                    }
+                                }))
+                            }
+                        }
+                    }
+                })
+            }(jQuery);
         </script>
     </x-slot>
 </div>

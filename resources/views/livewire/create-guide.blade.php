@@ -490,8 +490,9 @@
             if ($('#body').data('trumbowyg')) {
                 clearInterval(waitForTrumbowyg);
 
-                // Load initial content if editing a draft
-                const initialContent = editor.dataset.initialContent;
+                // Load initial content from Livewire property directly
+                // This is more reliable than the data attribute when navigating back to drafts
+                const initialContent = $wire.body;
                 if (initialContent) {
                     $('#body').trumbowyg('html', initialContent);
                 }

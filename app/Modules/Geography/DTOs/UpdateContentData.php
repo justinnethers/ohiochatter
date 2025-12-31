@@ -8,7 +8,7 @@ readonly class UpdateContentData
 {
     public function __construct(
         public ?int $contentTypeId = null,
-        public ?int $categoryId = null,
+        public ?array $categoryIds = null,
         public ?string $title = null,
         public ?string $body = null,
         public ?string $locatableType = null,
@@ -29,7 +29,7 @@ readonly class UpdateContentData
     {
         return new self(
             contentTypeId: $data['content_type_id'] ?? null,
-            categoryId: $data['content_category_id'] ?? null,
+            categoryIds: $data['category_ids'] ?? null,
             title: $data['title'] ?? null,
             body: $data['body'] ?? null,
             locatableType: $data['locatable_type'] ?? null,
@@ -53,9 +53,6 @@ readonly class UpdateContentData
 
         if ($this->contentTypeId !== null) {
             $data['content_type_id'] = $this->contentTypeId;
-        }
-        if ($this->categoryId !== null) {
-            $data['content_category_id'] = $this->categoryId;
         }
         if ($this->title !== null) {
             $data['title'] = $this->title;

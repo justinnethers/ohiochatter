@@ -119,8 +119,8 @@ class FetchLocationContent
     {
         return Content::where('locatable_type', $locatableType)
             ->where('locatable_id', $locatableId)
-            ->where('content_category_id', $categoryId)
-            ->with(['contentType', 'author'])
+            ->whereHas('contentCategories', fn ($q) => $q->where('content_categories.id', $categoryId))
+            ->with(['contentCategories', 'contentType', 'author'])
             ->published()
             ->latest('published_at')
             ->paginate($perPage);
@@ -138,7 +138,7 @@ class FetchLocationContent
     {
         return Content::where('locatable_type', $locatableType)
             ->where('locatable_id', $locatableId)
-            ->with(['contentCategory', 'contentType', 'author'])
+            ->with(['contentCategories', 'contentType', 'author'])
             ->featured()
             ->published()
             ->latest('published_at')
@@ -158,7 +158,7 @@ class FetchLocationContent
     {
         return Content::where('locatable_type', $locatableType)
             ->where('locatable_id', $locatableId)
-            ->with(['contentCategory', 'contentType', 'author'])
+            ->with(['contentCategories', 'contentType', 'author'])
             ->published()
             ->latest('published_at')
             ->paginate($perPage);
@@ -177,7 +177,7 @@ class FetchLocationContent
 
         return Content::where('locatable_type', County::class)
             ->whereIn('locatable_id', $countyIds)
-            ->with(['contentCategory', 'contentType', 'locatable'])
+            ->with(['contentCategories', 'contentType', 'locatable'])
             ->published()
             ->latest('published_at')
             ->take($limit)
@@ -197,7 +197,7 @@ class FetchLocationContent
 
         return Content::where('locatable_type', City::class)
             ->whereIn('locatable_id', $cityIds)
-            ->with(['contentCategory', 'contentType', 'locatable'])
+            ->with(['contentCategories', 'contentType', 'locatable'])
             ->published()
             ->latest('published_at')
             ->take($limit)
@@ -213,7 +213,7 @@ class FetchLocationContent
      */
     private function getCategoriesForLocation(string $locatableType, int $locatableId): Collection
     {
-        return ContentCategory::whereHas('content', function ($query) use ($locatableType, $locatableId) {
+        return ContentCategory::whereHas('contents', function ($query) use ($locatableType, $locatableId) {
             $query->where('locatable_type', $locatableType)
                 ->where('locatable_id', $locatableId)
                 ->published();

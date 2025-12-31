@@ -16,6 +16,7 @@ class GuideDraft extends Model
         'excerpt',
         'body',
         'content_category_id',
+        'category_ids',
         'content_type_id',
         'locatable_type',
         'locatable_id',
@@ -29,6 +30,7 @@ class GuideDraft extends Model
         'gallery' => 'array',
         'list_items' => 'array',
         'list_settings' => 'array',
+        'category_ids' => 'array',
     ];
 
     public function user(): BelongsTo

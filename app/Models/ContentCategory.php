@@ -14,6 +14,15 @@ class ContentCategory extends Model
         'display_order' => 'integer',
     ];
 
+    public function contents()
+    {
+        return $this->belongsToMany(Content::class, 'content_content_category')
+            ->withTimestamps();
+    }
+
+    /**
+     * @deprecated Use contents() instead
+     */
     public function content()
     {
         return $this->hasMany(Content::class);
@@ -73,7 +82,9 @@ class ContentCategory extends Model
         $descendantIds = $this->descendants()->pluck('id');
         $categoryIds = collect([$this->id])->merge($descendantIds);
 
-        return Content::whereIn('content_category_id', $categoryIds);
+        return Content::whereHas('contentCategories', function ($query) use ($categoryIds) {
+            $query->whereIn('content_categories.id', $categoryIds);
+        });
     }
 
     public function scopeRoot($query)

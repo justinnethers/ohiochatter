@@ -32,11 +32,11 @@
                             </a>
                         @endif
 
-                        @if($content->contentCategory)
-                            <a href="{{ route('guide.category', $content->contentCategory) }}" class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-steel-700 text-steel-300 hover:bg-steel-600 hover:text-white transition-colors">
-                                {{ $content->contentCategory->name }}
+                        @foreach($content->contentCategories as $category)
+                            <a href="{{ route('guide.category', $category) }}" class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-steel-700 text-steel-300 hover:bg-steel-600 hover:text-white transition-colors">
+                                {{ $category->name }}
                             </a>
-                        @endif
+                        @endforeach
                     </div>
 
                     <h1 class="text-2xl md:text-4xl font-bold text-white mb-4">{{ $content->title }}</h1>

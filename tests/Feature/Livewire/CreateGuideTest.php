@@ -59,12 +59,6 @@ describe('CreateGuide component', function () {
             ->assertStatus(200)
             ->assertViewIs('livewire.create-guide');
     });
-
-    it('loads categories', function () {
-        Livewire::actingAs($this->user)
-            ->test(CreateGuide::class)
-            ->assertSee($this->category->name);
-    });
 });
 
 describe('saving drafts', function () {
@@ -88,20 +82,18 @@ describe('saving drafts', function () {
             ->set('title', 'Complete Draft')
             ->set('excerpt', 'This is the excerpt')
             ->set('body', 'This is the body content')
-            ->set('categoryId', $this->category->id)
-                        ->set('locatableType', Region::class)
+            ->set('categoryIds', [$this->category->id])
+            ->set('locatableType', Region::class)
             ->set('locatableId', $this->region->id)
             ->call('saveDraft');
 
-        $this->assertDatabaseHas('guide_drafts', [
-            'user_id' => $this->user->id,
-            'title' => 'Complete Draft',
-            'excerpt' => 'This is the excerpt',
-            'body' => 'This is the body content',
-            'content_category_id' => $this->category->id,
-            'locatable_type' => Region::class,
-            'locatable_id' => $this->region->id,
-        ]);
+        $draft = GuideDraft::where('user_id', $this->user->id)->first();
+        expect($draft->title)->toBe('Complete Draft');
+        expect($draft->excerpt)->toBe('This is the excerpt');
+        expect($draft->body)->toBe('This is the body content');
+        expect($draft->category_ids)->toBe([$this->category->id]);
+        expect($draft->locatable_type)->toBe(Region::class);
+        expect($draft->locatable_id)->toBe($this->region->id);
     });
 
     it('can save a draft with empty title', function () {
@@ -159,7 +151,7 @@ describe('loading drafts', function () {
             'title' => 'My Saved Draft',
             'excerpt' => 'Draft excerpt',
             'body' => 'Draft body content',
-            'content_category_id' => $this->category->id,
+            'category_ids' => [$this->category->id],
             'locatable_type' => City::class,
             'locatable_id' => $this->city->id,
         ]);
@@ -170,7 +162,7 @@ describe('loading drafts', function () {
             ->assertSet('title', 'My Saved Draft')
             ->assertSet('excerpt', 'Draft excerpt')
             ->assertSet('body', 'Draft body content')
-            ->assertSet('categoryId', $this->category->id)
+            ->assertSet('categoryIds', [$this->category->id])
             ->assertSet('locatableType', City::class)
             ->assertSet('locatableId', $this->city->id);
     });
@@ -193,7 +185,7 @@ describe('submitting guides', function () {
         Livewire::actingAs($this->user)
             ->test(CreateGuide::class)
             ->call('submit')
-            ->assertHasErrors(['title', 'body', 'categoryId', 'locatableType']);
+            ->assertHasErrors(['title', 'body', 'categoryIds', 'locatableType']);
     });
 
     it('validates minimum lengths', function () {
@@ -211,8 +203,8 @@ describe('submitting guides', function () {
             ->set('title', 'A Complete Guide Title Here')
             ->set('excerpt', str_repeat('This is a longer excerpt that meets the minimum character requirement. ', 3))
             ->set('body', str_repeat('This is the body content that needs to be at least 200 characters long. ', 5))
-            ->set('categoryId', $this->category->id)
-                        ->set('locatableType', Region::class)
+            ->set('categoryIds', [$this->category->id])
+            ->set('locatableType', Region::class)
             ->set('locatableId', $this->region->id)
             ->call('submit')
             ->assertSet('submitted', true);
@@ -233,8 +225,8 @@ describe('submitting guides', function () {
             ->set('title', 'A Complete Guide Title Here')
             ->set('excerpt', str_repeat('This is a longer excerpt that meets the minimum character requirement. ', 3))
             ->set('body', str_repeat('This is the body content that needs to be at least 200 characters long. ', 5))
-            ->set('categoryId', $this->category->id)
-                        ->set('locatableType', Region::class)
+            ->set('categoryIds', [$this->category->id])
+            ->set('locatableType', Region::class)
             ->set('locatableId', $this->region->id)
             ->call('submit');
 
@@ -424,8 +416,8 @@ describe('list builder', function () {
             ->set('title', 'A Complete Guide Title Here')
             ->set('excerpt', str_repeat('This is a longer excerpt that meets the minimum. ', 3))
             ->set('body', str_repeat('This is body content that meets the minimum. ', 5))
-            ->set('categoryId', $this->category->id)
-                        ->set('locatableType', Region::class)
+            ->set('categoryIds', [$this->category->id])
+            ->set('locatableType', Region::class)
             ->set('locatableId', $this->region->id)
             ->set('listEnabled', true)
             ->call('addListItem')
@@ -440,8 +432,8 @@ describe('list builder', function () {
             ->set('title', 'A Complete Guide Title Here')
             ->set('excerpt', str_repeat('This is a longer excerpt that meets the minimum. ', 3))
             ->set('body', str_repeat('This is body content that meets the minimum. ', 5))
-            ->set('categoryId', $this->category->id)
-                        ->set('locatableType', Region::class)
+            ->set('categoryIds', [$this->category->id])
+            ->set('locatableType', Region::class)
             ->set('locatableId', $this->region->id)
             ->set('listEnabled', true)
             ->set('listIsRanked', true)

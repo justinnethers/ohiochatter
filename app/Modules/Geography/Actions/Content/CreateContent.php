@@ -15,7 +15,6 @@ class CreateContent
         return DB::transaction(function () use ($data, $userId) {
             $content = Content::create([
                 'content_type_id' => $data->contentTypeId,
-                'content_category_id' => $data->categoryId,
                 'user_id' => $userId,
                 'locatable_type' => $data->locatableType,
                 'locatable_id' => $data->locatableId,
@@ -32,9 +31,14 @@ class CreateContent
                 'published_at' => $data->publishedAt,
             ]);
 
+            // Sync categories via pivot table
+            if (!empty($data->categoryIds)) {
+                $content->contentCategories()->sync($data->categoryIds);
+            }
+
             event(new ContentCreated($content));
 
-            return $content->fresh(['contentCategory', 'contentType', 'author', 'locatable']);
+            return $content->fresh(['contentCategories', 'contentType', 'author', 'locatable']);
         });
     }
 }

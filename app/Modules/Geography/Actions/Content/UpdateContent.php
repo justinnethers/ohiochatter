@@ -17,7 +17,12 @@ class UpdateContent
                 $content->update($updateData);
             }
 
-            return $content->fresh(['contentCategory', 'contentType', 'author', 'locatable']);
+            // Sync categories if provided
+            if ($data->categoryIds !== null) {
+                $content->contentCategories()->sync($data->categoryIds);
+            }
+
+            return $content->fresh(['contentCategories', 'contentType', 'author', 'locatable']);
         });
     }
 }

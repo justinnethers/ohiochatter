@@ -7,6 +7,7 @@ use App\Models\Content;
 use App\Models\ContentCategory;
 use App\Models\ContentType;
 use App\Modules\Geography\Actions\Content\PublishContent;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
@@ -47,16 +48,27 @@ class ContentResource extends Resource
                             ->maxLength(255)
                             ->columnSpanFull(),
 
-                        Select::make('content_category_id')
-                            ->label('Category')
-                            ->options(ContentCategory::orderBy('name')->pluck('name', 'id'))
+                        CheckboxList::make('contentCategories')
+                            ->label('Categories')
+                            ->relationship('contentCategories', 'name')
+                            ->options(function () {
+                                return ContentCategory::root()
+                                    ->with('children')
+                                    ->orderBy('display_order')
+                                    ->get()
+                                    ->flatMap(function ($parent) {
+                                        return $parent->children->mapWithKeys(fn ($child) => [
+                                            $child->id => "{$parent->name} > {$child->name}"
+                                        ]);
+                                    });
+                            })
+                            ->columns(2)
                             ->required()
-                            ->searchable(),
+                            ->columnSpanFull(),
 
                         Select::make('content_type_id')
                             ->label('Type')
-                            ->options(ContentType::orderBy('name')->pluck('name', 'id'))
-                            ->required(),
+                            ->options(ContentType::orderBy('name')->pluck('name', 'id')),
 
                         Textarea::make('excerpt')
                             ->label('Summary')
@@ -115,9 +127,10 @@ class ContentResource extends Resource
                     ->label('Author')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('contentCategory.name')
-                    ->label('Category')
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('contentCategories.name')
+                    ->label('Categories')
+                    ->badge()
+                    ->separator(', '),
 
                 Tables\Columns\TextColumn::make('locatable.name')
                     ->label('Location')
@@ -153,9 +166,11 @@ class ContentResource extends Resource
                         false: fn ($query) => $query->whereNull('published_at'),
                     ),
 
-                SelectFilter::make('content_category_id')
+                SelectFilter::make('contentCategories')
                     ->label('Category')
-                    ->options(ContentCategory::orderBy('name')->pluck('name', 'id')),
+                    ->relationship('contentCategories', 'name')
+                    ->multiple()
+                    ->preload(),
 
                 TernaryFilter::make('featured')
                     ->label('Featured'),

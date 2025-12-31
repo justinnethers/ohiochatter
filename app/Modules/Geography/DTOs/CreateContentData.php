@@ -8,7 +8,7 @@ readonly class CreateContentData
 {
     public function __construct(
         public ?int $contentTypeId,
-        public int $categoryId,
+        public array $categoryIds,
         public string $title,
         public string $body,
         public ?string $locatableType = null,
@@ -28,7 +28,7 @@ readonly class CreateContentData
     {
         return new self(
             contentTypeId: $data['content_type_id'] ?? null,
-            categoryId: $data['content_category_id'],
+            categoryIds: $data['category_ids'] ?? [],
             title: $data['title'],
             body: $data['body'],
             locatableType: $data['locatable_type'] ?? null,
@@ -49,7 +49,6 @@ readonly class CreateContentData
     {
         return [
             'content_type_id' => $this->contentTypeId,
-            'content_category_id' => $this->categoryId,
             'title' => $this->title,
             'body' => $this->body,
             'locatable_type' => $this->locatableType,

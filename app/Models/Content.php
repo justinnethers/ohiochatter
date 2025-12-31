@@ -27,6 +27,15 @@ class Content extends Model
         return $this->morphTo();
     }
 
+    public function contentCategories()
+    {
+        return $this->belongsToMany(ContentCategory::class, 'content_content_category')
+            ->withTimestamps();
+    }
+
+    /**
+     * @deprecated Use contentCategories() instead
+     */
     public function contentCategory()
     {
         return $this->belongsTo(ContentCategory::class);

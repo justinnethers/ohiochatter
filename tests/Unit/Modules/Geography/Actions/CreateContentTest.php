@@ -28,7 +28,7 @@ test('it creates content with required fields', function () {
 
     $data = new CreateContentData(
         contentTypeId: $this->contentType->id,
-        categoryId: $this->category->id,
+        categoryIds: [$this->category->id],
         title: 'Test Content',
         body: 'Test body content',
     );
@@ -39,7 +39,8 @@ test('it creates content with required fields', function () {
         ->and($content->title)->toBe('Test Content')
         ->and($content->body)->toBe('Test body content')
         ->and($content->user_id)->toBe($this->user->id)
-        ->and($content->slug)->toBe('test-content');
+        ->and($content->slug)->toBe('test-content')
+        ->and($content->contentCategories)->toHaveCount(1);
 });
 
 test('it creates content with location', function () {
@@ -47,7 +48,7 @@ test('it creates content with location', function () {
 
     $data = new CreateContentData(
         contentTypeId: $this->contentType->id,
-        categoryId: $this->category->id,
+        categoryIds: [$this->category->id],
         title: 'Regional Content',
         body: 'Content for a region',
         locatableType: Region::class,
@@ -66,7 +67,7 @@ test('it uses custom slug when provided', function () {
 
     $data = new CreateContentData(
         contentTypeId: $this->contentType->id,
-        categoryId: $this->category->id,
+        categoryIds: [$this->category->id],
         title: 'Test Content',
         body: 'Test body',
         slug: 'custom-slug-here',
@@ -84,7 +85,7 @@ test('it dispatches ContentCreated event', function () {
 
     $data = new CreateContentData(
         contentTypeId: $this->contentType->id,
-        categoryId: $this->category->id,
+        categoryIds: [$this->category->id],
         title: 'Event Test',
         body: 'Testing events',
     );
@@ -101,7 +102,7 @@ test('it sets metadata fields', function () {
 
     $data = new CreateContentData(
         contentTypeId: $this->contentType->id,
-        categoryId: $this->category->id,
+        categoryIds: [$this->category->id],
         title: 'Test Content',
         body: 'Test body',
         excerpt: 'Short excerpt',
@@ -123,7 +124,7 @@ test('it loads relationships on returned content', function () {
 
     $data = new CreateContentData(
         contentTypeId: $this->contentType->id,
-        categoryId: $this->category->id,
+        categoryIds: [$this->category->id],
         title: 'Test Content',
         body: 'Test body',
         locatableType: Region::class,
@@ -132,7 +133,7 @@ test('it loads relationships on returned content', function () {
 
     $content = $action->execute($data, $this->user->id);
 
-    expect($content->relationLoaded('contentCategory'))->toBeTrue()
+    expect($content->relationLoaded('contentCategories'))->toBeTrue()
         ->and($content->relationLoaded('contentType'))->toBeTrue()
         ->and($content->relationLoaded('author'))->toBeTrue()
         ->and($content->relationLoaded('locatable'))->toBeTrue();

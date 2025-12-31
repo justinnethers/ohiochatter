@@ -86,16 +86,17 @@
                 @error('locatableType') <x-input-error :messages="$message" class="mt-2" /> @enderror
             </div>
 
-            {{-- Category --}}
-            <div>
-                <x-input-label for="categoryId" class="mb-2">Category <span class="text-red-400">*</span></x-input-label>
-                <x-select wire:model="categoryId" id="categoryId">
-                    <option value="">Select a category...</option>
-                    @foreach($categories as $category)
-                        <option value="{{ $category->id }}">{{ $category->name }}</option>
-                    @endforeach
-                </x-select>
-                @error('categoryId') <x-input-error :messages="$message" class="mt-1" /> @enderror
+            {{-- Categories --}}
+            <div class="bg-steel-900/50 rounded-xl p-4 border border-steel-700/50">
+                <h3 class="font-semibold text-steel-200 mb-4 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-accent-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                    </svg>
+                    Categories <span class="text-red-400">*</span>
+                </h3>
+                <p class="text-sm text-steel-400 mb-4">Select one or more categories that best describe your guide.</p>
+                @livewire('category-picker', ['categoryIds' => $categoryIds])
+                @error('categoryIds') <x-input-error :messages="$message" class="mt-2" /> @enderror
             </div>
 
             {{-- Excerpt/Summary --}}

@@ -28,7 +28,7 @@ class CreateGuide extends Component
     public string $title = '';
     public string $excerpt = '';
     public string $body = '';
-    public ?int $categoryId = null;
+    public array $categoryIds = [];
 
     // Location (set via LocationPicker child component)
     public ?string $locatableType = null;
@@ -55,7 +55,7 @@ class CreateGuide extends Component
     public bool $savedDraft = false;
     public ?Content $createdContent = null;
 
-    protected $listeners = ['locationSelected', 'reorderListItems'];
+    protected $listeners = ['locationSelected', 'reorderListItems', 'categoriesSelected'];
 
     public function mount(?int $draft = null): void
     {
@@ -78,7 +78,7 @@ class CreateGuide extends Component
         $this->title = $draft->title ?? '';
         $this->excerpt = $draft->excerpt ?? '';
         $this->body = $draft->body ?? '';
-        $this->categoryId = $draft->content_category_id;
+        $this->categoryIds = $draft->category_ids ?? [];
         $this->locatableType = $draft->locatable_type;
         $this->locatableId = $draft->locatable_id;
         $this->existingFeaturedImage = $draft->featured_image;
@@ -99,7 +99,8 @@ class CreateGuide extends Component
             'title' => 'required|string|min:10|max:255',
             'excerpt' => 'nullable|string|max:500',
             'body' => 'required|string|min:200',
-            'categoryId' => 'required|exists:content_categories,id',
+            'categoryIds' => 'required|array|min:1',
+            'categoryIds.*' => 'exists:content_categories,id',
             'locatableType' => 'required|in:App\Models\Region,App\Models\County,App\Models\City',
             'locatableId' => 'required|integer',
             'featuredImage' => 'nullable|image|max:5120',
@@ -132,7 +133,8 @@ class CreateGuide extends Component
             'excerpt.max' => 'Summary must be less than 500 characters.',
             'body.required' => 'Please write the content for your guide.',
             'body.min' => 'Guide content must be at least 200 characters.',
-            'categoryId.required' => 'Please select a category.',
+            'categoryIds.required' => 'Please select at least one category.',
+            'categoryIds.min' => 'Please select at least one category.',
             'locatableType.required' => 'Please select a location for your guide.',
             'locatableType.in' => 'Please select a valid location.',
             'featuredImage.image' => 'Featured image must be an image file.',
@@ -148,6 +150,11 @@ class CreateGuide extends Component
     {
         $this->locatableType = $type;
         $this->locatableId = $id;
+    }
+
+    public function categoriesSelected(array $categoryIds): void
+    {
+        $this->categoryIds = $categoryIds;
     }
 
     public function updatedFeaturedImage(): void
@@ -303,7 +310,7 @@ class CreateGuide extends Component
             'title' => $this->title ?: null,
             'body' => $this->body ?: null,
             'excerpt' => $this->excerpt ?: null,
-            'content_category_id' => $this->categoryId,
+            'category_ids' => $this->categoryIds,
             'locatable_type' => $this->locatableType,
             'locatable_id' => $this->locatableId,
             'featured_image' => $featuredImagePath,
@@ -396,7 +403,7 @@ class CreateGuide extends Component
         // Create content
         $data = new CreateContentData(
             contentTypeId: null,
-            categoryId: $this->categoryId,
+            categoryIds: $this->categoryIds,
             title: $this->title,
             body: $this->body,
             locatableType: $this->locatableType,
@@ -442,7 +449,7 @@ class CreateGuide extends Component
             'title',
             'excerpt',
             'body',
-            'categoryId',
+            'categoryIds',
             'locatableType',
             'locatableId',
             'featuredImage',
@@ -463,8 +470,6 @@ class CreateGuide extends Component
 
     public function render()
     {
-        return view('livewire.create-guide', [
-            'categories' => ContentCategory::whereNull('parent_id')->orderBy('display_order')->orderBy('name')->get(),
-        ]);
+        return view('livewire.create-guide');
     }
 }

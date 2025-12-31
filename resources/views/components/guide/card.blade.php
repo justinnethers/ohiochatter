@@ -41,13 +41,13 @@
                     </a>
                 @endif
 
-                {{-- Category Badge --}}
-                @if($content->contentCategory)
-                    <a href="{{ route('guide.category', $content->contentCategory) }}"
+                {{-- Category Badges --}}
+                @foreach($content->contentCategories as $category)
+                    <a href="{{ route('guide.category', $category) }}"
                        class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-steel-700 text-steel-300 hover:bg-steel-600 hover:text-white transition-colors">
-                        {{ $content->contentCategory->name }}
+                        {{ $category->name }}
                     </a>
-                @endif
+                @endforeach
             </div>
         </div>
     </div>
@@ -71,12 +71,12 @@
             </a>
         @endif
 
-        {{-- Category Badge --}}
-        @if($content->contentCategory)
-            <a href="{{ route('guide.category', $content->contentCategory) }}"
+        {{-- Category Badges --}}
+        @foreach($content->contentCategories as $category)
+            <a href="{{ route('guide.category', $category) }}"
                class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-steel-700 text-steel-300 hover:bg-steel-600 hover:text-white transition-colors">
-                {{ $content->contentCategory->name }}
+                {{ $category->name }}
             </a>
-        @endif
+        @endforeach
     </div>
 </article>

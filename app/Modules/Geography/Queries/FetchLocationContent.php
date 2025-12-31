@@ -15,7 +15,7 @@ class FetchLocationContent
      */
     public function execute(string $locatableType, int $locatableId, int $perPage = 12): LengthAwarePaginator
     {
-        $query = Content::with(['contentCategory', 'contentType', 'author', 'locatable'])
+        $query = Content::with(['contentCategories', 'contentType', 'author', 'locatable'])
             ->published()
             ->latest('published_at');
 
@@ -33,8 +33,8 @@ class FetchLocationContent
         int $categoryId,
         int $perPage = 12
     ): LengthAwarePaginator {
-        $query = Content::with(['contentType', 'author', 'locatable'])
-            ->where('content_category_id', $categoryId)
+        $query = Content::with(['contentCategories', 'contentType', 'author', 'locatable'])
+            ->whereHas('contentCategories', fn ($q) => $q->where('content_categories.id', $categoryId))
             ->published()
             ->latest('published_at');
 

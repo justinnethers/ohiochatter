@@ -11,19 +11,19 @@ class ContentCategorySeeder extends Seeder
     protected array $categories = [
         'Food & Drink' => [
             'description' => 'Culinary experiences across Ohio',
-            'children' => ['Restaurants', 'Breweries', 'Bars', 'Cafes', 'Bakeries'],
+            'children' => ['Restaurants', 'Breweries', 'Bars', 'Cafes', 'Bakeries', 'Wineries', 'Distilleries', 'Food Trucks', 'Ice Cream'],
         ],
         'Outdoors & Nature' => [
             'description' => 'Natural attractions and outdoor activities',
-            'children' => ['Hiking', 'Parks', 'Camping', 'Lakes', 'Scenic Drives', 'Fishing'],
+            'children' => ['Hiking', 'Parks', 'Camping', 'Lakes', 'Scenic Drives', 'Fishing', 'Bike Trails', 'Kayaking', 'Waterfalls', 'Gardens', 'Beaches', 'Golf', 'Caves'],
         ],
         'Arts & Culture' => [
             'description' => 'Cultural attractions and artistic venues',
-            'children' => ['Museums', 'Theaters', 'Galleries', 'Historic Sites', 'Architecture'],
+            'children' => ['Museums', 'Theaters', 'Galleries', 'Historic Sites', 'Architecture', 'Street Art', 'Live Music'],
         ],
         'Entertainment' => [
             'description' => 'Fun activities and entertainment venues',
-            'children' => ['Sports', 'Concerts', 'Events', 'Nightlife', 'Amusement Parks'],
+            'children' => ['Sports', 'Concerts', 'Events', 'Nightlife', 'Amusement Parks', 'Casinos', 'Escape Rooms', 'Bowling', 'Arcades'],
         ],
         'Shopping' => [
             'description' => 'Retail destinations and markets',
@@ -31,7 +31,7 @@ class ContentCategorySeeder extends Seeder
         ],
         'Family' => [
             'description' => 'Family-friendly activities and destinations',
-            'children' => ['Kid-Friendly', 'Playgrounds', 'Zoos', 'Aquariums'],
+            'children' => ['Kid-Friendly', 'Playgrounds', 'Zoos', 'Aquariums', 'Farms'],
         ],
     ];
 

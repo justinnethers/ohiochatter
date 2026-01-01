@@ -632,7 +632,7 @@ class CreateGuide extends Component
             return [];
         }
 
-        return ContentCategory::whereIn('id', $this->categoryIds)->get()->toArray();
+        return ContentCategory::with('parent')->whereIn('id', $this->categoryIds)->get()->toArray();
     }
 
     public function render()

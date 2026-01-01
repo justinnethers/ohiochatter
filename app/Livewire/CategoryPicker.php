@@ -9,41 +9,52 @@ use Livewire\Component;
 class CategoryPicker extends Component
 {
     public array $selectedCategoryIds = [];
-    public array $expandedParents = [];
+    public ?int $activeTab = null;
+
+    protected array $categoryColors = [
+        'Food & Drink' => 'amber',
+        'Outdoors & Nature' => 'emerald',
+        'Arts & Culture' => 'violet',
+        'Entertainment' => 'rose',
+        'Shopping' => 'sky',
+        'Family' => 'cyan',
+    ];
+
+    public function getCategoryColor(string $categoryName): string
+    {
+        return $this->categoryColors[$categoryName] ?? 'accent';
+    }
 
     public function mount(array $categoryIds = []): void
     {
         $this->selectedCategoryIds = $categoryIds;
 
-        // Auto-expand parents of selected categories
-        $this->initializeExpanded();
+        // Set initial active tab
+        $this->initializeActiveTab();
     }
 
-    protected function initializeExpanded(): void
+    protected function initializeActiveTab(): void
     {
-        if (empty($this->selectedCategoryIds)) {
-            return;
-        }
+        // If there are selected categories, activate the tab of the first one
+        if (!empty($this->selectedCategoryIds)) {
+            $firstSelected = ContentCategory::whereIn('id', $this->selectedCategoryIds)
+                ->whereNotNull('parent_id')
+                ->first();
 
-        // Find parent IDs of selected categories
-        $selectedCategories = ContentCategory::whereIn('id', $this->selectedCategoryIds)
-            ->whereNotNull('parent_id')
-            ->get();
-
-        foreach ($selectedCategories as $category) {
-            if ($category->parent_id && !in_array($category->parent_id, $this->expandedParents)) {
-                $this->expandedParents[] = $category->parent_id;
+            if ($firstSelected) {
+                $this->activeTab = $firstSelected->parent_id;
+                return;
             }
         }
+
+        // Default to first parent category
+        $firstParent = ContentCategory::root()->orderBy('display_order')->first();
+        $this->activeTab = $firstParent?->id;
     }
 
-    public function toggleParent(int $parentId): void
+    public function setActiveTab(int $parentId): void
     {
-        if (in_array($parentId, $this->expandedParents)) {
-            $this->expandedParents = array_values(array_diff($this->expandedParents, [$parentId]));
-        } else {
-            $this->expandedParents[] = $parentId;
-        }
+        $this->activeTab = $parentId;
     }
 
     public function toggleCategory(int $categoryId): void

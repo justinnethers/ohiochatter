@@ -1,6 +1,14 @@
 @php
     $previewLocation = $this->getPreviewLocation();
     $previewCategories = $this->getPreviewCategories();
+    $categoryColors = [
+        'Food & Drink' => ['bg' => 'bg-amber-500/20', 'text' => 'text-amber-400'],
+        'Outdoors & Nature' => ['bg' => 'bg-emerald-500/20', 'text' => 'text-emerald-400'],
+        'Arts & Culture' => ['bg' => 'bg-violet-500/20', 'text' => 'text-violet-400'],
+        'Entertainment' => ['bg' => 'bg-rose-500/20', 'text' => 'text-rose-400'],
+        'Shopping' => ['bg' => 'bg-sky-500/20', 'text' => 'text-sky-400'],
+        'Family' => ['bg' => 'bg-cyan-500/20', 'text' => 'text-cyan-400'],
+    ];
 @endphp
 
 <div class="bg-gradient-to-br from-steel-800 to-steel-850 p-4 md:p-8 text-steel-100 rounded-xl shadow-lg shadow-black/20 border border-steel-700/50">
@@ -37,7 +45,8 @@
                 @endif
 
                 @forelse($previewCategories as $category)
-                    <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-steel-700 text-steel-300">
+                    @php $catColors = $categoryColors[$category['parent']['name'] ?? ''] ?? ['bg' => 'bg-steel-700', 'text' => 'text-steel-300']; @endphp
+                    <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium {{ $catColors['bg'] }} {{ $catColors['text'] }}">
                         {{ $category['name'] }}
                     </span>
                 @empty

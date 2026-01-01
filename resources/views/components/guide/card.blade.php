@@ -1,6 +1,17 @@
 {{-- resources/views/components/guide/card.blade.php --}}
 @props(['content'])
 
+@php
+    $categoryColors = [
+        'Food & Drink' => ['bg' => 'bg-amber-500/20', 'text' => 'text-amber-400', 'hover' => 'hover:bg-amber-500/30'],
+        'Outdoors & Nature' => ['bg' => 'bg-emerald-500/20', 'text' => 'text-emerald-400', 'hover' => 'hover:bg-emerald-500/30'],
+        'Arts & Culture' => ['bg' => 'bg-violet-500/20', 'text' => 'text-violet-400', 'hover' => 'hover:bg-violet-500/30'],
+        'Entertainment' => ['bg' => 'bg-rose-500/20', 'text' => 'text-rose-400', 'hover' => 'hover:bg-rose-500/30'],
+        'Shopping' => ['bg' => 'bg-sky-500/20', 'text' => 'text-sky-400', 'hover' => 'hover:bg-sky-500/30'],
+        'Family' => ['bg' => 'bg-cyan-500/20', 'text' => 'text-cyan-400', 'hover' => 'hover:bg-cyan-500/30'],
+    ];
+@endphp
+
 <article class="group bg-gradient-to-br from-steel-800 to-steel-850 p-4 md:p-5 text-steel-100 rounded-xl mb-3 md:mb-4 shadow-lg shadow-black/20 border border-steel-700/50 hover:border-steel-600 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden">
     {{-- Accent stripe (shows on hover) --}}
     <div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-accent-400 to-accent-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -43,8 +54,9 @@
 
                 {{-- Category Badges --}}
                 @foreach($content->contentCategories as $category)
+                    @php $catColors = $categoryColors[$category->parent?->name] ?? ['bg' => 'bg-steel-700', 'text' => 'text-steel-300', 'hover' => 'hover:bg-steel-600']; @endphp
                     <a href="{{ route('guide.category', $category) }}"
-                       class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-steel-700 text-steel-300 hover:bg-steel-600 hover:text-white transition-colors">
+                       class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium {{ $catColors['bg'] }} {{ $catColors['text'] }} {{ $catColors['hover'] }} transition-colors">
                         {{ $category->name }}
                     </a>
                 @endforeach
@@ -73,8 +85,9 @@
 
         {{-- Category Badges --}}
         @foreach($content->contentCategories as $category)
+            @php $catColors = $categoryColors[$category->parent?->name] ?? ['bg' => 'bg-steel-700', 'text' => 'text-steel-300', 'hover' => 'hover:bg-steel-600']; @endphp
             <a href="{{ route('guide.category', $category) }}"
-               class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-steel-700 text-steel-300 hover:bg-steel-600 hover:text-white transition-colors">
+               class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium {{ $catColors['bg'] }} {{ $catColors['text'] }} {{ $catColors['hover'] }} transition-colors">
                 {{ $category->name }}
             </a>
         @endforeach

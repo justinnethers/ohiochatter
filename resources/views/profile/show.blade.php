@@ -283,11 +283,17 @@
                                                 \App\Services\ReplyPaginationService::getPerPage()
                                             );
                                         @endphp
+                                        @php
+                                            // Convert <br> and block-level closing tags to newlines before stripping
+                                            $excerpt = preg_replace('/<br\s*\/?>/i', "\n", $post->body);
+                                            $excerpt = preg_replace('/<\/(p|div|li)>/i', "\n", $excerpt);
+                                            $excerpt = Str::limit(strip_tags($excerpt), 200);
+                                        @endphp
                                         <x-thread.card
                                             :thread="$post->thread"
                                             :href="$post->thread->path() . '?page=' . $page . '#reply-' . $post->id"
                                             :timestamp="$post->created_at"
-                                            :excerpt="Str::limit(strip_tags($post->body), 200)"
+                                            :excerpt="$excerpt"
                                         />
                                     @else
                                         <div class="p-4 rounded-lg bg-steel-900/50 border border-steel-700/30">

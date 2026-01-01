@@ -1,7 +1,6 @@
 @php
     $previewLocation = $this->getPreviewLocation();
     $previewCategories = $this->getPreviewCategories();
-    $previewListItems = $this->getPreviewListItems();
 @endphp
 
 <div class="bg-gradient-to-br from-steel-800 to-steel-850 p-4 md:p-8 text-steel-100 rounded-xl shadow-lg shadow-black/20 border border-steel-700/50">
@@ -110,18 +109,7 @@
             </div>
         @endif
 
-        {{-- Body Content --}}
-        @if($body)
-            <div class="prose prose-lg prose-invert max-w-none mb-8">
-                {!! Str::markdown($body) !!}
-            </div>
-        @else
-            <div class="text-steel-500 italic mb-8 p-6 border-2 border-dashed border-steel-700 rounded-lg text-center">
-                [Guide content will appear here]
-            </div>
-        @endif
-
-        {{-- Content Blocks Preview --}}
+        {{-- Content Blocks --}}
         @if(!empty($blocks))
             <div class="space-y-6 mb-8">
                 @foreach($blocks as $block)
@@ -205,16 +193,5 @@
             </div>
         @endif
 
-        {{-- Legacy List Items --}}
-        @if(!empty($previewListItems))
-            <x-guide-list
-                :items="$previewListItems"
-                :settings="[
-                    'ranked' => $listIsRanked,
-                    'title' => $listTitle ?: null,
-                    'countdown' => $listCountdown,
-                ]"
-            />
-        @endif
     </article>
 </div>

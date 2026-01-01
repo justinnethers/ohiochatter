@@ -21,7 +21,7 @@ class CreateContent
                 'title' => $data->title,
                 'slug' => $data->slug ?? Str::slug($data->title),
                 'excerpt' => $data->excerpt,
-                'body' => $data->body,
+                'body' => $data->body ?? '',
                 'metadata' => $data->metadata,
                 'featured_image' => $data->featuredImage,
                 'gallery' => $data->gallery,

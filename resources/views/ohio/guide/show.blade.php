@@ -63,15 +63,9 @@
                     </div>
                 @endif
 
-                @if($content->body)
-                    <div class="prose prose-lg prose-invert max-w-none">
-                        {!! Str::markdown($content->body) !!}
-                    </div>
-                @endif
-
                 {{-- Content Blocks --}}
                 @if(!empty($content->blocks))
-                    <div class="space-y-6 {{ $content->body ? 'mt-8' : '' }}">
+                    <div class="space-y-6">
                         @foreach($content->blocks as $block)
                             @switch($block['type'] ?? '')
                                 @case('text')
@@ -176,13 +170,6 @@
                     </div>
                 @endif
 
-                {{-- Legacy List Items (from old list builder) --}}
-                @if(!empty($content->metadata['list_items']))
-                    <x-guide-list
-                        :items="$content->metadata['list_items']"
-                        :settings="$content->metadata['list_settings'] ?? []"
-                    />
-                @endif
             </article>
 
             @if(isset($relatedContent) && $relatedContent->isNotEmpty())

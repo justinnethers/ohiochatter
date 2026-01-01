@@ -29,6 +29,54 @@ class ContentAIService
         return trim($response->choices[0]->message->content);
     }
 
+    public function generateSummaryFromBlocks(string $title, array $blocks): string
+    {
+        $content = $this->buildContentFromBlocks($title, $blocks);
+
+        $response = OpenAI::chat()->create([
+            'model' => 'gpt-4o-mini',
+            'messages' => [
+                [
+                    'role' => 'system',
+                    'content' => 'You are a helpful assistant that writes concise, engaging summaries for local Ohio guides and reviews. Write in a friendly, informative tone. Keep summaries between 100-200 characters. Do not use quotes around the summary. Do not include phrases like "This guide" or "This review" - just describe what readers will find.',
+                ],
+                [
+                    'role' => 'user',
+                    'content' => "Write a brief summary for this guide:\n\n{$content}",
+                ],
+            ],
+            'max_tokens' => 100,
+            'temperature' => 0.7,
+        ]);
+
+        return trim($response->choices[0]->message->content);
+    }
+
+    protected function buildContentFromBlocks(string $title, array $blocks): string
+    {
+        $content = "Title: {$title}\n\n";
+
+        foreach ($blocks as $block) {
+            switch ($block['type'] ?? '') {
+                case 'text':
+                    $text = strip_tags($block['data']['content'] ?? '');
+                    $content .= mb_substr($text, 0, 500) . "\n\n";
+                    break;
+
+                case 'list':
+                    $listTitle = $block['data']['title'] ?? null;
+                    $content .= "List" . ($listTitle ? " ({$listTitle})" : "") . ":\n";
+                    foreach (array_slice($block['data']['items'] ?? [], 0, 5) as $item) {
+                        $content .= "- " . ($item['title'] ?? 'Untitled') . "\n";
+                    }
+                    $content .= "\n";
+                    break;
+            }
+        }
+
+        return mb_substr($content, 0, 2000);
+    }
+
     protected function buildContentForSummary(string $title, string $body, ?string $listTitle, array $listItems): string
     {
         $content = "Title: {$title}\n\n";

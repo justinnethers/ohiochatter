@@ -36,7 +36,7 @@
     </span>
 
     @if($excerpt)
-        <span class="mt-3 text-steel-300 text-sm line-clamp-2 block">
+        <span class="mt-3 text-steel-300 text-sm line-clamp-2 block post-body whitespace-pre-line">
             {{ $excerpt }}
         </span>
     @endif

@@ -469,6 +469,11 @@ class CreateGuide extends Component
                 'id' => Str::uuid()->toString(),
                 'title' => '',
                 'description' => '',
+                'website' => '',
+                'address' => '',
+                'rating' => null,
+                'image' => null,
+                'expanded' => true,
             ];
         }
     }
@@ -479,6 +484,28 @@ class CreateGuide extends Component
             unset($this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'][$nestedBlockIndex]['data']['items'][$nestedItemIndex]);
             $this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'][$nestedBlockIndex]['data']['items'] =
                 array_values($this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'][$nestedBlockIndex]['data']['items']);
+        }
+    }
+
+    public function toggleNestedListItem(int $blockIndex, int $itemIndex, int $nestedBlockIndex, int $nestedItemIndex): void
+    {
+        if (isset($this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'][$nestedBlockIndex]['data']['items'][$nestedItemIndex])) {
+            $currentState = $this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'][$nestedBlockIndex]['data']['items'][$nestedItemIndex]['expanded'] ?? false;
+            $this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'][$nestedBlockIndex]['data']['items'][$nestedItemIndex]['expanded'] = ! $currentState;
+        }
+    }
+
+    public function setNestedListItemRating(int $blockIndex, int $itemIndex, int $nestedBlockIndex, int $nestedItemIndex, ?int $rating): void
+    {
+        if (isset($this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'][$nestedBlockIndex]['data']['items'][$nestedItemIndex])) {
+            $this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'][$nestedBlockIndex]['data']['items'][$nestedItemIndex]['rating'] = $rating;
+        }
+    }
+
+    public function removeNestedListItemImage(int $blockIndex, int $itemIndex, int $nestedBlockIndex, int $nestedItemIndex): void
+    {
+        if (isset($this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'][$nestedBlockIndex]['data']['items'][$nestedItemIndex])) {
+            $this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'][$nestedBlockIndex]['data']['items'][$nestedItemIndex]['image'] = null;
         }
     }
 
@@ -525,6 +552,21 @@ class CreateGuide extends Component
                                     }
                                 }
                                 $blocks[$index]['data']['items'][$itemIndex]['blocks'][$nestedIndex]['data']['images'] = $images;
+                            }
+
+                            // Process nested list block items
+                            if ($nestedBlock['type'] === 'list' && ! empty($nestedBlock['data']['items'])) {
+                                foreach ($nestedBlock['data']['items'] as $nestedItemIndex => $nestedItem) {
+                                    // Remove UI-only fields
+                                    unset($blocks[$index]['data']['items'][$itemIndex]['blocks'][$nestedIndex]['data']['items'][$nestedItemIndex]['expanded']);
+
+                                    // Process nested list item image uploads
+                                    $nestedListImageKey = "nested_list_{$index}_{$itemIndex}_{$nestedIndex}_{$nestedItemIndex}";
+                                    if (isset($this->nestedBlockImages[$nestedListImageKey]) && $this->nestedBlockImages[$nestedListImageKey]) {
+                                        $path = $this->nestedBlockImages[$nestedListImageKey]->store('guides/blocks', 'public');
+                                        $blocks[$index]['data']['items'][$itemIndex]['blocks'][$nestedIndex]['data']['items'][$nestedItemIndex]['image'] = $path;
+                                    }
+                                }
                             }
                         }
                     }

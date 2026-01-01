@@ -63,11 +63,120 @@
                     </div>
                 @endif
 
-                <div class="prose prose-lg prose-invert max-w-none">
-                    {!! Str::markdown($content->body) !!}
-                </div>
+                @if($content->body)
+                    <div class="prose prose-lg prose-invert max-w-none">
+                        {!! Str::markdown($content->body) !!}
+                    </div>
+                @endif
 
-                {{-- List Items (from list builder) --}}
+                {{-- Content Blocks --}}
+                @if(!empty($content->blocks))
+                    <div class="space-y-6 {{ $content->body ? 'mt-8' : '' }}">
+                        @foreach($content->blocks as $block)
+                            @switch($block['type'] ?? '')
+                                @case('text')
+                                    @if(!empty($block['data']['content']))
+                                        <div class="prose prose-lg prose-invert max-w-none">
+                                            {!! $block['data']['content'] !!}
+                                        </div>
+                                    @endif
+                                    @break
+
+                                @case('image')
+                                    @if(!empty($block['data']['path']))
+                                        <figure class="my-6">
+                                            <img src="{{ Storage::url($block['data']['path']) }}"
+                                                alt="{{ $block['data']['alt'] ?? '' }}"
+                                                class="rounded-xl max-w-full h-auto">
+                                            @if(!empty($block['data']['caption']))
+                                                <figcaption class="mt-2 text-center text-sm text-steel-400">
+                                                    {{ $block['data']['caption'] }}
+                                                </figcaption>
+                                            @endif
+                                        </figure>
+                                    @endif
+                                    @break
+
+                                @case('carousel')
+                                    @if(!empty($block['data']['images']))
+                                        <div class="my-6 overflow-x-auto">
+                                            <div class="flex gap-4 pb-4">
+                                                @foreach($block['data']['images'] as $image)
+                                                    <img src="{{ Storage::url($image['path']) }}"
+                                                        alt="{{ $image['alt'] ?? '' }}"
+                                                        class="h-64 w-auto rounded-xl shrink-0">
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endif
+                                    @break
+
+                                @case('video')
+                                    @if(!empty($block['data']['url']))
+                                        @php
+                                            $videoUrl = $block['data']['url'];
+                                            $embedUrl = null;
+
+                                            // YouTube
+                                            if (preg_match('/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]+)/', $videoUrl, $matches)) {
+                                                $embedUrl = "https://www.youtube.com/embed/{$matches[1]}";
+                                            }
+                                            // Vimeo
+                                            elseif (preg_match('/vimeo\.com\/(\d+)/', $videoUrl, $matches)) {
+                                                $embedUrl = "https://player.vimeo.com/video/{$matches[1]}";
+                                            }
+                                        @endphp
+
+                                        <div class="my-6">
+                                            @if($embedUrl)
+                                                <div class="aspect-video rounded-xl overflow-hidden">
+                                                    <iframe src="{{ $embedUrl }}"
+                                                        class="w-full h-full"
+                                                        frameborder="0"
+                                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                        allowfullscreen></iframe>
+                                                </div>
+                                            @else
+                                                <a href="{{ $videoUrl }}" target="_blank" rel="noopener noreferrer"
+                                                    class="flex items-center gap-2 text-accent-400 hover:text-accent-300">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                    </svg>
+                                                    Watch Video
+                                                </a>
+                                            @endif
+                                            @if(!empty($block['data']['caption']))
+                                                <p class="mt-2 text-sm text-steel-400">{{ $block['data']['caption'] }}</p>
+                                            @endif
+                                        </div>
+                                    @endif
+                                    @break
+
+                                @case('list')
+                                    @if(!empty($block['data']['items']))
+                                        <x-guide-list
+                                            :items="collect($block['data']['items'])->map(fn($item) => [
+                                                'title' => $item['title'] ?? '',
+                                                'description' => $item['description'] ?? '',
+                                                'image' => $item['image'] ?? null,
+                                                'address' => $item['address'] ?? $item['website'] ?? '',
+                                                'rating' => $item['rating'] ?? null,
+                                            ])->toArray()"
+                                            :settings="[
+                                                'ranked' => $block['data']['ranked'] ?? true,
+                                                'title' => $block['data']['title'] ?? null,
+                                                'countdown' => $block['data']['countdown'] ?? false,
+                                            ]"
+                                        />
+                                    @endif
+                                    @break
+                            @endswitch
+                        @endforeach
+                    </div>
+                @endif
+
+                {{-- Legacy List Items (from old list builder) --}}
                 @if(!empty($content->metadata['list_items']))
                     <x-guide-list
                         :items="$content->metadata['list_items']"

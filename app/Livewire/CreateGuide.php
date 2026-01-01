@@ -63,6 +63,7 @@ class CreateGuide extends Component
     public bool $submitted = false;
     public bool $savedDraft = false;
     public ?Content $createdContent = null;
+    public bool $showPreview = false;
 
     protected $listeners = ['locationSelected', 'reorderListItems', 'categoriesSelected'];
 
@@ -145,7 +146,7 @@ class CreateGuide extends Component
             foreach ($this->blocks as $index => $block) {
                 switch ($block['type']) {
                     case 'text':
-                        $rules["blocks.{$index}.data.content"] = 'required|string|min:200';
+                        $rules["blocks.{$index}.data.content"] = 'required|string|min:10';
                         break;
                     case 'video':
                         $rules["blocks.{$index}.data.url"] = 'required|url';
@@ -196,7 +197,7 @@ class CreateGuide extends Component
             'guideRating.min' => 'Rating must be between 1 and 5 stars.',
             'guideRating.max' => 'Rating must be between 1 and 5 stars.',
             'blocks.*.data.content.required' => 'Text block content is required.',
-            'blocks.*.data.content.min' => 'Text block content must be at least 200 characters.',
+            'blocks.*.data.content.min' => 'Text block content must be at least 10 characters.',
             'blocks.*.data.url.required' => 'Video URL is required.',
             'blocks.*.data.url.url' => 'Please enter a valid video URL.',
             'blocks.*.data.items.*.title.required' => 'Each list item needs a title.',
@@ -465,6 +466,31 @@ class CreateGuide extends Component
         }
     }
 
+    public function removeBlockImage(int $index): void
+    {
+        if (isset($this->blocks[$index]) && $this->blocks[$index]['type'] === 'image') {
+            $this->blocks[$index]['data']['path'] = null;
+        }
+    }
+
+    public function removeBlockImageUpload(int $index): void
+    {
+        if (isset($this->blocks[$index])) {
+            $blockId = $this->blocks[$index]['id'] ?? null;
+            if ($blockId && isset($this->blockImages[$blockId])) {
+                unset($this->blockImages[$blockId]);
+            }
+        }
+    }
+
+    public function removeCarouselImage(int $blockIndex, int $imageIndex): void
+    {
+        if (isset($this->blocks[$blockIndex]['data']['images'][$imageIndex])) {
+            unset($this->blocks[$blockIndex]['data']['images'][$imageIndex]);
+            $this->blocks[$blockIndex]['data']['images'] = array_values($this->blocks[$blockIndex]['data']['images']);
+        }
+    }
+
     protected function processBlocksForSave(): array
     {
         $blocks = $this->blocks;
@@ -477,6 +503,34 @@ class CreateGuide extends Component
             if ($block['type'] === 'list' && ! empty($block['data']['items'])) {
                 foreach ($blocks[$index]['data']['items'] as $itemIndex => $item) {
                     unset($blocks[$index]['data']['items'][$itemIndex]['expanded']);
+                }
+            }
+
+            // Process image block uploads
+            if ($block['type'] === 'image') {
+                $blockId = $block['id'] ?? null;
+                if ($blockId && isset($this->blockImages[$blockId]) && $this->blockImages[$blockId]) {
+                    $path = $this->blockImages[$blockId]->store('guides/blocks', 'public');
+                    $blocks[$index]['data']['path'] = $path;
+                }
+            }
+
+            // Process carousel block uploads
+            if ($block['type'] === 'carousel') {
+                $blockId = $block['id'] ?? null;
+                if ($blockId && isset($this->blockImages[$blockId]) && $this->blockImages[$blockId]) {
+                    $images = $blocks[$index]['data']['images'] ?? [];
+                    $uploadedFiles = is_array($this->blockImages[$blockId])
+                        ? $this->blockImages[$blockId]
+                        : [$this->blockImages[$blockId]];
+
+                    foreach ($uploadedFiles as $file) {
+                        if ($file) {
+                            $path = $file->store('guides/blocks', 'public');
+                            $images[] = ['path' => $path, 'alt' => ''];
+                        }
+                    }
+                    $blocks[$index]['data']['images'] = $images;
                 }
             }
         }
@@ -561,13 +615,20 @@ class CreateGuide extends Component
         $this->featuredImage = null;
         $this->gallery = [];
         $this->listItemImages = [];
+        $this->blockImages = [];
         $this->existingFeaturedImage = $draft->featured_image;
         $this->existingGallery = $draft->gallery ?? [];
         $this->listItems = $draft->list_items ?? [];
 
+        // Reload blocks from draft to get saved image paths
+        $this->blocks = $draft->blocks ?? [];
+
         // Re-add expanded state for UI
         foreach ($this->listItems as $index => $item) {
             $this->listItems[$index]['expanded'] = false;
+        }
+        foreach ($this->blocks as $index => $block) {
+            $this->blocks[$index]['expanded'] = false;
         }
 
         $this->savedDraft = true;
@@ -705,7 +766,59 @@ class CreateGuide extends Component
             'submitted',
             'savedDraft',
             'createdContent',
+            'showPreview',
         ]);
+    }
+
+    public function togglePreview(): void
+    {
+        $this->showPreview = ! $this->showPreview;
+    }
+
+    public function getPreviewLocation(): ?array
+    {
+        if (! $this->locatableType || ! $this->locatableId) {
+            return null;
+        }
+
+        $model = $this->locatableType::find($this->locatableId);
+        if (! $model) {
+            return null;
+        }
+
+        return match ($this->locatableType) {
+            'App\Models\Region' => ['name' => $model->name, 'type' => 'region'],
+            'App\Models\County' => ['name' => $model->name . ' County', 'type' => 'county'],
+            'App\Models\City' => ['name' => $model->name, 'type' => 'city'],
+            default => null,
+        };
+    }
+
+    public function getPreviewCategories(): array
+    {
+        if (empty($this->categoryIds)) {
+            return [];
+        }
+
+        return ContentCategory::whereIn('id', $this->categoryIds)->get()->toArray();
+    }
+
+    public function getPreviewListItems(): array
+    {
+        if (! $this->listEnabled || empty($this->listItems)) {
+            return [];
+        }
+
+        // Return list items without UI-only fields
+        return collect($this->listItems)->map(function ($item) {
+            return [
+                'title' => $item['title'] ?? '',
+                'description' => $item['description'] ?? '',
+                'image' => $item['image'] ?? null,
+                'address' => $item['address'] ?? '',
+                'rating' => $item['rating'] ?? null,
+            ];
+        })->toArray();
     }
 
     public function render()

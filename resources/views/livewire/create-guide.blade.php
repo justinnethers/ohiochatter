@@ -47,6 +47,11 @@
             </div>
         @endif
 
+        {{-- Preview Mode --}}
+        @if($showPreview)
+            @include('livewire.partials.guide-preview')
+        @else
+
         {{-- Form --}}
         <form wire:submit="submit" class="space-y-6">
             {{-- Error Summary --}}
@@ -323,7 +328,7 @@
                 </div>
             </div>
 
-            {{-- Submit / Save Draft --}}
+            {{-- Preview / Submit / Save Draft --}}
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-4 border-t border-steel-700/50"
                 x-data="{
                     syncAllEditors() {
@@ -366,10 +371,20 @@
                             Saving...
                         </span>
                     </button>
-                    <span class="text-sm text-steel-500">Save and continue later</span>
+                    <span class="text-sm text-steel-500 hidden sm:inline">Save and continue later</span>
                 </div>
 
-                <button type="button" @click="syncAndSubmit()" wire:loading.attr="disabled" wire:target="submit,featuredImage,gallery"
+                <div class="flex items-center gap-3">
+                    <button type="button" @click="syncAllEditors(); $wire.togglePreview()"
+                        class="inline-flex items-center whitespace-nowrap px-4 py-2 bg-amber-500/20 text-amber-400 border border-amber-500/30 rounded-lg hover:bg-amber-500/30 transition-colors font-semibold">
+                        <svg class="w-4 h-4 mr-2 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                        </svg>
+                        Preview
+                    </button>
+
+                    <button type="button" @click="syncAndSubmit()" wire:loading.attr="disabled" wire:target="submit,featuredImage,gallery"
                     class="inline-flex items-center whitespace-nowrap px-4 py-2 bg-accent-500 text-white rounded-lg hover:bg-accent-600 transition-colors font-semibold disabled:opacity-50 shadow-lg shadow-accent-500/20">
                     <span wire:loading.remove wire:target="submit" class="inline-flex items-center">
                         <svg class="w-4 h-4 mr-2 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -385,9 +400,11 @@
                         Submitting...
                     </span>
                 </button>
+                </div>
             </div>
         </form>
-    @endif
+        @endif {{-- End of showPreview else --}}
+    @endif {{-- End of submitted --}}
 </div>
 
 @assets

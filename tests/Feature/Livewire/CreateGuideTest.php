@@ -861,7 +861,7 @@ describe('block validation', function () {
             ->set('locatableType', Region::class)
             ->set('locatableId', $this->region->id)
             ->call('addBlock', 'text')
-            ->set('blocks.0.data.content', '<p>Too short</p>')
+            ->set('blocks.0.data.content', '<p>Hi</p>')
             ->call('submit')
             ->assertHasErrors(['blocks.0.data.content']);
     });

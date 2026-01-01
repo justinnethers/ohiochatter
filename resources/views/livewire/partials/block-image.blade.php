@@ -7,10 +7,22 @@
         @if(!empty($block['data']['path']))
             <div class="relative inline-block mb-3">
                 <img src="{{ Storage::url($block['data']['path']) }}" class="h-32 w-auto rounded-lg border border-steel-700" alt="{{ $block['data']['alt'] ?? 'Block image' }}">
+                <button type="button" wire:click="removeBlockImage({{ $index }})"
+                    class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-lg">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
             </div>
         @elseif(isset($blockImages[$block['id']]) && $blockImages[$block['id']])
             <div class="relative inline-block mb-3">
                 <img src="{{ $blockImages[$block['id']]->temporaryUrl() }}" class="h-32 w-auto rounded-lg border border-steel-700" alt="Preview">
+                <button type="button" wire:click="removeBlockImageUpload({{ $index }})"
+                    class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-lg">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
             </div>
         @else
             <input type="file" wire:model="blockImages.{{ $block['id'] }}" accept="image/*"

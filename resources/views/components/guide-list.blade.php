@@ -65,6 +65,111 @@
                                     {{-- Description --}}
                                     <p class="text-steel-300 leading-relaxed">{{ $item['description'] }}</p>
 
+                                    {{-- Nested Blocks --}}
+                                    @if(!empty($item['blocks']))
+                                        <div class="mt-4 space-y-4">
+                                            @foreach($item['blocks'] as $nestedBlock)
+                                                @switch($nestedBlock['type'])
+                                                    @case('text')
+                                                        @if(!empty($nestedBlock['data']['content']))
+                                                            <div class="prose prose-sm prose-invert max-w-none text-steel-300">
+                                                                {!! $nestedBlock['data']['content'] !!}
+                                                            </div>
+                                                        @endif
+                                                        @break
+                                                    @case('image')
+                                                        @if(!empty($nestedBlock['data']['url']) || !empty($nestedBlock['data']['path']))
+                                                            <figure>
+                                                                <img src="{{ $nestedBlock['data']['url'] ?? Storage::url($nestedBlock['data']['path']) }}"
+                                                                    alt="{{ $nestedBlock['data']['caption'] ?? '' }}"
+                                                                    class="rounded-lg max-w-full h-auto">
+                                                                @if(!empty($nestedBlock['data']['caption']))
+                                                                    <figcaption class="mt-2 text-center text-sm text-steel-400">
+                                                                        {{ $nestedBlock['data']['caption'] }}
+                                                                    </figcaption>
+                                                                @endif
+                                                            </figure>
+                                                        @endif
+                                                        @break
+                                                    @case('video')
+                                                        @if(!empty($nestedBlock['data']['url']))
+                                                            <div class="aspect-video rounded-lg overflow-hidden bg-steel-900">
+                                                                @php
+                                                                    $videoUrl = $nestedBlock['data']['url'];
+                                                                    $youtubeId = null;
+                                                                    if (preg_match('/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]+)/', $videoUrl, $matches)) {
+                                                                        $youtubeId = $matches[1];
+                                                                    }
+                                                                @endphp
+                                                                @if($youtubeId)
+                                                                    <iframe src="https://www.youtube.com/embed/{{ $youtubeId }}"
+                                                                        class="w-full h-full" frameborder="0"
+                                                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                                        allowfullscreen></iframe>
+                                                                @else
+                                                                    <a href="{{ $videoUrl }}" target="_blank" class="flex items-center justify-center h-full text-accent-400 hover:text-accent-300">
+                                                                        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                                        </svg>
+                                                                    </a>
+                                                                @endif
+                                                            </div>
+                                                            @if(!empty($nestedBlock['data']['caption']))
+                                                                <p class="mt-2 text-center text-sm text-steel-400">{{ $nestedBlock['data']['caption'] }}</p>
+                                                            @endif
+                                                        @endif
+                                                        @break
+                                                    @case('carousel')
+                                                        @if(!empty($nestedBlock['data']['images']) || !empty($nestedBlock['data']['urls']))
+                                                            <div class="overflow-x-auto">
+                                                                <div class="flex gap-3 pb-2">
+                                                                    @if(!empty($nestedBlock['data']['images']))
+                                                                        @foreach($nestedBlock['data']['images'] as $image)
+                                                                            <img src="{{ Storage::url($image['path']) }}"
+                                                                                alt="{{ $image['alt'] ?? '' }}"
+                                                                                class="h-40 w-auto rounded-lg shrink-0">
+                                                                        @endforeach
+                                                                    @elseif(!empty($nestedBlock['data']['urls']))
+                                                                        @foreach(explode(',', $nestedBlock['data']['urls']) as $url)
+                                                                            <img src="{{ trim($url) }}"
+                                                                                alt=""
+                                                                                class="h-40 w-auto rounded-lg shrink-0">
+                                                                        @endforeach
+                                                                    @endif
+                                                                </div>
+                                                            </div>
+                                                        @endif
+                                                        @break
+                                                    @case('list')
+                                                        @if(!empty($nestedBlock['data']['items']))
+                                                            <div class="pl-4 border-l-2 border-steel-600/50 space-y-2">
+                                                                @if(!empty($nestedBlock['data']['title']))
+                                                                    <h4 class="font-semibold text-white text-sm">{{ $nestedBlock['data']['title'] }}</h4>
+                                                                @endif
+                                                                @foreach($nestedBlock['data']['items'] as $nestedItemIndex => $nestedListItem)
+                                                                    <div class="flex gap-2">
+                                                                        @if($nestedBlock['data']['ranked'] ?? true)
+                                                                            <span class="shrink-0 w-5 h-5 rounded-full bg-green-500/20 text-green-400 text-xs font-bold flex items-center justify-center">
+                                                                                {{ $nestedItemIndex + 1 }}
+                                                                            </span>
+                                                                        @endif
+                                                                        <div>
+                                                                            <p class="font-medium text-white text-sm">{{ $nestedListItem['title'] ?? '' }}</p>
+                                                                            @if(!empty($nestedListItem['description']))
+                                                                                <p class="text-steel-400 text-sm">{{ $nestedListItem['description'] }}</p>
+                                                                            @endif
+                                                                        </div>
+                                                                    </div>
+                                                                @endforeach
+                                                            </div>
+                                                        @endif
+                                                        @break
+                                                @endswitch
+                                            @endforeach
+                                        </div>
+                                    @endif
+
                                     {{-- Address/Link --}}
                                     @if(!empty($item['address']))
                                         <div class="mt-3 flex items-center gap-2 text-sm">

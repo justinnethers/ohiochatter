@@ -188,6 +188,7 @@
                                         'image' => $item['image'] ?? null,
                                         'address' => $item['address'] ?? $item['website'] ?? '',
                                         'rating' => $item['rating'] ?? null,
+                                        'blocks' => $item['blocks'] ?? [],
                                     ])->toArray()"
                                     :settings="[
                                         'ranked' => $block['data']['ranked'] ?? true,

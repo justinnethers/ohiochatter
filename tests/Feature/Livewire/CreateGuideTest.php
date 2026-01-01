@@ -563,6 +563,131 @@ describe('list block items', function () {
     });
 });
 
+describe('list item nested blocks', function () {
+    it('list items have a blocks array', function () {
+        $component = Livewire::actingAs($this->user)
+            ->test(CreateGuide::class)
+            ->call('addBlock', 'list')
+            ->call('addListItemToBlock', 0);
+
+        $blocks = $component->get('blocks');
+        expect($blocks[0]['data']['items'][0])->toHaveKey('blocks');
+        expect($blocks[0]['data']['items'][0]['blocks'])->toBeArray();
+        expect($blocks[0]['data']['items'][0]['blocks'])->toBeEmpty();
+    });
+
+    it('can add a text block to a list item', function () {
+        $component = Livewire::actingAs($this->user)
+            ->test(CreateGuide::class)
+            ->call('addBlock', 'list')
+            ->call('addListItemToBlock', 0)
+            ->call('addBlockToListItem', 0, 0, 'text');
+
+        $blocks = $component->get('blocks');
+        expect($blocks[0]['data']['items'][0]['blocks'])->toHaveCount(1);
+        expect($blocks[0]['data']['items'][0]['blocks'][0]['type'])->toBe('text');
+    });
+
+    it('can add an image block to a list item', function () {
+        $component = Livewire::actingAs($this->user)
+            ->test(CreateGuide::class)
+            ->call('addBlock', 'list')
+            ->call('addListItemToBlock', 0)
+            ->call('addBlockToListItem', 0, 0, 'image');
+
+        $blocks = $component->get('blocks');
+        expect($blocks[0]['data']['items'][0]['blocks'])->toHaveCount(1);
+        expect($blocks[0]['data']['items'][0]['blocks'][0]['type'])->toBe('image');
+    });
+
+    it('can add a carousel block to a list item', function () {
+        $component = Livewire::actingAs($this->user)
+            ->test(CreateGuide::class)
+            ->call('addBlock', 'list')
+            ->call('addListItemToBlock', 0)
+            ->call('addBlockToListItem', 0, 0, 'carousel');
+
+        $blocks = $component->get('blocks');
+        expect($blocks[0]['data']['items'][0]['blocks'])->toHaveCount(1);
+        expect($blocks[0]['data']['items'][0]['blocks'][0]['type'])->toBe('carousel');
+    });
+
+    it('can add a nested list block to a list item', function () {
+        $component = Livewire::actingAs($this->user)
+            ->test(CreateGuide::class)
+            ->call('addBlock', 'list')
+            ->call('addListItemToBlock', 0)
+            ->call('addBlockToListItem', 0, 0, 'list');
+
+        $blocks = $component->get('blocks');
+        expect($blocks[0]['data']['items'][0]['blocks'])->toHaveCount(1);
+        expect($blocks[0]['data']['items'][0]['blocks'][0]['type'])->toBe('list');
+        expect($blocks[0]['data']['items'][0]['blocks'][0]['data'])->toHaveKey('items');
+    });
+
+    it('can add multiple blocks to a list item', function () {
+        $component = Livewire::actingAs($this->user)
+            ->test(CreateGuide::class)
+            ->call('addBlock', 'list')
+            ->call('addListItemToBlock', 0)
+            ->call('addBlockToListItem', 0, 0, 'text')
+            ->call('addBlockToListItem', 0, 0, 'image')
+            ->call('addBlockToListItem', 0, 0, 'carousel');
+
+        $blocks = $component->get('blocks');
+        expect($blocks[0]['data']['items'][0]['blocks'])->toHaveCount(3);
+        expect($blocks[0]['data']['items'][0]['blocks'][0]['type'])->toBe('text');
+        expect($blocks[0]['data']['items'][0]['blocks'][1]['type'])->toBe('image');
+        expect($blocks[0]['data']['items'][0]['blocks'][2]['type'])->toBe('carousel');
+    });
+
+    it('can remove a block from a list item', function () {
+        $component = Livewire::actingAs($this->user)
+            ->test(CreateGuide::class)
+            ->call('addBlock', 'list')
+            ->call('addListItemToBlock', 0)
+            ->call('addBlockToListItem', 0, 0, 'text')
+            ->call('addBlockToListItem', 0, 0, 'image');
+
+        $blocks = $component->get('blocks');
+        expect($blocks[0]['data']['items'][0]['blocks'])->toHaveCount(2);
+
+        $component->call('removeBlockFromListItem', 0, 0, 0);
+
+        $blocks = $component->get('blocks');
+        expect($blocks[0]['data']['items'][0]['blocks'])->toHaveCount(1);
+        expect($blocks[0]['data']['items'][0]['blocks'][0]['type'])->toBe('image');
+    });
+
+    it('can update text block content within a list item', function () {
+        $component = Livewire::actingAs($this->user)
+            ->test(CreateGuide::class)
+            ->call('addBlock', 'list')
+            ->call('addListItemToBlock', 0)
+            ->call('addBlockToListItem', 0, 0, 'text')
+            ->set('blocks.0.data.items.0.blocks.0.data.content', '<p>Nested content</p>');
+
+        $blocks = $component->get('blocks');
+        expect($blocks[0]['data']['items'][0]['blocks'][0]['data']['content'])->toBe('<p>Nested content</p>');
+    });
+
+    it('nested blocks have correct order values', function () {
+        $component = Livewire::actingAs($this->user)
+            ->test(CreateGuide::class)
+            ->call('addBlock', 'list')
+            ->call('addListItemToBlock', 0)
+            ->call('addBlockToListItem', 0, 0, 'text')
+            ->call('addBlockToListItem', 0, 0, 'image')
+            ->call('addBlockToListItem', 0, 0, 'carousel');
+
+        $blocks = $component->get('blocks');
+        $nestedBlocks = $blocks[0]['data']['items'][0]['blocks'];
+        expect($nestedBlocks[0]['order'])->toBe(0);
+        expect($nestedBlocks[1]['order'])->toBe(1);
+        expect($nestedBlocks[2]['order'])->toBe(2);
+    });
+});
+
 describe('block persistence', function () {
     it('saves blocks with draft', function () {
         Livewire::actingAs($this->user)
@@ -658,6 +783,88 @@ describe('block persistence', function () {
         expect($content->blocks[1]['data']['items'][0]['title'])->toBe('Best Restaurant');
         expect($content->blocks[1]['data']['items'][0]['website'])->toBe('https://restaurant.com');
         expect($content->blocks[1]['data']['items'][0]['address'])->toBe('123 Main St');
+    });
+
+    it('saves list item nested blocks with draft', function () {
+        Livewire::actingAs($this->user)
+            ->test(CreateGuide::class)
+            ->set('title', 'Draft with nested blocks')
+            ->call('addBlock', 'list')
+            ->call('addListItemToBlock', 0)
+            ->set('blocks.0.data.items.0.title', 'Item with blocks')
+            ->set('blocks.0.data.items.0.description', 'This item has nested content')
+            ->call('addBlockToListItem', 0, 0, 'text')
+            ->set('blocks.0.data.items.0.blocks.0.data.content', '<p>Nested text content</p>')
+            ->call('addBlockToListItem', 0, 0, 'image')
+            ->call('saveDraft');
+
+        $draft = GuideDraft::where('user_id', $this->user->id)->first();
+        expect($draft->blocks[0]['data']['items'][0]['blocks'])->toHaveCount(2);
+        expect($draft->blocks[0]['data']['items'][0]['blocks'][0]['type'])->toBe('text');
+        expect($draft->blocks[0]['data']['items'][0]['blocks'][0]['data']['content'])->toBe('<p>Nested text content</p>');
+        expect($draft->blocks[0]['data']['items'][0]['blocks'][1]['type'])->toBe('image');
+    });
+
+    it('loads list item nested blocks from draft', function () {
+        $draft = GuideDraft::factory()->forUser($this->user)->create([
+            'blocks' => [
+                [
+                    'id' => 'list-1',
+                    'type' => 'list',
+                    'order' => 0,
+                    'data' => [
+                        'title' => 'My List',
+                        'ranked' => true,
+                        'countdown' => false,
+                        'items' => [
+                            [
+                                'id' => 'item-1',
+                                'title' => 'First Item',
+                                'description' => 'Description here',
+                                'blocks' => [
+                                    ['id' => 'nested-1', 'type' => 'text', 'order' => 0, 'data' => ['content' => '<p>Nested</p>']],
+                                    ['id' => 'nested-2', 'type' => 'carousel', 'order' => 1, 'data' => ['images' => []]],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+
+        $component = Livewire::actingAs($this->user)
+            ->test(CreateGuide::class, ['draft' => $draft->id]);
+
+        $blocks = $component->get('blocks');
+        expect($blocks[0]['data']['items'][0]['blocks'])->toHaveCount(2);
+        expect($blocks[0]['data']['items'][0]['blocks'][0]['type'])->toBe('text');
+        expect($blocks[0]['data']['items'][0]['blocks'][0]['data']['content'])->toBe('<p>Nested</p>');
+        expect($blocks[0]['data']['items'][0]['blocks'][1]['type'])->toBe('carousel');
+    });
+
+    it('saves list item nested blocks to content on submit', function () {
+        Livewire::actingAs($this->user)
+            ->test(CreateGuide::class)
+            ->set('title', 'Guide with Nested Item Blocks')
+            ->call('addBlock', 'text')
+            ->set('blocks.0.data.content', str_repeat('<p>Intro content here.</p>', 10))
+            ->call('addBlock', 'list')
+            ->set('blocks.1.data.title', 'Places to Visit')
+            ->call('addListItemToBlock', 1)
+            ->set('blocks.1.data.items.0.title', 'Amazing Spot')
+            ->set('blocks.1.data.items.0.description', 'A great place to visit')
+            ->call('addBlockToListItem', 1, 0, 'text')
+            ->set('blocks.1.data.items.0.blocks.0.data.content', '<p>Extra details about this spot</p>')
+            ->set('categoryIds', [$this->category->id])
+            ->set('locatableType', Region::class)
+            ->set('locatableId', $this->region->id)
+            ->call('submit')
+            ->assertSet('submitted', true);
+
+        $content = \App\Models\Content::where('title', 'Guide with Nested Item Blocks')->first();
+        expect($content->blocks[1]['data']['items'][0]['blocks'])->toHaveCount(1);
+        expect($content->blocks[1]['data']['items'][0]['blocks'][0]['type'])->toBe('text');
+        expect($content->blocks[1]['data']['items'][0]['blocks'][0]['data']['content'])->toBe('<p>Extra details about this spot</p>');
     });
 });
 

@@ -314,6 +314,11 @@
                                             );
                                         @endphp
                                         @php
+                                            // Extract first image before processing
+                                            $excerptImage = null;
+                                            if (preg_match('/<img[^>]+src=["\']([^"\']+)["\'][^>]*>/i', $post->body, $imgMatch)) {
+                                                $excerptImage = $imgMatch[1];
+                                            }
                                             // Remove blockquotes first
                                             $excerpt = preg_replace('/<blockquote[^>]*>.*?<\/blockquote>/is', '', $post->body);
                                             // Convert <br> and block-level closing tags to newlines
@@ -334,6 +339,7 @@
                                             :href="$post->thread->path() . '?page=' . $page . '#reply-' . $post->id"
                                             :timestamp="$post->created_at"
                                             :excerpt="$excerpt"
+                                            :excerpt-image="$excerptImage"
                                         />
                                     @else
                                         <div class="p-4 rounded-lg bg-steel-900/50 border border-steel-700/30">

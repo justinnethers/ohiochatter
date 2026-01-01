@@ -4,6 +4,7 @@
     'timestamp' => null,
     'replyCount' => null,
     'excerpt' => null,
+    'excerptImage' => null,
 ])
 
 @php
@@ -40,9 +41,16 @@
         @endif
     </span>
 
-    @if($excerpt)
-        <span class="text-steel-300 text-sm line-clamp-2 block post-body whitespace-pre-line">
-            {{ $excerpt }}
+    @if($excerpt || $excerptImage)
+        <span class="mt-3 flex gap-3 items-start">
+            @if($excerptImage)
+                <img src="{{ $excerptImage }}" alt="" class="w-16 h-16 object-cover rounded-lg flex-shrink-0">
+            @endif
+            @if($excerpt)
+                <span class="text-steel-300 text-sm line-clamp-2 block post-body whitespace-pre-line flex-1">
+                    {{ $excerpt }}
+                </span>
+            @endif
         </span>
     @endif
 </a>

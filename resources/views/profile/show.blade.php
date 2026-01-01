@@ -6,9 +6,11 @@
                 <span class="hidden md:inline-block w-1 h-6 bg-accent-500 rounded-full"></span>
                 {{ $user->username }}'s Profile
             </h2>
-            <a href="{{ url()->previous() }}" class="text-steel-300 hover:text-white transition-colors flex items-center gap-2">
+            <a href="{{ url()->previous() }}"
+               class="text-steel-300 hover:text-white transition-colors flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                 </svg>
                 Back
             </a>
@@ -16,26 +18,31 @@
     </x-slot>
 
     <div class="container mx-auto">
-        <div class="md:rounded-2xl md:bg-gradient-to-br md:from-steel-800/50 md:to-steel-900/50 md:backdrop-blur-sm md:border md:border-steel-700/30 p-2 md:p-8 md:mt-4">
+        <div
+            class="md:rounded-2xl md:bg-gradient-to-br md:from-steel-800/50 md:to-steel-900/50 md:backdrop-blur-sm md:border md:border-steel-700/30 p-2 md:p-8 md:mt-4">
 
             {{-- Profile Header Card --}}
-            <div class="bg-gradient-to-br from-steel-800 to-steel-850 rounded-xl shadow-lg shadow-black/20 border border-steel-700/50 overflow-hidden mb-6">
+            <div
+                class="bg-gradient-to-br from-steel-800 to-steel-850 rounded-xl shadow-lg shadow-black/20 border border-steel-700/50 overflow-hidden mb-6">
                 {{-- Generated pattern banner --}}
                 <div class="h-24 md:h-32 relative overflow-hidden">
-                    <x-profile-pattern :username="$user->username" class="absolute inset-0 w-full h-full" />
+                    <x-profile-pattern :username="$user->username" class="absolute inset-0 w-full h-full"/>
                 </div>
 
                 <div class="px-4 md:px-8 pb-6 -mt-12 md:-mt-16">
                     <div class="flex flex-col md:flex-row md:items-end gap-4">
                         {{-- Avatar --}}
                         <div class="relative">
-                            <x-avatar size="24" :avatar-path="$user->avatar_path" class="ring-4 ring-steel-800 md:w-32 md:h-32"/>
+                            <x-avatar size="24" :avatar-path="$user->avatar_path"
+                                      class="ring-4 ring-steel-800 md:w-32 md:h-32"/>
                             @if($user->is_admin)
-                                <span class="absolute -bottom-1 -right-1 bg-gradient-to-r from-amber-500 to-amber-600 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-lg">
+                                <span
+                                    class="absolute -bottom-1 -right-1 bg-gradient-to-r from-amber-500 to-amber-600 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-lg">
                                     Admin
                                 </span>
                             @elseif($user->is_moderator)
-                                <span class="absolute -bottom-1 -right-1 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-lg">
+                                <span
+                                    class="absolute -bottom-1 -right-1 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-lg">
                                     Mod
                                 </span>
                             @endif
@@ -53,7 +60,8 @@
                                 <a href="{{ route('messages.create') }}?recipient={{ $user->username }}"
                                    class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-accent-500 to-accent-600 rounded-lg text-white font-semibold text-sm shadow-lg shadow-accent-500/25 hover:shadow-accent-500/40 hover:from-accent-600 hover:to-accent-700 transition-all duration-200">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                                     </svg>
                                     Message
                                 </a>
@@ -61,7 +69,8 @@
                                 <a href="{{ route('profile.edit') }}"
                                    class="inline-flex items-center px-4 py-2 bg-steel-700 hover:bg-steel-600 rounded-lg text-white font-medium text-sm transition-colors duration-200">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                     </svg>
                                     Edit Profile
                                 </a>
@@ -75,7 +84,8 @@
                 {{-- Left column: Stats --}}
                 <div class="space-y-6">
                     {{-- Member Stats Card --}}
-                    <div class="bg-gradient-to-br from-steel-800 to-steel-850 p-6 rounded-xl shadow-lg shadow-black/20 border border-steel-700/50">
+                    <div
+                        class="bg-gradient-to-br from-steel-800 to-steel-850 p-6 rounded-xl shadow-lg shadow-black/20 border border-steel-700/50">
                         <h3 class="text-lg font-semibold text-white mb-4">Member Stats</h3>
 
                         <dl class="space-y-3">
@@ -115,7 +125,8 @@
                     </div>
 
                     {{-- Reputation Card --}}
-                    <div class="bg-gradient-to-br from-steel-800 to-steel-850 p-6 rounded-xl shadow-lg shadow-black/20 border border-steel-700/50">
+                    <div
+                        class="bg-gradient-to-br from-steel-800 to-steel-850 p-6 rounded-xl shadow-lg shadow-black/20 border border-steel-700/50">
                         <h3 class="text-lg font-semibold text-white mb-4">Reputation</h3>
 
                         {{-- Reputation Score --}}
@@ -132,7 +143,9 @@
                                 <div class="text-2xl font-bold text-emerald-400">{{ number_format($totalReps) }}</div>
                                 <div class="text-emerald-400/70 text-sm flex items-center justify-center gap-1">
                                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                                        <path fill-rule="evenodd"
+                                              d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"
+                                              clip-rule="evenodd"></path>
                                     </svg>
                                     Reps
                                 </div>
@@ -141,7 +154,9 @@
                                 <div class="text-2xl font-bold text-red-400">{{ number_format($totalNegs) }}</div>
                                 <div class="text-red-400/70 text-sm flex items-center justify-center gap-1">
                                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                        <path fill-rule="evenodd"
+                                              d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z"
+                                              clip-rule="evenodd"></path>
                                     </svg>
                                     Negs
                                 </div>
@@ -151,7 +166,8 @@
 
                     {{-- BuckEYE Game Stats --}}
                     @if($gameStats && $gameStats->games_played > 0)
-                        <div class="bg-gradient-to-br from-steel-800 to-steel-850 p-6 rounded-xl shadow-lg shadow-black/20 border border-steel-700/50">
+                        <div
+                            class="bg-gradient-to-br from-steel-800 to-steel-850 p-6 rounded-xl shadow-lg shadow-black/20 border border-steel-700/50">
                             <h3 class="text-lg font-semibold text-white mb-4">BuckEYE Stats</h3>
 
                             <dl class="space-y-3">
@@ -162,7 +178,8 @@
                                 <div class="flex justify-between items-center py-2 border-b border-steel-700/50">
                                     <dt class="text-steel-400">Win Rate</dt>
                                     <dd class="text-emerald-400 font-medium">
-                                        {{ $gameStats->games_played > 0 ? number_format(($gameStats->games_won / $gameStats->games_played) * 100, 1) : 0 }}%
+                                        {{ $gameStats->games_played > 0 ? number_format(($gameStats->games_won / $gameStats->games_played) * 100, 1) : 0 }}
+                                        %
                                     </dd>
                                 </div>
                                 <div class="flex justify-between items-center py-2 border-b border-steel-700/50">
@@ -196,8 +213,9 @@
                                             <div class="flex items-center gap-2">
                                                 <span class="w-4 text-steel-400 text-sm">{{ $i }}</span>
                                                 <div class="flex-1 h-5 bg-steel-900 rounded overflow-hidden">
-                                                    <div class="h-full bg-accent-500 rounded flex items-center justify-end px-2 text-xs font-medium text-white min-w-[2rem]"
-                                                         style="width: {{ max($percentage, 10) }}%">
+                                                    <div
+                                                        class="h-full bg-accent-500 rounded flex items-center justify-end px-2 text-xs font-medium text-white min-w-[2rem]"
+                                                        style="width: {{ max($percentage, 10) }}%">
                                                         {{ $count }}
                                                     </div>
                                                 </div>
@@ -214,12 +232,13 @@
                 <div class="lg:col-span-2 space-y-6">
                     {{-- Recent Threads --}}
                     @if($threads->count() > 0)
-                        <div class="bg-gradient-to-br from-steel-800 to-steel-850 p-6 rounded-xl shadow-lg shadow-black/20 border border-steel-700/50">
+                        <div
+                            class="bg-gradient-to-br from-steel-800 to-steel-850 p-6 rounded-xl shadow-lg shadow-black/20 border border-steel-700/50">
                             <h3 class="text-lg font-semibold text-white mb-4">Recent Threads</h3>
 
                             <div class="space-y-4">
                                 @foreach($threads as $thread)
-                                    <x-thread.card :thread="$thread" :reply-count="$thread->replyCount()" />
+                                    <x-thread.card :thread="$thread" :reply-count="$thread->replyCount()"/>
                                 @endforeach
                             </div>
                         </div>
@@ -227,31 +246,41 @@
 
                     {{-- Guides --}}
                     @if($guides->count() > 0)
-                        <div class="bg-gradient-to-br from-steel-800 to-steel-850 p-6 rounded-xl shadow-lg shadow-black/20 border border-steel-700/50">
+                        <div
+                            class="bg-gradient-to-br from-steel-800 to-steel-850 p-6 rounded-xl shadow-lg shadow-black/20 border border-steel-700/50">
                             <h3 class="text-lg font-semibold text-white mb-4">Guides</h3>
 
                             <div class="space-y-4">
                                 @foreach($guides as $guide)
-                                    <a href="{{ route('guide.show', $guide) }}" class="group block p-4 rounded-xl bg-steel-900/50 border border-steel-700/30 hover:border-steel-600 hover:bg-steel-900 transition-all duration-200">
-                                        <span class="text-lg text-white font-semibold group-hover:text-accent-400 transition-colors block mb-3">
+                                    <a href="{{ route('guide.show', $guide) }}"
+                                       class="group block p-4 rounded-xl bg-steel-900/50 border border-steel-700/30 hover:border-steel-600 hover:bg-steel-900 transition-all duration-200">
+                                        <span
+                                            class="text-lg text-white font-semibold group-hover:text-accent-400 transition-colors block mb-3">
                                             {{ $guide->title }}
                                         </span>
 
                                         <span class="flex items-center justify-between flex-wrap gap-2">
                                             <span class="flex items-center gap-3">
                                                 @if($guide->contentCategory)
-                                                    <span class="inline-flex items-center px-3 py-1 bg-accent-500 rounded-full text-sm font-semibold text-white shadow-lg shadow-black/20">
+                                                    <span
+                                                        class="inline-flex items-center px-3 py-1 bg-accent-500 rounded-full text-sm font-semibold text-white shadow-lg shadow-black/20">
                                                         {{ $guide->contentCategory->name }}
                                                     </span>
                                                 @endif
-                                                <span class="text-sm text-steel-400">{{ ($guide->published_at ?? $guide->created_at)->diffForHumans() }}</span>
+                                                <span
+                                                    class="text-sm text-steel-400">{{ ($guide->published_at ?? $guide->created_at)->diffForHumans() }}</span>
                                             </span>
 
                                             @if($guide->locatable)
-                                                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-steel-900/70 rounded-full border border-steel-700/50 text-sm text-steel-300">
-                                                    <svg class="w-4 h-4 text-steel-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                <span
+                                                    class="inline-flex items-center gap-1.5 px-3 py-1 bg-steel-900/70 rounded-full border border-steel-700/50 text-sm text-steel-300">
+                                                    <svg class="w-4 h-4 text-steel-400" fill="none"
+                                                         stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                              stroke-width="2"
+                                                              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                              stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                                                     </svg>
                                                     {{ $guide->locatable->name }}
                                                 </span>
@@ -270,7 +299,8 @@
                     @endif
 
                     {{-- Recent Posts --}}
-                    <div class="bg-gradient-to-br from-steel-800 to-steel-850 p-6 rounded-xl shadow-lg shadow-black/20 border border-steel-700/50">
+                    <div
+                        class="bg-gradient-to-br from-steel-800 to-steel-850 p-6 rounded-xl shadow-lg shadow-black/20 border border-steel-700/50">
                         <h3 class="text-lg font-semibold text-white mb-4">Recent Posts</h3>
 
                         @if($recentPosts->count() > 0)
@@ -284,10 +314,20 @@
                                             );
                                         @endphp
                                         @php
-                                            // Convert <br> and block-level closing tags to newlines before stripping
-                                            $excerpt = preg_replace('/<br\s*\/?>/i', "\n", $post->body);
+                                            // Remove blockquotes first
+                                            $excerpt = preg_replace('/<blockquote[^>]*>.*?<\/blockquote>/is', '', $post->body);
+                                            // Convert <br> and block-level closing tags to newlines
+                                            $excerpt = preg_replace('/<br\s*\/?>/i', "\n", $excerpt);
                                             $excerpt = preg_replace('/<\/(p|div|li)>/i', "\n", $excerpt);
-                                            $excerpt = Str::limit(strip_tags($excerpt), 200);
+                                            // Strip remaining HTML
+                                            $excerpt = strip_tags($excerpt);
+                                            // Decode HTML entities
+                                            $excerpt = html_entity_decode($excerpt, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                                            // Clean up excessive whitespace while preserving single newlines
+                                            $excerpt = preg_replace('/[^\S\n]+/', ' ', $excerpt);
+                                            $excerpt = preg_replace('/\n\s*\n/', "\n", $excerpt);
+                                            $excerpt = trim($excerpt);
+                                            $excerpt = Str::limit($excerpt, 200);
                                         @endphp
                                         <x-thread.card
                                             :thread="$post->thread"
@@ -298,7 +338,8 @@
                                     @else
                                         <div class="p-4 rounded-lg bg-steel-900/50 border border-steel-700/30">
                                             <span class="font-medium text-steel-500 italic">Deleted thread</span>
-                                            <div class="mt-2 text-steel-400 text-sm">{{ $post->created_at->diffForHumans() }}</div>
+                                            <div
+                                                class="mt-2 text-steel-400 text-sm">{{ $post->created_at->diffForHumans() }}</div>
                                         </div>
                                     @endif
                                 @endforeach

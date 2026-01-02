@@ -110,13 +110,18 @@ class FetchRegionData
     }
 
     /**
-     * Get recent content from child locations (counties and cities).
+     * Get recent content from the region and all child locations (counties and cities).
      */
     private function getChildContentInRegion(Region $region, int $limit = 6): Collection
     {
         return Content::where(function ($q) use ($region) {
-            // County content within region
+            // Direct region content
             $q->where(function ($sub) use ($region) {
+                $sub->where('locatable_type', Region::class)
+                    ->where('locatable_id', $region->id);
+            })
+            // County content within region
+            ->orWhere(function ($sub) use ($region) {
                 $sub->where('locatable_type', County::class)
                     ->whereIn('locatable_id', function ($countyQuery) use ($region) {
                         $countyQuery->select('id')

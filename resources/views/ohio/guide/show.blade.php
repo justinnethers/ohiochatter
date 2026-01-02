@@ -13,6 +13,11 @@
     <div class="container mx-auto">
         <div class="md:rounded-2xl md:bg-gradient-to-br md:from-steel-800/50 md:to-steel-900/50 md:backdrop-blur-sm md:border md:border-steel-700/30 p-2 md:p-8 md:mt-4">
             <article class="bg-gradient-to-br from-steel-800 to-steel-850 p-4 md:p-8 text-steel-100 rounded-xl shadow-lg shadow-black/20 border border-steel-700/50">
+                {{-- Pending Revision Review (Admin Only) --}}
+                @if(auth()->user()?->isAdmin() && $content->hasPendingRevision())
+                    @livewire('review-revision', ['revision' => $content->pendingRevision])
+                @endif
+
                 <header class="mb-6">
                     <div class="flex flex-wrap gap-2 mb-4">
                         @php
@@ -41,19 +46,35 @@
 
                     <h1 class="text-2xl md:text-4xl font-bold text-white mb-4">{{ $content->title }}</h1>
 
-                    <div class="flex items-center text-steel-400 text-sm">
-                        @if($content->author)
-                            <div class="flex items-center">
-                                <x-avatar :avatar-path="$content->author->avatar_path" size="8" />
-                                <span class="ml-2">By <a href="{{ route('profile.show', $content->author) }}" class="text-accent-400 hover:text-accent-300 transition-colors">{{ $content->author->username }}</a></span>
-                            </div>
-                            <span class="mx-2">&bull;</span>
-                        @endif
-                        <span>{{ $content->created_at->format('F j, Y') }}</span>
-                        @if($content->updated_at && $content->updated_at->ne($content->created_at))
-                            <span class="mx-2">&bull;</span>
-                            <span>Updated {{ $content->updated_at->format('F j, Y') }}</span>
-                        @endif
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center text-steel-400 text-sm">
+                            @if($content->author)
+                                <div class="flex items-center">
+                                    <x-avatar :avatar-path="$content->author->avatar_path" size="8" />
+                                    <span class="ml-2">By <a href="{{ route('profile.show', $content->author) }}" class="text-accent-400 hover:text-accent-300 transition-colors">{{ $content->author->username }}</a></span>
+                                </div>
+                                <span class="mx-2">&bull;</span>
+                            @endif
+                            <span>{{ $content->created_at->format('F j, Y') }}</span>
+                            @if($content->updated_at && $content->updated_at->ne($content->created_at))
+                                <span class="mx-2">&bull;</span>
+                                <span>Updated {{ $content->updated_at->format('F j, Y') }}</span>
+                            @endif
+                        </div>
+
+                        @can('update', $content)
+                            <a href="{{ route('guide.edit-content', $content) }}"
+                               class="inline-flex items-center gap-2 px-4 py-2 bg-steel-700 text-steel-200 rounded-lg hover:bg-steel-600 transition-colors text-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                </svg>
+                                @if(auth()->user()->isAdmin())
+                                    Edit Guide
+                                @else
+                                    Suggest Edit
+                                @endif
+                            </a>
+                        @endcan
                     </div>
                 </header>
 

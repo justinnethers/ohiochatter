@@ -72,16 +72,26 @@ class FetchCountyData
     }
 
     /**
-     * Get recent content from cities in this county.
+     * Get recent content from the county and all cities within it.
      */
     private function getCityContentInCounty(County $county, int $limit = 6): Collection
     {
-        return Content::where('locatable_type', City::class)
-            ->whereIn('locatable_id', function ($query) use ($county) {
-                $query->select('id')
-                    ->from('cities')
-                    ->where('county_id', $county->id);
+        return Content::where(function ($q) use ($county) {
+            // Direct county content
+            $q->where(function ($sub) use ($county) {
+                $sub->where('locatable_type', County::class)
+                    ->where('locatable_id', $county->id);
             })
+            // City content within county
+            ->orWhere(function ($sub) use ($county) {
+                $sub->where('locatable_type', City::class)
+                    ->whereIn('locatable_id', function ($cityQuery) use ($county) {
+                        $cityQuery->select('id')
+                            ->from('cities')
+                            ->where('county_id', $county->id);
+                    });
+            });
+        })
             ->with(['contentCategory', 'contentType', 'locatable', 'author'])
             ->published()
             ->latest('published_at')

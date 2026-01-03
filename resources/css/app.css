@@ -79,6 +79,12 @@ blockquote p {
 }
 
 /* Post body content */
+.post-body {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+}
+
 .post-body img {
     width: 100%;
     max-width: 600px;

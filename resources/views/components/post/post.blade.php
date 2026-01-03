@@ -8,7 +8,7 @@
 
         {{-- Post content --}}
         <div class="prose prose-invert prose-lg p-4 md:p-8 flex-1 post-body">
-            {!! $post->body !!}
+            {!! $post->formatted_body !!}
         </div>
 
         {{-- Mobile date --}}

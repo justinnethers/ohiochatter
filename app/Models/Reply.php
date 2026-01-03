@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Reppable;
+use App\Traits\AutolinksUrls;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -11,6 +12,7 @@ use Laravel\Scout\Searchable;
 
 class Reply extends Model
 {
+    use AutolinksUrls;
     use HasFactory;
     use Reppable;
     use Searchable;

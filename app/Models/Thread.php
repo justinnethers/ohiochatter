@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Reppable;
+use App\Traits\AutolinksUrls;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -17,7 +18,7 @@ use Spatie\Sitemap\Tags\Url;
 
 class Thread extends Model implements Sitemapable
 {
-    use HasFactory, Reppable, Searchable, SoftDeletes;
+    use AutolinksUrls, HasFactory, Reppable, Searchable, SoftDeletes;
 
     protected $guarded = [];
 

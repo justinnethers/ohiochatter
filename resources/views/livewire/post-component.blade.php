@@ -79,7 +79,7 @@
             @else
                 <div class="flex gap-2">
                     <div class="post-body text-xl md:text-lg flex-1" wire:key="post-{{ $post->id }}">
-                        {!! $post->body !!}
+                        {!! $post->formatted_body !!}
                     </div>
                     @if ($this->firstPostOnPage)
                         @guest

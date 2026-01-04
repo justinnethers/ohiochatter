@@ -8,7 +8,7 @@
     <meta name='admaven-placement' content=Bqjw8rHY4>
 
     @guest
-        <script data-cfasync="false" src="//dcbbwymp1bhlf.cloudfront.net/?wbbcd=1235535"></script>
+        {{--        <script data-cfasync="false" src="//dcbbwymp1bhlf.cloudfront.net/?wbbcd=1235535"></script>--}}
     @endguest
 
     {{-- SEO Meta Tags --}}

@@ -135,6 +135,8 @@ iframe[allowfullscreen] {
 
 .trumbowyg-dark .trumbowyg-box {
     border: none;
+    border-radius: 0.75rem;
+    overflow: hidden;
 }
 
 .trumbowyg-button-pane .trumbowyg-button-group::after {

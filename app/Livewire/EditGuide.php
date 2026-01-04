@@ -43,7 +43,6 @@ class EditGuide extends Component
 
     // Block images
     public array $blockImages = [];
-    public array $nestedBlockImages = [];
 
     // UI state
     public bool $submitted = false;
@@ -254,7 +253,6 @@ class EditGuide extends Component
                 'website' => '',
                 'rating' => null,
                 'expanded' => true,
-                'blocks' => [],
             ];
         }
     }
@@ -304,43 +302,6 @@ class EditGuide extends Component
         }
     }
 
-    // List item nested block methods
-
-    public function addBlockToListItem(int $blockIndex, int $itemIndex, string $type): void
-    {
-        if (! isset($this->blocks[$blockIndex]['data']['items'][$itemIndex])) {
-            return;
-        }
-
-        if (! isset($this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'])) {
-            $this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'] = [];
-        }
-
-        $existingBlocks = $this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'];
-        $order = count($existingBlocks);
-
-        $this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'][] = [
-            'id' => Str::uuid()->toString(),
-            'type' => $type,
-            'order' => $order,
-            'data' => $this->getDefaultBlockData($type),
-            'expanded' => true,
-        ];
-    }
-
-    public function removeBlockFromListItem(int $blockIndex, int $itemIndex, int $nestedBlockIndex): void
-    {
-        if (isset($this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'][$nestedBlockIndex])) {
-            unset($this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'][$nestedBlockIndex]);
-            $this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'] =
-                array_values($this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks']);
-
-            foreach ($this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'] as $i => &$block) {
-                $block['order'] = $i;
-            }
-        }
-    }
-
     public function removeBlockImage(int $index): void
     {
         if (isset($this->blocks[$index]) && $this->blocks[$index]['type'] === 'image') {
@@ -366,96 +327,6 @@ class EditGuide extends Component
         }
     }
 
-    // Nested block image methods
-
-    public function getNestedBlockImageKey(int $blockIndex, int $itemIndex, int $nestedBlockIndex): string
-    {
-        $blockId = $this->blocks[$blockIndex]['id'] ?? $blockIndex;
-        $itemId = $this->blocks[$blockIndex]['data']['items'][$itemIndex]['id'] ?? $itemIndex;
-        $nestedBlockId = $this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'][$nestedBlockIndex]['id'] ?? $nestedBlockIndex;
-
-        return "{$blockId}-{$itemId}-{$nestedBlockId}";
-    }
-
-    public function removeNestedBlockImage(int $blockIndex, int $itemIndex, int $nestedBlockIndex): void
-    {
-        if (isset($this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'][$nestedBlockIndex])) {
-            $this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'][$nestedBlockIndex]['data']['path'] = null;
-        }
-    }
-
-    public function removeNestedBlockImageUpload(int $blockIndex, int $itemIndex, int $nestedBlockIndex): void
-    {
-        $key = $this->getNestedBlockImageKey($blockIndex, $itemIndex, $nestedBlockIndex);
-        if (isset($this->nestedBlockImages[$key])) {
-            unset($this->nestedBlockImages[$key]);
-        }
-    }
-
-    public function removeNestedCarouselImage(int $blockIndex, int $itemIndex, int $nestedBlockIndex, int $imageIndex): void
-    {
-        if (isset($this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'][$nestedBlockIndex]['data']['images'][$imageIndex])) {
-            unset($this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'][$nestedBlockIndex]['data']['images'][$imageIndex]);
-            $this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'][$nestedBlockIndex]['data']['images'] =
-                array_values($this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'][$nestedBlockIndex]['data']['images']);
-        }
-    }
-
-    // Nested list methods
-
-    public function addNestedListItem(int $blockIndex, int $itemIndex, int $nestedBlockIndex): void
-    {
-        if (isset($this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'][$nestedBlockIndex]) &&
-            $this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'][$nestedBlockIndex]['type'] === 'list') {
-
-            if (! isset($this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'][$nestedBlockIndex]['data']['items'])) {
-                $this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'][$nestedBlockIndex]['data']['items'] = [];
-            }
-
-            $this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'][$nestedBlockIndex]['data']['items'][] = [
-                'id' => Str::uuid()->toString(),
-                'title' => '',
-                'description' => '',
-                'website' => '',
-                'address' => '',
-                'rating' => null,
-                'image' => null,
-                'expanded' => true,
-            ];
-        }
-    }
-
-    public function removeNestedListItem(int $blockIndex, int $itemIndex, int $nestedBlockIndex, int $nestedItemIndex): void
-    {
-        if (isset($this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'][$nestedBlockIndex]['data']['items'][$nestedItemIndex])) {
-            unset($this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'][$nestedBlockIndex]['data']['items'][$nestedItemIndex]);
-            $this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'][$nestedBlockIndex]['data']['items'] =
-                array_values($this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'][$nestedBlockIndex]['data']['items']);
-        }
-    }
-
-    public function toggleNestedListItem(int $blockIndex, int $itemIndex, int $nestedBlockIndex, int $nestedItemIndex): void
-    {
-        if (isset($this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'][$nestedBlockIndex]['data']['items'][$nestedItemIndex])) {
-            $currentState = $this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'][$nestedBlockIndex]['data']['items'][$nestedItemIndex]['expanded'] ?? false;
-            $this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'][$nestedBlockIndex]['data']['items'][$nestedItemIndex]['expanded'] = ! $currentState;
-        }
-    }
-
-    public function setNestedListItemRating(int $blockIndex, int $itemIndex, int $nestedBlockIndex, int $nestedItemIndex, ?int $rating): void
-    {
-        if (isset($this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'][$nestedBlockIndex]['data']['items'][$nestedItemIndex])) {
-            $this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'][$nestedBlockIndex]['data']['items'][$nestedItemIndex]['rating'] = $rating;
-        }
-    }
-
-    public function removeNestedListItemImage(int $blockIndex, int $itemIndex, int $nestedBlockIndex, int $nestedItemIndex): void
-    {
-        if (isset($this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'][$nestedBlockIndex]['data']['items'][$nestedItemIndex])) {
-            $this->blocks[$blockIndex]['data']['items'][$itemIndex]['blocks'][$nestedBlockIndex]['data']['items'][$nestedItemIndex]['image'] = null;
-        }
-    }
-
     protected function processBlocksForSave(): array
     {
         $blocks = $this->blocks;
@@ -466,49 +337,7 @@ class EditGuide extends Component
             if ($block['type'] === 'list' && ! empty($block['data']['items'])) {
                 foreach ($blocks[$index]['data']['items'] as $itemIndex => $item) {
                     unset($blocks[$index]['data']['items'][$itemIndex]['expanded']);
-
-                    if (! empty($item['blocks'])) {
-                        foreach ($item['blocks'] as $nestedIndex => $nestedBlock) {
-                            unset($blocks[$index]['data']['items'][$itemIndex]['blocks'][$nestedIndex]['expanded']);
-
-                            $nestedBlockId = $nestedBlock['id'] ?? null;
-                            $blockId = $block['id'] ?? $index;
-                            $itemId = $item['id'] ?? $itemIndex;
-                            $nestedKey = "{$blockId}-{$itemId}-{$nestedBlockId}";
-
-                            if ($nestedBlock['type'] === 'image' && isset($this->nestedBlockImages[$nestedKey]) && $this->nestedBlockImages[$nestedKey]) {
-                                $path = $this->nestedBlockImages[$nestedKey]->store('guides/blocks', 'public');
-                                $blocks[$index]['data']['items'][$itemIndex]['blocks'][$nestedIndex]['data']['path'] = $path;
-                            }
-
-                            if ($nestedBlock['type'] === 'carousel' && isset($this->nestedBlockImages[$nestedKey]) && $this->nestedBlockImages[$nestedKey]) {
-                                $images = $blocks[$index]['data']['items'][$itemIndex]['blocks'][$nestedIndex]['data']['images'] ?? [];
-                                $uploadedFiles = is_array($this->nestedBlockImages[$nestedKey])
-                                    ? $this->nestedBlockImages[$nestedKey]
-                                    : [$this->nestedBlockImages[$nestedKey]];
-
-                                foreach ($uploadedFiles as $file) {
-                                    if ($file) {
-                                        $path = $file->store('guides/blocks', 'public');
-                                        $images[] = ['path' => $path, 'alt' => ''];
-                                    }
-                                }
-                                $blocks[$index]['data']['items'][$itemIndex]['blocks'][$nestedIndex]['data']['images'] = $images;
-                            }
-
-                            if ($nestedBlock['type'] === 'list' && ! empty($nestedBlock['data']['items'])) {
-                                foreach ($nestedBlock['data']['items'] as $nestedItemIndex => $nestedItem) {
-                                    unset($blocks[$index]['data']['items'][$itemIndex]['blocks'][$nestedIndex]['data']['items'][$nestedItemIndex]['expanded']);
-
-                                    $nestedListImageKey = "nested_list_{$index}_{$itemIndex}_{$nestedIndex}_{$nestedItemIndex}";
-                                    if (isset($this->nestedBlockImages[$nestedListImageKey]) && $this->nestedBlockImages[$nestedListImageKey]) {
-                                        $path = $this->nestedBlockImages[$nestedListImageKey]->store('guides/blocks', 'public');
-                                        $blocks[$index]['data']['items'][$itemIndex]['blocks'][$nestedIndex]['data']['items'][$nestedItemIndex]['image'] = $path;
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    unset($blocks[$index]['data']['items'][$itemIndex]['blocks']);
                 }
             }
 

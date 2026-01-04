@@ -68,14 +68,7 @@
                                     </div>
 
                                     {{-- Description --}}
-                                    <p class="text-steel-300 {{ $isNested ? 'text-sm' : '' }} leading-relaxed">{{ $item['description'] }}</p>
-
-                                    {{-- Nested Blocks --}}
-                                    @if(!empty($item['blocks']))
-                                        <div class="{{ $isNested ? 'mt-2' : 'mt-4' }}">
-                                            <x-blocks.renderer :blocks="$item['blocks']" mode="view" :nested="true"/>
-                                        </div>
-                                    @endif
+                                    <div class="text-steel-300 {{ $isNested ? 'text-sm' : '' }} leading-relaxed prose prose-invert prose-sm max-w-none prose-p:my-2 prose-ul:my-2 prose-ol:my-2 prose-li:my-0">{!! $item['description'] !!}</div>
 
                                     {{-- Address/Link --}}
                                     @if(!empty($item['address']))

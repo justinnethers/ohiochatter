@@ -9,8 +9,12 @@
 
     @guest
         @php
-            $position = \Stevebauman\Location\Facades\Location::get();
-            $isUS = $position && $position->countryCode === 'US';
+            $isUS = session('is_us_visitor', function () {
+                $position = \Stevebauman\Location\Facades\Location::get();
+                $isUS = $position && $position->countryCode === 'US';
+                session(['is_us_visitor' => $isUS]);
+                return $isUS;
+            });
         @endphp
         @if(!$isUS)
             <script data-cfasync="false" src="//dcbbwymp1bhlf.cloudfront.net/?wbbcd=1235535"></script>

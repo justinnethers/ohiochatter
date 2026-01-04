@@ -5,14 +5,17 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name='admaven-placement' content=Bqjw8rHY4>
 
     {{-- SEO Meta Tags --}}
     @if(isset($seo))
-        <x-seo.head :seo="$seo" />
+        <x-seo.head :seo="$seo"/>
         <title>{{ $seo->title }} - {{ config('app.name', 'OhioChatter') }}</title>
     @else
         <meta name="description" content="{{ $meta ?? '' }}">
-        <title>@if (isset($title)){{ $title }} - @endif{{ config('app.name', 'Laravel') }}</title>
+        <title>@if (isset($title))
+                {{ $title }} -
+            @endif{{ config('app.name', 'Laravel') }}</title>
     @endif
 
     <!-- Fonts -->
@@ -133,7 +136,8 @@
 <body class="font-sans antialiased">
 <div class="min-h-screen bg-gradient-to-br from-steel-950 via-steel-900 to-steel-950 relative">
     {{-- Subtle background pattern overlay --}}
-    <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSA2MCAwIEwgMCAwIDAgNjAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjAyKSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-50 pointer-events-none"></div>
+    <div
+        class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSA2MCAwIEwgMCAwIDAgNjAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjAyKSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-50 pointer-events-none"></div>
 
     <div class="relative">
         @include('layouts.navigation')
@@ -142,8 +146,9 @@
             <header x-data="{}"
                     x-bind:class="{ 'py-2 md:py-4 top-16': !$store.scroll.scrolled, 'py-1.5 md:py-2 top-10': $store.scroll.scrolled }"
                     class="bg-gradient-to-r from-steel-800 via-steel-800 to-steel-850 border-b border-steel-700/50 shadow-xl shadow-black/20 sticky z-40 transition-all duration-300">
-                <div x-bind:class="{ 'text-base md:text-lg': !$store.scroll.scrolled, 'text-sm md:text-base': $store.scroll.scrolled }"
-                     class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div
+                    x-bind:class="{ 'text-base md:text-lg': !$store.scroll.scrolled, 'text-sm md:text-base': $store.scroll.scrolled }"
+                    class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     {{ $header }}
                 </div>
             </header>
@@ -162,6 +167,6 @@
 @endif
 @stack('footer')
 
-<x-guest-signup-modal />
+<x-guest-signup-modal/>
 </body>
 </html>

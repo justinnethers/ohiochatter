@@ -176,6 +176,7 @@ return [
          * Module Service Providers...
          */
         App\Modules\Geography\GeographyServiceProvider::class,
+        App\Modules\Pickem\PickemServiceProvider::class,
     ])->toArray(),
 
     /*

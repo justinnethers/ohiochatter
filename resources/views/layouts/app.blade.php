@@ -7,6 +7,10 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name='admaven-placement' content=Bqjw8rHY4>
 
+    @guest
+        <script data-cfasync="false" src="//dcbbwymp1bhlf.cloudfront.net/?wbbcd=1235527"></script>
+    @endguest
+
     {{-- SEO Meta Tags --}}
     @if(isset($seo))
         <x-seo.head :seo="$seo"/>

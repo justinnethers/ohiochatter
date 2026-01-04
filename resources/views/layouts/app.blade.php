@@ -8,7 +8,13 @@
     <meta name='admaven-placement' content=Bqjw8rHY4>
 
     @guest
-        {{--        <script data-cfasync="false" src="//dcbbwymp1bhlf.cloudfront.net/?wbbcd=1235535"></script>--}}
+        @php
+            $position = \Stevebauman\Location\Facades\Location::get();
+            $isUS = $position && $position->countryCode === 'US';
+        @endphp
+        @if(!$isUS)
+            <script data-cfasync="false" src="//dcbbwymp1bhlf.cloudfront.net/?wbbcd=1235535"></script>
+        @endif
     @endguest
 
     {{-- SEO Meta Tags --}}

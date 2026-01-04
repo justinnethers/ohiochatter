@@ -13,6 +13,24 @@ class LatestPoll extends Component
     public $hasVoted = false;
     public $selectedOption = '';
     public $selectedOptions = [];
+    public $expandedVoters = [];
+
+    public function toggleVoters($optionId)
+    {
+        if (in_array($optionId, $this->expandedVoters)) {
+            $this->expandedVoters = array_values(array_filter(
+                $this->expandedVoters,
+                fn($id) => $id !== $optionId
+            ));
+        } else {
+            $this->expandedVoters[] = $optionId;
+        }
+    }
+
+    public function isVotersExpanded($optionId)
+    {
+        return in_array($optionId, $this->expandedVoters);
+    }
 
     public function mount()
     {
@@ -49,6 +67,11 @@ class LatestPoll extends Component
             return redirect()->route('login');
         }
 
+        // Check if poll has ended
+        if ($this->poll && $this->poll->hasEnded()) {
+            return;
+        }
+
         if ($this->hasVoted || !$this->poll) {
             return;
         }
@@ -81,6 +104,11 @@ class LatestPoll extends Component
             $count += $option->votes->count();
         }
         return $count;
+    }
+
+    public function getPollEndedProperty()
+    {
+        return $this->poll && $this->poll->hasEnded();
     }
 
     public function getPercentage($option)

@@ -32,6 +32,7 @@ class StoreThreadRequest extends FormRequest
             $rules['poll_type'] = 'required|in:single,multiple';
             $rules['options'] = 'required|array|min:2';
             $rules['options.*'] = 'required|string|max:255';
+            $rules['poll_ends_at'] = 'nullable|date|after:now';
         }
 
         return $rules;

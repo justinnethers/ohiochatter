@@ -4,19 +4,34 @@
             <span class="w-1 h-5 bg-accent-500 rounded-full"></span>
             Poll
         </h3>
-        @if($hasVoted)
-            <div class="inline-flex items-center gap-2 px-3 py-1 bg-steel-900/70 rounded-full border border-steel-700/50">
-                <svg class="w-4 h-4 text-steel-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                </svg>
-                <span class="font-bold text-steel-100">{{ $this->voteCount }}</span>
-                <span class="text-sm text-steel-400">{{ \Illuminate\Support\Str::plural('vote', $this->voteCount) }}</span>
-            </div>
-        @endif
+        <div class="flex items-center gap-2 flex-wrap">
+            @if($poll->ends_at)
+                <div class="inline-flex items-center gap-2 px-3 py-1 bg-steel-900/70 rounded-full border border-steel-700/50">
+                    <svg class="w-4 h-4 text-steel-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    @if($poll->hasEnded())
+                        <span class="text-sm text-red-400">Poll closed {{ $poll->ends_at->diffForHumans() }}</span>
+                    @else
+                        <span class="text-sm text-steel-400">Closes {{ $poll->ends_at->diffForHumans() }}</span>
+                    @endif
+                </div>
+            @endif
+
+            @if($hasVoted || $poll->hasEnded())
+                <div class="inline-flex items-center gap-2 px-3 py-1 bg-steel-900/70 rounded-full border border-steel-700/50">
+                    <svg class="w-4 h-4 text-steel-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="font-bold text-steel-100">{{ $this->voteCount }}</span>
+                    <span class="text-sm text-steel-400">{{ \Illuminate\Support\Str::plural('vote', $this->voteCount) }}</span>
+                </div>
+            @endif
+        </div>
     </div>
 
-    @if($hasVoted)
-        {{-- Results View (Answered State) - Sorted by votes --}}
+    @if($hasVoted || $poll->hasEnded())
+        {{-- Results View (Answered State or Poll Ended) - Sorted by votes --}}
         @php
             $maxVotes = $poll->pollOptions->max(fn($o) => $o->votes->count());
         @endphp
@@ -58,7 +73,35 @@
                             <div class="bg-gradient-to-r from-steel-500 to-steel-600 rounded-full h-full transition-all duration-500 ease-out" style="width: {{ $percentage }}%"></div>
                         @endif
                     </div>
-                    <span class="text-sm text-steel-400 mt-1.5 block"><span class="font-bold text-steel-300">{{ $voteCount }}</span> {{ \Illuminate\Support\Str::plural('vote', $voteCount) }}</span>
+                    <div class="flex items-center gap-3 mt-1.5">
+                        <span class="text-sm text-steel-400"><span class="font-bold text-steel-300">{{ $voteCount }}</span> {{ \Illuminate\Support\Str::plural('vote', $voteCount) }}</span>
+
+                        {{-- Voter toggle --}}
+                        @if($voteCount > 0)
+                            <button
+                                type="button"
+                                wire:click="toggleVoters({{ $option->id }})"
+                                class="text-xs text-accent-400 hover:text-accent-300 flex items-center gap-1 transition-colors"
+                            >
+                                <svg class="w-3 h-3 transition-transform {{ $this->isVotersExpanded($option->id) ? 'rotate-180' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                                {{ $this->isVotersExpanded($option->id) ? 'Hide voters' : 'Show voters' }}
+                            </button>
+                        @endif
+                    </div>
+
+                    {{-- Voter pills --}}
+                    @if($voteCount > 0 && $this->isVotersExpanded($option->id))
+                        <div class="flex flex-wrap gap-2 mt-3">
+                            @foreach($option->votes as $vote)
+                                <a href="/profiles/{{ $vote->user->username }}" class="flex items-center gap-2 bg-steel-900/50 rounded-full px-3 py-1.5 border border-steel-700/30 hover:border-steel-600/50 transition-colors">
+                                    <x-avatar size="5" :avatar-path="$vote->user->avatar_path" />
+                                    <span class="text-sm text-steel-200">{{ $vote->user->username }}</span>
+                                </a>
+                            @endforeach
+                        </div>
+                    @endif
                 </div>
             @endforeach
         </div>

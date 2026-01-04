@@ -62,7 +62,8 @@ class CreateThread
         $poll = Poll::create([
             'user_id' => auth()->id(),
             'thread_id' => $thread->id,
-            'type' => $data['poll_type']
+            'type' => $data['poll_type'],
+            'ends_at' => $data['poll_ends_at'] ?? null,
         ]);
 
         foreach ($data['options'] as $option) {

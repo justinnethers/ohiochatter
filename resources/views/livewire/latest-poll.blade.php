@@ -6,9 +6,16 @@
                     <span class="w-1 h-4 bg-accent-500 rounded-full"></span>
                     Latest Poll
                 </h3>
-                @if($hasVoted || !auth()->check())
-                    <span class="text-xs text-steel-400">{{ $this->voteCount }} {{ \Illuminate\Support\Str::plural('vote', $this->voteCount) }}</span>
-                @endif
+                <div class="flex items-center gap-2">
+                    @if($poll->ends_at && $poll->hasEnded())
+                        <span class="text-xs text-red-400">Closed</span>
+                    @elseif($poll->ends_at)
+                        <span class="text-xs text-steel-500">Closes {{ $poll->ends_at->diffForHumans() }}</span>
+                    @endif
+                    @if($hasVoted || !auth()->check() || $poll->hasEnded())
+                        <span class="text-xs text-steel-400">{{ $this->voteCount }} {{ \Illuminate\Support\Str::plural('vote', $this->voteCount) }}</span>
+                    @endif
+                </div>
             </div>
 
             <a href="{{ $thread->path() }}" class="block text-steel-200 hover:text-white text-sm mb-3 line-clamp-2">
@@ -34,8 +41,8 @@
                 <a href="{{ route('login') }}" class="text-xs text-accent-400 hover:text-accent-300">
                     Login to vote &rarr;
                 </a>
-            @elseif($hasVoted)
-                {{-- Voted view - show results --}}
+            @elseif($hasVoted || $poll->hasEnded())
+                {{-- Voted view or Poll Ended - show results --}}
                 @php
                     $maxVotes = $poll->pollOptions->max(fn($o) => $o->votes->count());
                 @endphp
@@ -60,6 +67,30 @@
                             <div class="w-full bg-steel-950 rounded-full h-1.5">
                                 <div class="@if($isLeader) bg-amber-400 @else bg-steel-500 @endif rounded-full h-full" style="width: {{ $percentage }}%"></div>
                             </div>
+                            {{-- Compact voter toggle --}}
+                            @if($option->votes->count() > 0)
+                                <button
+                                    type="button"
+                                    wire:click="toggleVoters({{ $option->id }})"
+                                    class="text-xs text-steel-500 hover:text-steel-400 mt-1 flex items-center gap-1"
+                                >
+                                    <svg class="w-2 h-2 transition-transform {{ $this->isVotersExpanded($option->id) ? 'rotate-180' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                    {{ $option->votes->count() }} {{ \Illuminate\Support\Str::plural('voter', $option->votes->count()) }}
+                                </button>
+
+                                @if($this->isVotersExpanded($option->id))
+                                    <div class="flex flex-wrap gap-1.5 mt-2">
+                                        @foreach($option->votes as $vote)
+                                            <a href="/profiles/{{ $vote->user->username }}" class="flex items-center gap-1.5 bg-steel-900/50 rounded-full px-2 py-1 border border-steel-700/30 hover:border-steel-600/50 transition-colors">
+                                                <x-avatar size="4" :avatar-path="$vote->user->avatar_path" />
+                                                <span class="text-xs text-steel-300">{{ $vote->user->username }}</span>
+                                            </a>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            @endif
                         </div>
                     @endforeach
                 </div>

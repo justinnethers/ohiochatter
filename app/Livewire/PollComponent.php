@@ -12,6 +12,24 @@ class PollComponent extends Component
     public $hasVoted = false;
     public $selectedOption = '';
     public $selectedOptions = [];
+    public $expandedVoters = [];
+
+    public function toggleVoters($optionId)
+    {
+        if (in_array($optionId, $this->expandedVoters)) {
+            $this->expandedVoters = array_values(array_filter(
+                $this->expandedVoters,
+                fn($id) => $id !== $optionId
+            ));
+        } else {
+            $this->expandedVoters[] = $optionId;
+        }
+    }
+
+    public function isVotersExpanded($optionId)
+    {
+        return in_array($optionId, $this->expandedVoters);
+    }
 
     public function mount(Poll $poll)
     {
@@ -40,6 +58,12 @@ class PollComponent extends Component
         \Log::info('Vote method called');
         \Log::info('Selected option:', ['option' => $this->selectedOption]);
         \Log::info('Selected options:', ['options' => $this->selectedOptions]);
+
+        // Check if poll has ended
+        if ($this->poll->hasEnded()) {
+            \Log::info('Poll has ended');
+            return;
+        }
 
         if (!auth()->check()) {
             \Log::info('User not authenticated');
@@ -84,6 +108,11 @@ class PollComponent extends Component
             $count += $option->votes->count();
         }
         return $count;
+    }
+
+    public function getPollEndedProperty()
+    {
+        return $this->poll->hasEnded();
     }
 
     public function getPercentage($option)

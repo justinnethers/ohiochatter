@@ -106,6 +106,20 @@
                                     + Add another option
                                 </button>
                             </div>
+
+                            <div>
+                                <x-input-label for="poll_ends_at" class="mb-2">
+                                    Poll End Date <span class="text-steel-500 text-sm font-normal">(optional)</span>
+                                </x-input-label>
+                                <x-text-input
+                                    type="datetime-local"
+                                    id="poll_ends_at"
+                                    name="poll_ends_at"
+                                    value="{{ old('poll_ends_at') }}"
+                                    min="{{ now()->format('Y-m-d\TH:i') }}"
+                                />
+                                <p class="text-xs text-steel-500 mt-1">Leave blank for a poll that never ends</p>
+                            </div>
                         </div>
                     </div>
 

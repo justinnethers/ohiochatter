@@ -29,7 +29,14 @@
                 @elseif($isWrong)
                     <div class="absolute left-0 top-4 bottom-4 w-1 bg-rose-500 rounded-r-full"></div>
                 @elseif($userPick)
-                    <div class="absolute left-0 top-4 bottom-4 w-1 bg-accent-500 rounded-r-full"></div>
+                    @php
+                        $hasConfidence = isset($confidences[$matchup->id]) && $confidences[$matchup->id];
+                        $isComplete = $pickem->scoring_type !== 'confidence' || $hasConfidence;
+                    @endphp
+                    <div class="absolute left-0 top-4 bottom-4 w-1 {{ $isComplete ? 'bg-emerald-500' : 'bg-yellow-500' }} rounded-r-full"></div>
+                @elseif($pickem->scoring_type === 'confidence' && isset($confidences[$matchup->id]) && $confidences[$matchup->id])
+                    {{-- Has confidence points but no team pick --}}
+                    <div class="absolute left-0 top-4 bottom-4 w-1 bg-yellow-500 rounded-r-full"></div>
                 @endif
 
                 {{-- Description if present --}}

@@ -24,11 +24,19 @@ class PickemAlertBar extends Component
             ->orderBy('picks_lock_at', 'asc')
             ->first();
 
-        if ($this->pickem) {
-            $this->hasSubmitted = PickemPick::where('user_id', auth()->id())
-                ->whereIn('pickem_matchup_id', $this->pickem->matchups->pluck('id'))
-                ->exists();
+        if (! $this->pickem) {
+            return;
         }
+
+        // Don't show if already viewing this pickem
+        if (request()->routeIs('pickem.show') && request()->route('pickem')?->id === $this->pickem->id) {
+            $this->pickem = null;
+            return;
+        }
+
+        $this->hasSubmitted = PickemPick::where('user_id', auth()->id())
+            ->whereIn('pickem_matchup_id', $this->pickem->matchups->pluck('id'))
+            ->exists();
     }
 
     public function render()

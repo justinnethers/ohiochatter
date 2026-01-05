@@ -38,9 +38,10 @@
                         </div>
                     @endforeach
                 </div>
-                <a href="{{ route('login') }}" class="text-xs text-accent-400 hover:text-accent-300">
-                    Login to vote &rarr;
-                </a>
+                <div class="flex items-center justify-between text-xs">
+                    <span class="text-steel-400">Login to vote</span>
+                    <a href="{{ $thread->path() }}" class="text-accent-400 hover:text-accent-300">View poll &rarr;</a>
+                </div>
             @elseif($hasVoted || $poll->hasEnded())
                 {{-- Voted view or Poll Ended - show results --}}
                 @php
@@ -94,9 +95,10 @@
                         </div>
                     @endforeach
                 </div>
-                <a href="{{ $thread->path() }}" class="text-xs text-steel-400 hover:text-steel-300">
-                    View full poll &rarr;
-                </a>
+                <div class="flex items-center justify-between text-xs">
+                    <span class="text-steel-400">{{ $hasVoted ? 'You voted' : 'Poll closed' }}</span>
+                    <a href="{{ $thread->path() }}" class="text-accent-400 hover:text-accent-300">View poll &rarr;</a>
+                </div>
             @else
                 {{-- Voting view --}}
                 <div class="space-y-2 mb-3">

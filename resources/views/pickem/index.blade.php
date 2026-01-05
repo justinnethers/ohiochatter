@@ -36,9 +36,16 @@
             @endif
 
             @if($pickems->isEmpty())
-                <div class="text-center py-12">
-                    <p class="text-steel-400 text-lg">No Pick 'Ems yet</p>
-                    <p class="text-steel-500 text-sm mt-1">Check back soon for upcoming games!</p>
+                <div class="bg-gradient-to-br from-steel-800 to-steel-850 rounded-xl p-8 md:p-12 text-center border border-steel-700/50 shadow-lg shadow-black/20">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-steel-700/50 mb-6">
+                        <svg class="w-8 h-8 text-steel-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">No Pick 'Ems Available</h3>
+                    <p class="text-steel-400 max-w-md mx-auto">
+                        There are no active Pick 'Em games right now. Check back soon for upcoming matchups!
+                    </p>
                 </div>
             @else
                 <section>

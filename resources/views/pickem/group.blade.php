@@ -111,7 +111,7 @@
                     <h3 class="text-lg font-semibold text-white mb-4">Leaderboard</h3>
 
                     @if($leaderboard->isEmpty())
-                        <p class="text-steel-400 text-sm">No scores yet</p>
+                        <p class="text-steel-400 text-sm">No entries yet</p>
                     @else
                         <div class="space-y-0.5">
                             @foreach($leaderboard as $entry)

@@ -121,7 +121,10 @@
             @endif
 
             <!-- Hamburger -->
-            <div class="-mr-2 flex items-center sm:hidden">
+            <div class="-mr-2 flex items-center sm:hidden gap-2">
+                @auth
+                    <livewire:notifications-dropdown />
+                @endauth
                 <button @click="open = ! open"
                         class="inline-flex items-center justify-center p-2 rounded-lg text-steel-400 hover:text-white hover:bg-steel-700/50 focus:outline-none focus:bg-steel-700/50 focus:text-white transition duration-150 ease-in-out">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">

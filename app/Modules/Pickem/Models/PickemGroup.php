@@ -47,8 +47,9 @@ class PickemGroup extends Model
     {
         return DB::table('users')
             ->select('users.*')
-            ->selectRaw('SUM(
+            ->selectRaw('COALESCE(SUM(
                 CASE
+                    WHEN pickem_matchups.winner IS NULL THEN 0
                     WHEN pickems.scoring_type = "simple" AND pickem_matchups.winner = pickem_picks.pick THEN 1
                     WHEN pickems.scoring_type = "simple" AND pickem_matchups.winner = "push" THEN 1
                     WHEN pickems.scoring_type = "weighted" AND pickem_matchups.winner = pickem_picks.pick THEN pickem_matchups.points
@@ -57,14 +58,14 @@ class PickemGroup extends Model
                     WHEN pickems.scoring_type = "confidence" AND pickem_matchups.winner = "push" THEN pickem_picks.confidence
                     ELSE 0
                 END
-            ) as total_points')
+            ), 0) as total_points')
             ->join('pickem_picks', 'users.id', '=', 'pickem_picks.user_id')
             ->join('pickem_matchups', 'pickem_picks.pickem_matchup_id', '=', 'pickem_matchups.id')
             ->join('pickems', 'pickem_matchups.pickem_id', '=', 'pickems.id')
             ->where('pickems.pickem_group_id', $this->id)
-            ->whereNotNull('pickem_matchups.winner')
             ->groupBy('users.id')
             ->orderByDesc('total_points')
+            ->orderBy('users.username')
             ->get();
     }
 }

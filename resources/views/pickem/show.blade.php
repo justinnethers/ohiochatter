@@ -106,12 +106,10 @@
             {{-- Main Pickem Game Component --}}
             <livewire:pickem-game :pickem="$pickem" />
 
-            {{-- Leaderboard (show after picks are locked or when finalized) --}}
-            @if($pickem->isLocked() || $pickem->is_finalized)
-                <div class="mt-8 pt-8 border-t border-steel-700/50">
-                    <livewire:pickem-leaderboard :pickem="$pickem" />
-                </div>
-            @endif
+            {{-- Leaderboard --}}
+            <div class="mt-8 pt-8 border-t border-steel-700/50">
+                <livewire:pickem-leaderboard :pickem="$pickem" />
+            </div>
 
             {{-- Discussion Section --}}
             <div class="mt-8 pt-8 border-t border-steel-700/50">

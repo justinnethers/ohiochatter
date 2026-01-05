@@ -2,7 +2,7 @@
     <h3 class="text-lg font-semibold text-white mb-4">Leaderboard</h3>
 
     @if($leaderboard->isEmpty())
-        <p class="text-steel-400">No picks submitted yet.</p>
+        <p class="text-steel-400">No entries yet. Be the first to submit your picks!</p>
     @else
         <div class="space-y-2">
             @foreach($leaderboard as $index => $entry)

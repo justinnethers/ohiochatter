@@ -1,5 +1,52 @@
 <x-app-layout>
     <x-slot name="title">{{ $pickem->title }}</x-slot>
+
+    <x-slot name="head">
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/trumbowyg@2.30.0/dist/trumbowyg.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/trumbowyg@2.30.0/dist/plugins/upload/trumbowyg.upload.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.27.3/ui/trumbowyg.min.css">
+        <style>
+            .trumbowyg-dark .trumbowyg-box {
+                border-color: #475569;
+                background: #0f172a;
+            }
+            .trumbowyg-dark .trumbowyg-box .trumbowyg-editor {
+                background: #0f172a;
+                color: #e2e8f0;
+                min-height: 80px;
+            }
+            .trumbowyg-dark .trumbowyg-button-pane {
+                background: #1e293b;
+                border-color: #475569;
+            }
+            .trumbowyg-dark .trumbowyg-button-pane button {
+                color: #94a3b8;
+            }
+            .trumbowyg-dark .trumbowyg-button-pane button:hover {
+                background: #334155;
+                color: #e2e8f0;
+            }
+            .trumbowyg-giphy-button {
+                display: flex !important;
+                align-items: center;
+                justify-content: center;
+                font-size: 11px !important;
+                font-weight: 700 !important;
+                color: #94a3b8 !important;
+                text-transform: uppercase;
+                width: auto !important;
+                padding: 0 8px !important;
+            }
+            .trumbowyg-giphy-button:hover {
+                color: #e2e8f0 !important;
+            }
+            .trumbowyg-giphy-button svg {
+                display: none !important;
+            }
+        </style>
+    </x-slot>
+
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="text-lg md:text-xl font-bold text-white leading-tight flex items-center gap-3 min-w-0">
@@ -73,4 +120,6 @@
             </div>
         </div>
     </div>
+
+    <x-giphy-modal />
 </x-app-layout>

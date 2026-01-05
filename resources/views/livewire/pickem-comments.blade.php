@@ -1,29 +1,93 @@
 <div>
     {{-- Comment Form --}}
     @auth
-        <form wire:submit="addComment" class="mb-6">
+        <form
+            x-data="{ submitting: false }"
+            x-on:submit.prevent="
+                submitting = true;
+                $wire.set('body', $('#comment-editor').trumbowyg('html'));
+                $wire.addComment().then(() => {
+                    $('#comment-editor').trumbowyg('html', '');
+                    submitting = false;
+                });
+            "
+            class="mb-6"
+        >
             <div class="bg-gradient-to-br from-steel-800 to-steel-850 rounded-xl p-4 border border-steel-700/50">
-                <textarea
-                    wire:model="body"
-                    rows="3"
-                    placeholder="Add a comment..."
-                    class="w-full bg-steel-700/50 border-steel-600 rounded-lg text-white placeholder-steel-400 focus:border-accent-500 focus:ring-accent-500 resize-none"
-                ></textarea>
+                <div wire:ignore>
+                    <div class="trumbowyg-dark">
+                        <div id="comment-editor" class="editor text-white bg-transparent"></div>
+                    </div>
+                </div>
                 @error('body')
                     <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
                 @enderror
                 <div class="mt-3 flex justify-end">
                     <button
                         type="submit"
-                        wire:loading.attr="disabled"
+                        x-bind:disabled="submitting"
                         class="px-4 py-2 bg-gradient-to-r from-accent-500 to-accent-600 rounded-lg text-white font-semibold text-sm shadow-lg shadow-accent-500/25 hover:shadow-accent-500/40 hover:from-accent-600 hover:to-accent-700 transition-all duration-200 disabled:opacity-50"
                     >
-                        <span wire:loading.remove>Post Comment</span>
-                        <span wire:loading>Posting...</span>
+                        <span x-show="!submitting">Post Comment</span>
+                        <span x-show="submitting" x-cloak>Posting...</span>
                     </button>
                 </div>
             </div>
         </form>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                if (typeof $ !== 'undefined' && $('#comment-editor').length) {
+                    let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                    $('#comment-editor').trumbowyg({
+                        btnsDef: {
+                            image: {
+                                dropdown: ['insertImage', 'upload'],
+                                ico: 'insertImage'
+                            },
+                            giphy: {
+                                fn: function () {
+                                    window.dispatchEvent(new CustomEvent('open-giphy-modal'));
+                                },
+                                title: 'Insert GIF',
+                                text: 'GIF',
+                                hasIcon: false
+                            }
+                        },
+                        btns: [
+                            ['strong', 'em', 'del'],
+                            ['unorderedList', 'orderedList'],
+                            ['image', 'giphy'],
+                            ['link'],
+                            ['viewHTML'],
+                            ['fullscreen']
+                        ],
+                        autogrow: true,
+                        defaultLinkTarget: '_blank',
+                        plugins: {
+                            upload: {
+                                serverPath: '/upload-image?_token=' + csrfToken,
+                                fileFieldName: 'image',
+                                urlPropertyName: 'url'
+                            }
+                        }
+                    });
+
+                    // Listen for GIF selection
+                    window.addEventListener('giphy-selected', function(e) {
+                        if (e.detail && e.detail.url) {
+                            var imgHtml = '<img src="' + e.detail.url + '" alt="GIF">';
+                            $('#comment-editor').trumbowyg('execCmd', {
+                                cmd: 'insertHTML',
+                                param: imgHtml,
+                                forceCss: false
+                            });
+                        }
+                    });
+                }
+            });
+        </script>
     @else
         <div class="mb-6 p-4 bg-steel-700/50 rounded-lg text-center">
             <p class="text-steel-300">
@@ -53,8 +117,8 @@
                                 </a>
                                 <span class="text-xs text-steel-500">{{ $comment->created_at->diffForHumans() }}</span>
                             </div>
-                            <div class="text-steel-300 prose prose-invert prose-sm max-w-none">
-                                {!! nl2br(e($comment->body)) !!}
+                            <div class="text-steel-300 prose prose-invert prose-sm max-w-none post-body">
+                                {!! $comment->body !!}
                             </div>
                         </div>
                         @if(auth()->check() && (auth()->id() === $comment->user_id || auth()->user()->is_admin))

@@ -31,7 +31,7 @@ test('it creates a basic thread', function () {
 
     $this->actingAs($user);
 
-    $action = new CreateThread();
+    $action = app(CreateThread::class);
 
     $thread = $action->execute([
         'title' => 'Test Thread',
@@ -52,7 +52,7 @@ test('it creates a thread with poll', function () {
 
     $this->actingAs($user);
 
-    $action = new CreateThread();
+    $action = app(CreateThread::class);
 
     $thread = $action->execute([
         'title' => 'Test Thread',
@@ -74,7 +74,7 @@ test('it throws exception when banned user tries to create thread', function () 
 
     $this->actingAs($user);
 
-    $action = new CreateThread();
+    $action = app(CreateThread::class);
 
     expect(fn() => $action->execute([
         'title' => 'Test Thread',

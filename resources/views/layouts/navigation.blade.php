@@ -37,7 +37,8 @@
 
             <!-- Settings Dropdown -->
             @if (Auth::check())
-                <div class="hidden sm:flex sm:items-center sm:ml-6">
+                <div class="hidden sm:flex sm:items-center sm:ml-6 gap-2">
+                    <livewire:notifications-dropdown />
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
                             <button

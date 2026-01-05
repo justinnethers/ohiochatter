@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Poll;
 use App\Models\Thread;
+use App\Services\MentionService;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use App\Models\Reply;
@@ -40,6 +41,10 @@ class PostComponent extends Component
     {
         $this->post->body = $this->body;
         $this->post->save();
+
+        // Process any new mentions in the edited body
+        app(MentionService::class)->processMentions($this->body, $this->post, auth()->user());
+
         $this->editMode = false;
         $this->dispatch('destroy-editor', ['editorId' => $this->post->id]);
         session()->flash('message', 'Post updated successfully.');

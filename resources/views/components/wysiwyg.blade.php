@@ -23,6 +23,7 @@
                 crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/trumbowyg@2.30.0/dist/plugins/upload/trumbowyg.upload.min.js"
                 crossorigin="anonymous"></script>
+        <script src="/js/trumbowyg-mention.js"></script>
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.27.3/ui/trumbowyg.min.css">
         <link rel="stylesheet"
@@ -46,6 +47,21 @@
 
             .trumbowyg-giphy-button svg {
                 display: none !important;
+            }
+
+            /* Mention styling */
+            .mention {
+                color: #60a5fa !important;
+                font-weight: 500;
+                text-decoration: none;
+            }
+
+            .mention:hover {
+                text-decoration: underline;
+            }
+
+            .trumbowyg-mention-dropdown {
+                font-family: inherit;
             }
         </style>
     </x-slot>
@@ -97,6 +113,11 @@
                         }
                     }
                 });
+
+                // Initialize mention functionality
+                if (typeof window.initTrumbowygMention === 'function') {
+                    window.initTrumbowygMention(editor);
+                }
 
                 // Load initial content from data attribute if present
                 const initialContent = editorElement.dataset.initialContent;

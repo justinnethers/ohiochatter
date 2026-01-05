@@ -6,10 +6,14 @@ use App\Http\Requests\StoreReplyRequest;
 use App\Models\Forum;
 use App\Models\Reply;
 use App\Models\Thread;
+use App\Services\MentionService;
 use Illuminate\Http\RedirectResponse;
 
 class ReplyController extends Controller
 {
+    public function __construct(
+        protected MentionService $mentionService
+    ) {}
     /**
      * Store a newly created reply in storage.
      *
@@ -24,6 +28,9 @@ class ReplyController extends Controller
             'body'    => $request->body,
             'user_id' => auth()->id(),
         ])->load('owner');
+
+        // Process mentions in the reply body
+        $this->mentionService->processMentions($request->body, $reply, auth()->user());
 
         // Calculate the page number where the new reply is located.
         // Using ceil() ensures that if the number of replies exactly fills a page,

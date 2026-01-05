@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\UserSearchController;
 use App\Http\Controllers\ArchiveController;
 use App\Http\Controllers\BuckEyeGameController;
 use App\Http\Controllers\DashboardController;
@@ -77,6 +78,9 @@ Route::middleware('auth')->group(function () {
     Route::post('messages', [MessageController::class, 'store'])->name('messages.store');
     Route::get('messages/{thread}', [MessageController::class, 'show'])->name('messages.show');
     Route::post('messages/{thread}/reply', [MessageController::class, 'addMessage'])->name('messages.add_message');
+
+    // User mention search API
+    Route::get('api/users/search', UserSearchController::class)->name('api.users.search');
 });
 
 

@@ -105,6 +105,16 @@ blockquote p {
     text-decoration-color: rgb(59 130 246);
 }
 
+/* Mention links */
+.post-body a.mention {
+    @apply text-accent-400 font-medium;
+    text-decoration: none;
+}
+
+.post-body a.mention:hover {
+    text-decoration: underline;
+}
+
 .post-body ul, .trumbowyg-editor ul {
     @apply list-disc list-inside text-steel-300;
 }

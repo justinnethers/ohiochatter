@@ -5,11 +5,16 @@ namespace App\Actions\Threads;
 use App\Models\Poll;
 use App\Models\PollOption;
 use App\Models\Thread;
+use App\Services\MentionService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class CreateThread
 {
+    public function __construct(
+        protected MentionService $mentionService
+    ) {}
+
     public function execute(array $validated)
     {
         if (auth()->user()->is_banned) {
@@ -22,6 +27,9 @@ class CreateThread
             if ($validated['has_poll'] ?? false) {
                 $this->createPoll($thread, $validated);
             }
+
+            // Process mentions in the thread body
+            $this->mentionService->processMentions($validated['body'], $thread, auth()->user());
 
             $this->updateCache($thread);
 

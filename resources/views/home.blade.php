@@ -61,6 +61,9 @@
                 {{-- Latest Poll --}}
                 <livewire:latest-poll />
 
+                {{-- Active Pick 'Em --}}
+                <livewire:active-pickem />
+
                 {{-- Quick Stats --}}
                 <x-home.quick-stats :stats="$stats" />
 

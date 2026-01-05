@@ -78,7 +78,7 @@
                                         @if($pickem->isLocked())
                                             <span class="text-steel-500">Locked</span>
                                         @else
-                                            <span class="text-steel-400">Locks {{ $pickem->picks_lock_at->diffForHumans() }}</span>
+                                            <span class="text-steel-400">Locks in {{ $pickem->picks_lock_at->diffForHumans(null, true) }}</span>
                                         @endif
                                     @else
                                         <span class="text-accent-400">Open</span>

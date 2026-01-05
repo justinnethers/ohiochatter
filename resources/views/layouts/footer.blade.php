@@ -64,6 +64,11 @@
                                     Ohio Guide
                                 </a>
                             </li>
+                            <li>
+                                <a href="{{ route('pickem.index') }}" class="text-steel-400 hover:text-accent-400 hover:pl-2 transition-all duration-200">
+                                    Pick 'Em
+                                </a>
+                            </li>
                         </ul>
                     </div>
 

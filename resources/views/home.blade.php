@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="title">Ohio's Community Forum</x-slot>
 
-    <div class="container mx-auto px-4 pt-6 md:pt-8 pb-6">
+    <div class="container mx-auto pt-4">
         {{-- Welcome Section --}}
         <x-home.welcome />
 

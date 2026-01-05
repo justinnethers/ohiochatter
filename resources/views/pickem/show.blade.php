@@ -89,7 +89,7 @@
                         @if($pickem->isLocked())
                             <span class="text-sm text-rose-400">Locked</span>
                         @else
-                            <span class="text-sm text-emerald-400">Locks {{ $pickem->picks_lock_at->diffForHumans() }}</span>
+                            <span class="text-sm text-emerald-400">Locks in {{ $pickem->picks_lock_at->diffForHumans(null, true) }}</span>
                         @endif
                     @else
                         <span class="text-sm text-accent-400">Open</span>

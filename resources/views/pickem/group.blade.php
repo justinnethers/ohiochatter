@@ -73,7 +73,8 @@
                                                     @endif
                                                 @endauth
                                                 @if(!$isComplete && $pickem->picks_lock_at)
-                                                    <span class="text-steel-400">Locks {{ $pickem->picks_lock_at->diffForHumans() }}</span>
+                                                    <span
+                                                        class="text-steel-400">Locks in {{ $pickem->picks_lock_at->diffForHumans(null, true) }}</span>
                                                 @elseif($isComplete)
                                                     <span class="text-steel-500">Completed</span>
                                                 @endif
@@ -122,13 +123,18 @@
                                     @elseif($loop->index == 2)
                                         <span class="w-5 text-center text-amber-500 font-bold text-sm">3</span>
                                     @else
-                                        <span class="w-5 text-center text-white font-medium text-sm">{{ $loop->iteration }}</span>
+                                        <span
+                                            class="w-5 text-center text-white font-medium text-sm">{{ $loop->iteration }}</span>
                                     @endif
-                                    <img src="{{ $entry->avatar_path ? url($entry->avatar_path) : asset('images/avatars/default.png') }}" alt="" class="w-6 h-6 rounded-full flex-shrink-0">
-                                    <a href="{{ route('profile.show', $entry->username) }}" class="flex-1 min-w-0 text-white hover:text-accent-400 truncate text-sm">
+                                    <img
+                                        src="{{ $entry->avatar_path ? url($entry->avatar_path) : asset('images/avatars/default.png') }}"
+                                        alt="" class="w-6 h-6 rounded-full flex-shrink-0">
+                                    <a href="{{ route('profile.show', $entry->username) }}"
+                                       class="flex-1 min-w-0 text-white hover:text-accent-400 truncate text-sm">
                                         {{ $entry->username }}
                                     </a>
-                                    <span class="font-semibold text-accent-400 text-sm">{{ (int) $entry->total_points }}</span>
+                                    <span
+                                        class="font-semibold text-accent-400 text-sm">{{ (int) $entry->total_points }}</span>
                                 </div>
                             @endforeach
                         </div>

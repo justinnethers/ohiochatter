@@ -24,7 +24,7 @@
                                 @elseif($index === 2)
                                     <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-amber-600/20 text-amber-500 font-bold">3</span>
                                 @else
-                                    <span class="inline-flex items-center justify-center w-8 h-8 text-steel-400 font-medium">{{ $index + 1 }}</span>
+                                    <span class="inline-flex items-center justify-center w-8 h-8 text-white font-medium">{{ $index + 1 }}</span>
                                 @endif
                             </td>
                             <td class="px-4 py-3">

@@ -102,36 +102,28 @@
             <div class="lg:col-span-1">
                 <div
                     class="md:rounded-2xl bg-gradient-to-br from-steel-800/50 to-steel-900/50 md:backdrop-blur-sm md:border md:border-steel-700/30 p-4 md:p-6 sticky top-24">
-                    <h3 class="text-lg font-semibold text-white mb-4">SLeaderboard</h3>
+                    <h3 class="text-lg font-semibold text-white mb-4">Leaderboard</h3>
 
                     @if($leaderboard->isEmpty())
                         <p class="text-steel-400 text-sm">No scores yet</p>
                     @else
-                        <div class="space-y-1">
+                        <div class="space-y-0.5">
                             @foreach($leaderboard as $entry)
-                                <div
-                                    class="flex items-center gap-3 p-2 rounded-lg {{ $loop->index < 3 ? 'bg-steel-700/30' : '' }}">
+                                <div class="flex items-center gap-2 py-1.5">
                                     @if($loop->first)
-                                        <span
-                                            class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-yellow-500/20 text-yellow-400 font-bold text-sm">1</span>
+                                        <span class="w-5 text-center text-yellow-400 font-bold text-sm">1</span>
                                     @elseif($loop->index == 1)
-                                        <span
-                                            class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-400/20 text-gray-300 font-bold text-sm">2</span>
+                                        <span class="w-5 text-center text-gray-300 font-bold text-sm">2</span>
                                     @elseif($loop->index == 2)
-                                        <span
-                                            class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-amber-600/20 text-amber-500 font-bold text-sm">3</span>
+                                        <span class="w-5 text-center text-amber-500 font-bold text-sm">3</span>
                                     @else
-                                        <span
-                                            class="inline-flex items-center justify-center w-7 h-7 text-white font-medium text-sm">{{ $loop->iteration }}</span>
+                                        <span class="w-5 text-center text-white font-medium text-sm">{{ $loop->iteration }}</span>
                                     @endif
-                                    <div class="flex-1 min-w-0">
-                                        <a href="{{ route('profile.show', $entry->username) }}"
-                                           class="text-white hover:text-accent-400 truncate block">
-                                            {{ $entry->username }}
-                                        </a>
-                                    </div>
-                                    <span
-                                        class="font-semibold text-accent-400">{{ (int) $entry->total_points }} pts</span>
+                                    <img src="{{ $entry->avatar_path ? url($entry->avatar_path) : asset('images/avatars/default.png') }}" alt="" class="w-6 h-6 rounded-full flex-shrink-0">
+                                    <a href="{{ route('profile.show', $entry->username) }}" class="flex-1 min-w-0 text-white hover:text-accent-400 truncate text-sm">
+                                        {{ $entry->username }}
+                                    </a>
+                                    <span class="font-semibold text-accent-400 text-sm">{{ (int) $entry->total_points }}</span>
                                 </div>
                             @endforeach
                         </div>

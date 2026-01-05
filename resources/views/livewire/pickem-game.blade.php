@@ -11,6 +11,10 @@
         </div>
     @endif
 
+    @if($pickem->scoring_type === 'confidence' && !$pickem->isLocked())
+        <p class="text-sm text-steel-400 mb-3">Assign confidence points to each matchup. Click a selected value again to deselect it.</p>
+    @endif
+
     <div class="space-y-3">
         @foreach($pickem->matchups as $matchup)
             @php
@@ -67,7 +71,9 @@
                         {{-- Confidence points for confidence mode --}}
                         @if($pickem->scoring_type === 'confidence')
                             @if(!$pickem->isLocked())
-                                <div class="flex items-center gap-1 bg-steel-900/50 rounded-full px-2 py-1 shadow-inner">
+                                <div class="flex flex-col items-center gap-1">
+                                    <span class="text-xs text-steel-500">Points</span>
+                                    <div class="flex items-center gap-1 bg-steel-900/50 rounded-full px-2 py-1 shadow-inner">
                                     @for($i = 1; $i <= $pickem->matchups->count(); $i++)
                                         @php
                                             $isSelected = ($confidences[$matchup->id] ?? '') == $i;
@@ -84,6 +90,7 @@
                                                         : 'bg-steel-700 text-steel-300 hover:bg-steel-600 hover:text-white') }}"
                                         >{{ $i }}</button>
                                     @endfor
+                                    </div>
                                 </div>
                             @else
                                 @if(isset($confidences[$matchup->id]))

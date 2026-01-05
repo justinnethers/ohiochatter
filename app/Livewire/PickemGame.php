@@ -56,6 +56,12 @@ class PickemGame extends Component
             return;
         }
 
+        // If clicking the same value, deselect it
+        if (isset($this->confidences[$matchupId]) && $this->confidences[$matchupId] == $value) {
+            unset($this->confidences[$matchupId]);
+            return;
+        }
+
         // Remove confidence from any other matchup that has this value
         foreach ($this->confidences as $id => $conf) {
             if ($conf == $value && $id != $matchupId) {

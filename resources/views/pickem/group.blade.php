@@ -65,14 +65,19 @@
                                                         class="font-bold text-steel-100">{{ $participantCount }}</span>
                                                 </span>
                                             @endif
-                                            <span class="text-sm text-steel-400">
+                                            <div class="flex items-center gap-2 text-sm">
+                                                @auth
+                                                    @if($pickem->hasUserSubmitted(auth()->user()))
+                                                        <span class="text-emerald-400">Submitted</span>
+                                                        <span class="text-steel-600">&bull;</span>
+                                                    @endif
+                                                @endauth
                                                 @if(!$isComplete && $pickem->picks_lock_at)
-                                                    <span
-                                                        class="text-emerald-400">Locks {{ $pickem->picks_lock_at->diffForHumans() }}</span>
+                                                    <span class="text-steel-400">Locks {{ $pickem->picks_lock_at->diffForHumans() }}</span>
                                                 @elseif($isComplete)
-                                                    Completed
+                                                    <span class="text-steel-500">Completed</span>
                                                 @endif
-                                            </span>
+                                            </div>
                                         </div>
 
                                         {{-- Winner display for completed pickems --}}

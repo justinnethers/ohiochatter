@@ -43,15 +43,9 @@
             @else
                 <section>
                     @foreach($pickems as $pickem)
-                        <article class="group {{ $pickem->isLocked() ? 'bg-steel-850/80 border-steel-700/30' : 'bg-gradient-to-br from-steel-800 to-steel-850 border-steel-700/50 hover:border-steel-600 hover:shadow-xl hover:-translate-y-0.5' }} p-3 md:p-4 text-steel-100 rounded-xl mb-2 md:mb-4 shadow-lg shadow-black/20 border transition-all duration-300 relative overflow-hidden">
-                            {{-- Locked state overlay --}}
-                            @if ($pickem->isLocked())
-                                <div class="absolute inset-0 bg-gradient-to-br from-steel-900/30 to-steel-950/40 pointer-events-none"></div>
-                                <div class="absolute left-0 top-0 bottom-0 w-1 bg-steel-600/50"></div>
-                            @endif
-
+                        <article class="group bg-gradient-to-br from-steel-800 to-steel-850 border-steel-700/50 hover:border-steel-600 hover:shadow-xl hover:-translate-y-0.5 p-3 md:p-4 text-steel-100 rounded-xl mb-2 md:mb-4 shadow-lg shadow-black/20 border transition-all duration-300 relative overflow-hidden">
                             <a class="group/title text-lg md:text-xl font-semibold transition-colors duration-200 block leading-snug" href="{{ route('pickem.show', $pickem) }}">
-                                <span class="{{ $pickem->isLocked() ? 'text-steel-400 group-hover/title:text-steel-300' : 'text-white group-hover/title:text-accent-400' }} transition-colors duration-200">
+                                <span class="text-white group-hover/title:text-accent-400 transition-colors duration-200">
                                     {{ $pickem->title }}
                                 </span>
                             </a>
@@ -73,15 +67,23 @@
 
                                 <div class="flex-1"></div>
 
-                                @if($pickem->picks_lock_at)
-                                    @if($pickem->isLocked())
-                                        <span class="text-sm text-rose-400">Locked</span>
+                                <div class="flex items-center gap-2 text-sm">
+                                    @auth
+                                        @if($pickem->hasUserSubmitted(auth()->user()))
+                                            <span class="text-emerald-400">Submitted</span>
+                                            <span class="text-steel-600">&bull;</span>
+                                        @endif
+                                    @endauth
+                                    @if($pickem->picks_lock_at)
+                                        @if($pickem->isLocked())
+                                            <span class="text-steel-500">Locked</span>
+                                        @else
+                                            <span class="text-steel-400">Locks {{ $pickem->picks_lock_at->diffForHumans() }}</span>
+                                        @endif
                                     @else
-                                        <span class="text-sm text-emerald-400">Locks {{ $pickem->picks_lock_at->diffForHumans() }}</span>
+                                        <span class="text-accent-400">Open</span>
                                     @endif
-                                @else
-                                    <span class="text-sm text-accent-400">Open</span>
-                                @endif
+                                </div>
                             </div>
                         </article>
                     @endforeach

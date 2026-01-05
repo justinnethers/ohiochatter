@@ -135,6 +135,20 @@ class Pickem extends Model
     }
 
     /**
+     * Check if a user has submitted picks for this pickem.
+     */
+    public function hasUserSubmitted(?User $user): bool
+    {
+        if (! $user) {
+            return false;
+        }
+
+        return PickemPick::whereIn('pickem_matchup_id', $this->matchups->pluck('id'))
+            ->where('user_id', $user->id)
+            ->exists();
+    }
+
+    /**
      * Get the leaderboard for this specific pickem.
      */
     public function getLeaderboard(int $limit = 10): array

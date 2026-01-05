@@ -1,119 +1,126 @@
 <div>
     @if (session()->has('success'))
-        <div class="mb-4 p-4 bg-green-500/20 border border-green-500/50 rounded-lg text-green-400">
+        <div class="mb-4 p-4 bg-emerald-500/20 border border-emerald-500/50 rounded-xl text-emerald-400">
             {{ session('success') }}
         </div>
     @endif
 
     @if (session()->has('error'))
-        <div class="mb-4 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-400">
+        <div class="mb-4 p-4 bg-rose-500/20 border border-rose-500/50 rounded-xl text-rose-400">
             {{ session('error') }}
         </div>
     @endif
 
-    <div class="space-y-4">
+    <div class="space-y-3">
         @foreach($pickem->matchups as $matchup)
-            <div class="bg-gradient-to-br from-steel-800 to-steel-850 rounded-xl p-4 border border-steel-700/50">
+            @php
+                $userPick = $picks[$matchup->id] ?? null;
+                $isCorrect = $matchup->winner && $userPick === $matchup->winner;
+                $isWrong = $matchup->winner && $userPick && $userPick !== $matchup->winner && $matchup->winner !== 'push';
+            @endphp
+            <article class="group bg-gradient-to-br from-steel-800 to-steel-850 p-3 md:p-4 rounded-xl shadow-lg shadow-black/20 border border-steel-700/50 relative overflow-hidden">
+                {{-- Left edge indicator for pick state --}}
+                @if($isCorrect)
+                    <div class="absolute left-0 top-4 bottom-4 w-1 bg-emerald-500 rounded-r-full"></div>
+                @elseif($isWrong)
+                    <div class="absolute left-0 top-4 bottom-4 w-1 bg-rose-500 rounded-r-full"></div>
+                @elseif($userPick)
+                    <div class="absolute left-0 top-4 bottom-4 w-1 bg-accent-500 rounded-r-full"></div>
+                @endif
+
+                {{-- Description if present --}}
                 @if($matchup->description)
-                    <div class="text-sm text-steel-400 mb-3">{{ $matchup->description }}</div>
+                    <div class="text-sm text-steel-400 mb-2">{{ $matchup->description }}</div>
                 @endif
 
-                <div class="grid grid-cols-2 gap-3">
-                    {{-- Option A --}}
-                    <button
-                        wire:click="makePick({{ $matchup->id }}, 'a')"
-                        @if($pickem->isLocked()) disabled @endif
-                        class="relative p-4 rounded-lg border-2 transition-all duration-200 text-left
-                            {{ ($picks[$matchup->id] ?? '') === 'a'
-                                ? 'border-accent-500 bg-accent-500/20'
-                                : 'border-steel-600 hover:border-steel-500 bg-steel-700/30' }}
-                            {{ $pickem->isLocked() ? 'cursor-not-allowed opacity-75' : 'cursor-pointer' }}"
-                    >
-                        <span class="text-lg font-semibold text-white">{{ $matchup->option_a }}</span>
-                        @if($matchup->winner === 'a')
-                            <span class="absolute top-2 right-2 text-green-400">
-                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                </svg>
-                            </span>
-                        @endif
-                        @if($pickem->isLocked() && $matchup->winner)
-                            <div class="mt-2 text-xs text-steel-400">
-                                {{ $matchup->getPickCountForOption('a') }} picks
-                            </div>
-                        @endif
-                    </button>
+                {{-- Main selection area --}}
+                <div class="flex flex-col md:flex-row md:items-center gap-3">
+                    {{-- Option buttons --}}
+                    <div class="flex items-center gap-2 flex-1">
+                        <button
+                            wire:click="makePick({{ $matchup->id }}, 'a')"
+                            @if($pickem->isLocked()) disabled @endif
+                            class="flex-1 md:flex-none px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200
+                                {{ $userPick === 'a'
+                                    ? 'bg-accent-500 text-white shadow-lg shadow-accent-500/25'
+                                    : 'bg-steel-900/70 text-steel-300 border border-steel-700/50 hover:border-steel-600 hover:text-white' }}
+                                {{ $pickem->isLocked() ? 'cursor-not-allowed opacity-60' : '' }}
+                                {{ $matchup->winner === 'a' ? 'ring-2 ring-emerald-500 ring-offset-2 ring-offset-steel-800' : '' }}"
+                        >{{ $matchup->option_a }}</button>
 
-                    {{-- Option B --}}
-                    <button
-                        wire:click="makePick({{ $matchup->id }}, 'b')"
-                        @if($pickem->isLocked()) disabled @endif
-                        class="relative p-4 rounded-lg border-2 transition-all duration-200 text-left
-                            {{ ($picks[$matchup->id] ?? '') === 'b'
-                                ? 'border-accent-500 bg-accent-500/20'
-                                : 'border-steel-600 hover:border-steel-500 bg-steel-700/30' }}
-                            {{ $pickem->isLocked() ? 'cursor-not-allowed opacity-75' : 'cursor-pointer' }}"
-                    >
-                        <span class="text-lg font-semibold text-white">{{ $matchup->option_b }}</span>
-                        @if($matchup->winner === 'b')
-                            <span class="absolute top-2 right-2 text-green-400">
-                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                </svg>
-                            </span>
+                        <span class="text-steel-500 text-sm px-1">vs</span>
+
+                        <button
+                            wire:click="makePick({{ $matchup->id }}, 'b')"
+                            @if($pickem->isLocked()) disabled @endif
+                            class="flex-1 md:flex-none px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200
+                                {{ $userPick === 'b'
+                                    ? 'bg-accent-500 text-white shadow-lg shadow-accent-500/25'
+                                    : 'bg-steel-900/70 text-steel-300 border border-steel-700/50 hover:border-steel-600 hover:text-white' }}
+                                {{ $pickem->isLocked() ? 'cursor-not-allowed opacity-60' : '' }}
+                                {{ $matchup->winner === 'b' ? 'ring-2 ring-emerald-500 ring-offset-2 ring-offset-steel-800' : '' }}"
+                        >{{ $matchup->option_b }}</button>
+                    </div>
+
+                    {{-- Right side: confidence/points/status --}}
+                    <div class="flex items-center gap-3">
+                        {{-- Confidence points for confidence mode --}}
+                        @if($pickem->scoring_type === 'confidence')
+                            @if(!$pickem->isLocked())
+                                <div class="flex items-center gap-1 bg-steel-900/50 rounded-full px-2 py-1 shadow-inner">
+                                    @for($i = 1; $i <= $pickem->matchups->count(); $i++)
+                                        @php
+                                            $isSelected = ($confidences[$matchup->id] ?? '') == $i;
+                                            $isUsed = in_array($i, $this->usedConfidences) && !$isSelected;
+                                        @endphp
+                                        <button
+                                            wire:click="setConfidence({{ $matchup->id }}, {{ $i }})"
+                                            @if($isUsed) disabled @endif
+                                            class="w-6 h-6 rounded-full text-xs font-bold transition-all duration-200
+                                                {{ $isSelected
+                                                    ? 'bg-accent-500 text-white shadow-md'
+                                                    : ($isUsed
+                                                        ? 'bg-steel-800 text-steel-600 cursor-not-allowed'
+                                                        : 'bg-steel-700 text-steel-300 hover:bg-steel-600 hover:text-white') }}"
+                                        >{{ $i }}</button>
+                                    @endfor
+                                </div>
+                            @else
+                                @if(isset($confidences[$matchup->id]))
+                                    <div class="inline-flex items-center gap-1 px-3 py-1 bg-steel-900/70 rounded-full border border-steel-700/50">
+                                        <span class="font-bold text-accent-400">{{ $confidences[$matchup->id] }}</span>
+                                        <span class="text-sm text-steel-400">pts</span>
+                                    </div>
+                                @endif
+                            @endif
                         @endif
-                        @if($pickem->isLocked() && $matchup->winner)
-                            <div class="mt-2 text-xs text-steel-400">
-                                {{ $matchup->getPickCountForOption('b') }} picks
+
+                        {{-- Points for weighted mode --}}
+                        @if($pickem->scoring_type === 'weighted')
+                            <div class="inline-flex items-center gap-1 px-3 py-1 bg-steel-900/70 rounded-full border border-steel-700/50">
+                                <span class="font-bold text-accent-400">{{ $matchup->points }}</span>
+                                <span class="text-sm text-steel-400">{{ Str::plural('pt', $matchup->points) }}</span>
                             </div>
                         @endif
-                    </button>
+
+                        {{-- Push indicator --}}
+                        @if($matchup->winner === 'push')
+                            <span class="inline-flex items-center px-3 py-1 bg-yellow-500/20 rounded-full text-yellow-400 text-xs font-medium">
+                                Push
+                            </span>
+                        @endif
+
+                        {{-- Pick counts when locked --}}
+                        @if($pickem->isLocked() && $matchup->winner)
+                            <div class="inline-flex items-center gap-1 px-2 py-1 bg-steel-900/70 rounded-full border border-steel-700/50 text-xs text-steel-400">
+                                <span class="{{ $matchup->winner === 'a' ? 'text-emerald-400 font-bold' : '' }}">{{ $matchup->getPickCountForOption('a') }}</span>
+                                <span>-</span>
+                                <span class="{{ $matchup->winner === 'b' ? 'text-emerald-400 font-bold' : '' }}">{{ $matchup->getPickCountForOption('b') }}</span>
+                            </div>
+                        @endif
+                    </div>
                 </div>
-
-                {{-- Push indicator --}}
-                @if($matchup->winner === 'push')
-                    <div class="mt-3 text-center text-sm text-yellow-400">
-                        Push (Tie) - All picks count as correct
-                    </div>
-                @endif
-
-                {{-- Confidence selector for confidence mode --}}
-                @if($pickem->scoring_type === 'confidence' && !$pickem->isLocked())
-                    <div class="mt-3 flex items-center gap-2">
-                        <label class="text-sm text-steel-400">Confidence:</label>
-                        <select
-                            wire:change="setConfidence({{ $matchup->id }}, $event.target.value)"
-                            class="bg-steel-700 border-steel-600 rounded text-sm text-white px-3 py-1.5 focus:border-accent-500 focus:ring-accent-500"
-                        >
-                            <option value="">Select points...</option>
-                            @for($i = 1; $i <= $pickem->matchups->count(); $i++)
-                                <option
-                                    value="{{ $i }}"
-                                    {{ ($confidences[$matchup->id] ?? '') == $i ? 'selected' : '' }}
-                                    {{ in_array($i, $this->usedConfidences) && ($confidences[$matchup->id] ?? '') != $i ? 'disabled' : '' }}
-                                >{{ $i }} point{{ $i > 1 ? 's' : '' }}</option>
-                            @endfor
-                        </select>
-                        @if(isset($confidences[$matchup->id]))
-                            <span class="text-accent-400 font-semibold">{{ $confidences[$matchup->id] }} pts</span>
-                        @endif
-                    </div>
-                @endif
-
-                {{-- Show points for weighted mode --}}
-                @if($pickem->scoring_type === 'weighted')
-                    <div class="mt-2 text-sm text-steel-400">
-                        Worth: <span class="text-accent-400 font-semibold">{{ $matchup->points }} point{{ $matchup->points > 1 ? 's' : '' }}</span>
-                    </div>
-                @endif
-
-                {{-- Show confidence for confidence mode when locked --}}
-                @if($pickem->scoring_type === 'confidence' && $pickem->isLocked() && isset($confidences[$matchup->id]))
-                    <div class="mt-2 text-sm text-steel-400">
-                        Your confidence: <span class="text-accent-400 font-semibold">{{ $confidences[$matchup->id] }} point{{ $confidences[$matchup->id] > 1 ? 's' : '' }}</span>
-                    </div>
-                @endif
-            </div>
+            </article>
         @endforeach
     </div>
 
@@ -146,7 +153,7 @@
             $userScore = $pickem->getUserScore(auth()->user());
             $maxScore = $pickem->getMaxPossibleScore();
         @endphp
-        <div class="mt-6 p-4 bg-gradient-to-r from-accent-500/20 to-accent-600/20 border border-accent-500/30 rounded-lg">
+        <div class="mt-6 p-4 bg-gradient-to-br from-steel-800 to-steel-850 rounded-xl border border-accent-500/30 shadow-lg shadow-black/20">
             <div class="text-center">
                 <span class="text-steel-300">Your Score:</span>
                 <span class="text-2xl font-bold text-accent-400 ml-2">{{ $userScore }}</span>

@@ -123,4 +123,49 @@ class Pickem extends Model
             default => 0,
         };
     }
+
+    /**
+     * Get all unique users who submitted picks for this pickem.
+     */
+    public function getParticipantCount(): int
+    {
+        return PickemPick::whereIn('pickem_matchup_id', $this->matchups->pluck('id'))
+            ->distinct('user_id')
+            ->count('user_id');
+    }
+
+    /**
+     * Get the leaderboard for this specific pickem.
+     */
+    public function getLeaderboard(int $limit = 10): array
+    {
+        $participants = PickemPick::whereIn('pickem_matchup_id', $this->matchups->pluck('id'))
+            ->distinct('user_id')
+            ->pluck('user_id');
+
+        $scores = [];
+        foreach ($participants as $userId) {
+            $user = User::find($userId);
+            if ($user) {
+                $scores[] = [
+                    'user' => $user,
+                    'score' => $this->getUserScore($user),
+                    'max' => $this->getMaxPossibleScore(),
+                ];
+            }
+        }
+
+        usort($scores, fn($a, $b) => $b['score'] <=> $a['score']);
+
+        return array_slice($scores, 0, $limit);
+    }
+
+    /**
+     * Get the winner (highest scorer) for this pickem.
+     */
+    public function getWinner(): ?array
+    {
+        $leaderboard = $this->getLeaderboard(1);
+        return $leaderboard[0] ?? null;
+    }
 }

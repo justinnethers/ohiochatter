@@ -23,13 +23,12 @@
 
             @if($groups->isNotEmpty())
                 <div class="mb-6">
-                    <h3 class="text-sm font-semibold text-steel-400 uppercase tracking-wider mb-3">Groups</h3>
                     <div class="flex flex-wrap gap-2">
                         @foreach($groups as $group)
                             <a href="{{ route('pickem.group', $group) }}"
-                               class="inline-flex items-center gap-2 px-3 py-1.5 bg-steel-700/50 hover:bg-steel-700 rounded-lg text-sm text-steel-200 transition-colors">
+                               class="inline-flex items-center px-3 py-1 bg-accent-500 rounded-full text-xs md:text-sm font-semibold text-white shadow-lg shadow-black/20 hover:bg-accent-600 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200">
                                 {{ $group->name }}
-                                <span class="text-xs text-steel-400">({{ $group->pickems_count }})</span>
+                                <span class="ml-1.5 text-white/70">({{ $group->pickems_count }})</span>
                             </a>
                         @endforeach
                     </div>
@@ -38,71 +37,55 @@
 
             @if($pickems->isEmpty())
                 <div class="text-center py-12">
-                    <svg class="w-16 h-16 mx-auto text-steel-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                    </svg>
                     <p class="text-steel-400 text-lg">No Pick 'Ems yet</p>
                     <p class="text-steel-500 text-sm mt-1">Check back soon for upcoming games!</p>
                 </div>
             @else
-                <div class="space-y-4">
+                <section>
                     @foreach($pickems as $pickem)
-                        <a href="{{ route('pickem.show', $pickem) }}"
-                           class="block bg-gradient-to-br from-steel-800 to-steel-850 p-4 md:p-5 rounded-xl shadow-lg shadow-black/20 border border-steel-700/50 hover:border-accent-500/50 transition-all duration-200 group">
-                            <div class="flex items-start justify-between gap-4">
-                                <div class="flex-1 min-w-0">
-                                    <h3 class="text-lg font-semibold text-white group-hover:text-accent-400 transition-colors truncate">
-                                        {{ $pickem->title }}
-                                    </h3>
-                                    <div class="flex flex-wrap items-center gap-3 mt-2 text-sm text-steel-400">
-                                        @if($pickem->group)
-                                            <span class="inline-flex items-center gap-1">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
-                                                </svg>
-                                                {{ $pickem->group->name }}
-                                            </span>
-                                        @endif
-                                        <span class="inline-flex items-center gap-1">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                                            </svg>
-                                            {{ $pickem->matchups->count() }} matchups
-                                        </span>
-                                        <span class="inline-flex items-center gap-1">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                            </svg>
-                                            {{ $pickem->owner->username }}
-                                        </span>
-                                    </div>
+                        <article class="group {{ $pickem->isLocked() ? 'bg-steel-850/80 border-steel-700/30' : 'bg-gradient-to-br from-steel-800 to-steel-850 border-steel-700/50 hover:border-steel-600 hover:shadow-xl hover:-translate-y-0.5' }} p-3 md:p-4 text-steel-100 rounded-xl mb-2 md:mb-4 shadow-lg shadow-black/20 border transition-all duration-300 relative overflow-hidden">
+                            {{-- Locked state overlay --}}
+                            @if ($pickem->isLocked())
+                                <div class="absolute inset-0 bg-gradient-to-br from-steel-900/30 to-steel-950/40 pointer-events-none"></div>
+                                <div class="absolute left-0 top-0 bottom-0 w-1 bg-steel-600/50"></div>
+                            @endif
+
+                            <a class="group/title text-lg md:text-xl font-semibold transition-colors duration-200 block leading-snug" href="{{ route('pickem.show', $pickem) }}">
+                                <span class="{{ $pickem->isLocked() ? 'text-steel-400 group-hover/title:text-steel-300' : 'text-white group-hover/title:text-accent-400' }} transition-colors duration-200">
+                                    {{ $pickem->title }}
+                                </span>
+                            </a>
+
+
+                            {{-- Bottom stats row --}}
+                            <div class="flex flex-wrap text-sm mt-2 items-center gap-2">
+                                @if($pickem->group)
+                                    <a href="{{ route('pickem.group', $pickem->group) }}"
+                                       class="inline-flex items-center px-2 md:px-3 py-0.5 md:py-1 bg-accent-500 rounded-full text-xs md:text-sm font-semibold text-white shadow-lg shadow-black/20 hover:bg-accent-600 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200">
+                                        {{ $pickem->group->name }}
+                                    </a>
+                                @endif
+
+                                <div class="inline-flex items-center gap-1 md:gap-2 px-2 md:px-3 py-0.5 md:py-1 bg-steel-900/70 rounded-full border border-steel-700/50">
+                                    <span class="font-bold text-steel-100">{{ $pickem->matchups->count() }}</span>
+                                    <span class="text-sm text-steel-400">{{ Str::plural('matchup', $pickem->matchups->count()) }}</span>
                                 </div>
-                                <div class="flex flex-col items-end gap-2 shrink-0">
+
+                                <div class="flex-1"></div>
+
+                                @if($pickem->picks_lock_at)
                                     @if($pickem->isLocked())
-                                        <span class="inline-flex items-center gap-1 px-2 py-1 bg-red-500/20 text-red-400 rounded text-xs font-medium">
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                                            </svg>
-                                            Locked
-                                        </span>
-                                    @elseif($pickem->picks_lock_at)
-                                        <span class="inline-flex items-center gap-1 px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs font-medium">
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                            </svg>
-                                            Locks {{ $pickem->picks_lock_at->diffForHumans() }}
-                                        </span>
+                                        <span class="text-sm text-rose-400">Locked</span>
                                     @else
-                                        <span class="inline-flex items-center gap-1 px-2 py-1 bg-accent-500/20 text-accent-400 rounded text-xs font-medium">
-                                            Open
-                                        </span>
+                                        <span class="text-sm text-emerald-400">Locks {{ $pickem->picks_lock_at->diffForHumans() }}</span>
                                     @endif
-                                    <span class="text-xs text-steel-500 capitalize">{{ $pickem->scoring_type }}</span>
-                                </div>
+                                @else
+                                    <span class="text-sm text-accent-400">Open</span>
+                                @endif
                             </div>
-                        </a>
+                        </article>
                     @endforeach
-                </div>
+                </section>
 
                 <div class="mt-6">
                     {{ $pickems->links() }}

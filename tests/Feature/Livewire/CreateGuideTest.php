@@ -15,6 +15,7 @@ uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
 
 beforeEach(function () {
     $this->user = User::factory()->create();
+    $this->admin = User::factory()->create(['is_admin' => true]);
     $this->region = Region::factory()->create();
     $this->county = County::factory()->for($this->region)->create();
     $this->city = City::factory()->for($this->county)->create();
@@ -39,14 +40,34 @@ describe('route access', function () {
             ->assertRedirect(route('login'));
     });
 
-    it('allows authenticated users to access create page', function () {
+    it('forbids non-admin users from accessing create page', function () {
         $this->actingAs($this->user)
+            ->get(route('guide.create'))
+            ->assertForbidden();
+    });
+
+    it('forbids non-admin users from accessing my guides page', function () {
+        $this->actingAs($this->user)
+            ->get(route('guide.my-guides'))
+            ->assertForbidden();
+    });
+
+    it('forbids non-admin users from accessing edit page', function () {
+        $draft = GuideDraft::factory()->forUser($this->admin)->create();
+
+        $this->actingAs($this->user)
+            ->get(route('guide.edit', $draft->id))
+            ->assertForbidden();
+    });
+
+    it('allows admin users to access create page', function () {
+        $this->actingAs($this->admin)
             ->get(route('guide.create'))
             ->assertOk();
     });
 
-    it('allows authenticated users to access my guides page', function () {
-        $this->actingAs($this->user)
+    it('allows admin users to access my guides page', function () {
+        $this->actingAs($this->admin)
             ->get(route('guide.my-guides'))
             ->assertOk();
     });

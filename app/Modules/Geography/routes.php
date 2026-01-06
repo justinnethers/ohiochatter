@@ -32,14 +32,14 @@ Route::middleware('web')->prefix('ohio')->group(function () {
         Route::get('/article/{content}', [ContentController::class, 'show'])->name('guide.show');
 
         // User Guide Creation & Editing (requires auth)
-        Route::middleware('auth')->group(function () {
-            Route::get('/create', fn () => view('guides.create'))->name('guide.create');
-            Route::get('/my-guides', fn () => view('guides.my-guides'))->name('guide.my-guides');
-            Route::get('/drafts', fn () => redirect()->route('guide.my-guides')); // Redirect old URL
-            Route::get('/edit/{draft}', fn (int $draft) => view('guides.create', ['draft' => $draft]))->name('guide.edit');
+        Route::middleware(['auth', 'admin'])->group(function () {
+            Route::get('/create', fn() => view('guides.create'))->name('guide.create');
+            Route::get('/my-guides', fn() => view('guides.my-guides'))->name('guide.my-guides');
+            Route::get('/drafts', fn() => redirect()->route('guide.my-guides')); // Redirect old URL
+            Route::get('/edit/{draft}', fn(int $draft) => view('guides.create', ['draft' => $draft]))->name('guide.edit');
 
             // Edit published content (author or admin only)
-            Route::get('/article/{content}/edit', fn (Content $content) => view('guides.edit-content', ['content' => $content]))
+            Route::get('/article/{content}/edit', fn(Content $content) => view('guides.edit-content', ['content' => $content]))
                 ->name('guide.edit-content')
                 ->middleware('can:update,content');
         });

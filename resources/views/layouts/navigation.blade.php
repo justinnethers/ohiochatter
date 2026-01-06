@@ -3,7 +3,8 @@
      :class="{ 'h-16': !$store.scroll.scrolled, 'h-12': $store.scroll.scrolled }"
      class="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-steel-900 via-steel-800 to-steel-900 backdrop-blur-md border-b border-steel-700/50 shadow-lg shadow-black/20 transition-all duration-300">
     {{-- Blue accent line at top --}}
-    <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-accent-500 to-transparent"></div>
+    <div
+        class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-accent-500 to-transparent"></div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
         <div class="flex justify-between h-full transition-all duration-300">
@@ -11,7 +12,8 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a class="text-white font-bold text-xl flex items-center gap-2 group" href="{{ route('home') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-white group-hover:text-accent-400 transition-colors duration-200"/>
+                        <x-application-logo
+                            class="block h-9 w-auto fill-current text-white group-hover:text-accent-400 transition-colors duration-200"/>
                     </a>
                 </div>
 
@@ -38,7 +40,7 @@
             <!-- Settings Dropdown -->
             @if (Auth::check())
                 <div class="hidden sm:flex sm:items-center sm:ml-6 gap-2">
-                    <livewire:notifications-dropdown />
+                    <livewire:notifications-dropdown/>
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
                             <button
@@ -51,7 +53,8 @@
                                     <x-avatar size="6" :avatar-path="Auth::user()->avatar_path"/>
                                     @auth
                                         @if($count = Auth::user()->newThreadsCount() > 0)
-                                            <span class="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-red-500 ring-2 ring-steel-800"></span>
+                                            <span
+                                                class="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-red-500 ring-2 ring-steel-800"></span>
                                         @endif
                                     @endauth
                                 </div>
@@ -77,17 +80,24 @@
                                 @endauth
                             </x-dropdown-link>
 
+                            <x-dropdown-link :href="route('dashboard')">
+                                {{ __('Dashboard') }}
+                            </x-dropdown-link>
+
                             <x-dropdown-link :href="route('profile.edit')">
-                                {{ __('Profile') }}
+                                {{ __('User Settings') }}
+                            </x-dropdown-link>
+
+                            <x-dropdown-link :href="route('profile.show', auth()->user())">
+                                {{ __('Public Profile') }}
                             </x-dropdown-link>
 
                             <div class="border-t border-steel-700/50 my-1"></div>
 
-                            <x-dropdown-link :href="route('guide.my-guides')">
-                                {{ __('My Guides') }}
-                            </x-dropdown-link>
-
                             @if (Auth::user()->isAdmin())
+                                <x-dropdown-link :href="route('guide.my-guides')">
+                                    {{ __('Guides') }}
+                                </x-dropdown-link>
                                 <x-dropdown-link :href="route('pulse')" target="_blank">
                                     {{ __('Pulse') }}
                                 </x-dropdown-link>
@@ -123,7 +133,7 @@
             <!-- Hamburger -->
             <div class="-mr-2 flex items-center sm:hidden gap-2">
                 @auth
-                    <livewire:notifications-dropdown />
+                    <livewire:notifications-dropdown/>
                 @endauth
                 <button @click="open = ! open"
                         class="inline-flex items-center justify-center p-2 rounded-lg text-steel-400 hover:text-white hover:bg-steel-700/50 focus:outline-none focus:bg-steel-700/50 focus:text-white transition duration-150 ease-in-out">
@@ -186,22 +196,12 @@
                         target="_blank"
                     >Pulse
                     </x-responsive-nav-link>
+
+                    <x-responsive-nav-link :href="route('guide.my-guides')">
+                        {{ __('Guides') }}
+                    </x-responsive-nav-link>
                 @endif
             @endif
-
-            <x-responsive-nav-link
-                :href="route('messages.index')"
-                :active="request()->routeIs('messages.index')"
-            >
-                {{ __('Messages') }}
-                @auth
-                    {{--                    @if(($unreadCount = auth()->user()->threads->filter(function($thread) {--}}
-                    {{--                        return $thread->isUnread(auth()->id());--}}
-                    {{--                    })->count()) > 0)--}}
-                    {{--                        <span class="text-red-500">[{{ $unreadCount }} new]</span>--}}
-                    {{--                    @endif--}}
-                @endauth
-            </x-responsive-nav-link>
         </div>
 
         <!-- Responsive Settings Options -->
@@ -213,12 +213,31 @@
                 </div>
 
                 <div class="mt-3 space-y-1">
-                    <x-responsive-nav-link :href="route('profile.edit')">
-                        {{ __('Profile') }}
+
+                    <x-responsive-nav-link
+                        :href="route('messages.index')"
+                        :active="request()->routeIs('messages.index')"
+                    >
+                        {{ __('Messages') }}
+                        @auth
+                            {{--                    @if(($unreadCount = auth()->user()->threads->filter(function($thread) {--}}
+                            {{--                        return $thread->isUnread(auth()->id());--}}
+                            {{--                    })->count()) > 0)--}}
+                            {{--                        <span class="text-red-500">[{{ $unreadCount }} new]</span>--}}
+                            {{--                    @endif--}}
+                        @endauth
                     </x-responsive-nav-link>
 
-                    <x-responsive-nav-link :href="route('guide.my-guides')">
-                        {{ __('My Guides') }}
+                    <x-responsive-nav-link :href="route('dashboard')">
+                        {{ __('Dashboard') }}
+                    </x-responsive-nav-link>
+
+                    <x-responsive-nav-link :href="route('profile.edit')">
+                        {{ __('User Settings') }}
+                    </x-responsive-nav-link>
+
+                    <x-responsive-nav-link :href="route('profile.show', auth()->user())">
+                        {{ __('Public Profile') }}
                     </x-responsive-nav-link>
 
                     <!-- Authentication -->

@@ -146,28 +146,28 @@ it('marks revision as rejected with notes', function () {
 });
 
 // Phase 4: Routes
-it('shows edit page to content author', function () {
+it('denies edit page to guests', function () {
+    $content = Content::factory()->published()->create();
+
+    $this->get(route('guide.edit-content', $content))
+        ->assertRedirect(route('login'));
+});
+
+it('forbids content author from accessing edit page if not admin', function () {
     $content = Content::factory()->published()->create();
 
     $this->actingAs($content->author)
         ->get(route('guide.edit-content', $content))
-        ->assertOk();
+        ->assertForbidden();
 });
 
-it('denies edit page to non-author', function () {
+it('forbids non-admin users from accessing edit page', function () {
     $content = Content::factory()->published()->create();
     $otherUser = User::factory()->create();
 
     $this->actingAs($otherUser)
         ->get(route('guide.edit-content', $content))
         ->assertForbidden();
-});
-
-it('denies edit page to guests', function () {
-    $content = Content::factory()->published()->create();
-
-    $this->get(route('guide.edit-content', $content))
-        ->assertRedirect(route('login'));
 });
 
 it('allows admin to access edit page for any content', function () {

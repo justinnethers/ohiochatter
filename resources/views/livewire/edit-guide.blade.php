@@ -2,24 +2,16 @@
     @if($submitted)
         {{-- Success State --}}
         <div class="text-center py-12">
-            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full {{ $isAdmin ? 'bg-green-500/20 border border-green-500/50' : 'bg-blue-500/20 border border-blue-500/50' }} mb-6">
-                <svg class="w-8 h-8 {{ $isAdmin ? 'text-green-400' : 'text-blue-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-500/20 border border-green-500/50 mb-6">
+                <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                 </svg>
             </div>
-            @if($isAdmin)
-                <h3 class="text-2xl font-bold text-white mb-3">Changes Applied!</h3>
-                <p class="text-steel-300 mb-6 max-w-md mx-auto">
-                    Your changes to <strong class="text-white">"{{ $title }}"</strong>
-                    have been applied immediately.
-                </p>
-            @else
-                <h3 class="text-2xl font-bold text-white mb-3">Changes Submitted for Review!</h3>
-                <p class="text-steel-300 mb-6 max-w-md mx-auto">
-                    Your suggested changes to <strong class="text-white">"{{ $title }}"</strong>
-                    have been submitted. An admin will review and approve them shortly.
-                </p>
-            @endif
+            <h3 class="text-2xl font-bold text-white mb-3">Changes Saved!</h3>
+            <p class="text-steel-300 mb-6 max-w-md mx-auto">
+                Your changes to <strong class="text-white">"{{ $title }}"</strong>
+                have been saved.
+            </p>
             <div class="flex justify-center gap-4">
                 @php
                     $content = \App\Models\Content::find($contentId);
@@ -33,29 +25,6 @@
             </div>
         </div>
     @else
-        {{-- Non-admin notice --}}
-        @if(!$isAdmin)
-            <div class="mb-6 p-4 bg-gradient-to-r from-amber-500/20 to-amber-600/20 border border-amber-500/50 text-amber-200 rounded-xl flex items-center gap-3">
-                <svg class="w-5 h-5 text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                <span>Your changes will be submitted for review. An admin will review and approve your edits before they are published.</span>
-            </div>
-        @endif
-
-        {{-- Pending revision notice --}}
-        @if($pendingRevision)
-            <div class="mb-6 p-4 bg-gradient-to-r from-blue-500/20 to-blue-600/20 border border-blue-500/50 text-blue-200 rounded-xl">
-                <div class="flex items-center gap-2 mb-2">
-                    <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <span class="font-semibold">You have a pending revision</span>
-                </div>
-                <p class="text-sm text-blue-300">Submitted {{ $pendingRevision->created_at->diffForHumans() }}. Submitting new changes will replace this pending revision.</p>
-            </div>
-        @endif
-
         {{-- Form --}}
         <form wire:submit="submit" class="space-y-6">
             {{-- Error Summary --}}

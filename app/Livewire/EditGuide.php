@@ -3,12 +3,6 @@
 namespace App\Livewire;
 
 use App\Models\Content;
-use App\Models\ContentCategory;
-use App\Models\ContentRevision;
-use App\Modules\Geography\Actions\Content\CreateContentRevision;
-use App\Modules\Geography\Actions\Content\UpdateContent;
-use App\Modules\Geography\DTOs\CreateRevisionData;
-use App\Modules\Geography\DTOs\UpdateContentData;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
@@ -20,9 +14,6 @@ class EditGuide extends Component
 
     #[Locked]
     public int $contentId;
-
-    #[Locked]
-    public bool $isAdmin = false;
 
     // Form fields
     public string $title = '';
@@ -46,7 +37,6 @@ class EditGuide extends Component
 
     // UI state
     public bool $submitted = false;
-    public ?ContentRevision $pendingRevision = null;
 
     protected $listeners = ['locationSelected', 'categoriesSelected'];
 
@@ -113,10 +103,7 @@ class EditGuide extends Component
         $this->authorize('update', $content);
 
         $this->contentId = $content->id;
-        $this->isAdmin = auth()->user()->isAdmin();
-
         $this->loadContentData($content);
-        $this->pendingRevision = $content->pendingRevision;
     }
 
     protected function loadContentData(Content $content): void
@@ -396,17 +383,6 @@ class EditGuide extends Component
             unset($metadata['address']);
         }
 
-        if ($this->isAdmin) {
-            $this->applyDirectUpdate($content, $processedBlocks, $metadata);
-        } else {
-            $this->createRevision($content, $processedBlocks, $metadata);
-        }
-
-        $this->submitted = true;
-    }
-
-    protected function applyDirectUpdate(Content $content, array $processedBlocks, array $metadata): void
-    {
         $content->update([
             'title' => $this->title,
             'excerpt' => $this->excerpt ?: null,
@@ -418,21 +394,8 @@ class EditGuide extends Component
         ]);
 
         $content->contentCategories()->sync($this->categoryIds);
-    }
 
-    protected function createRevision(Content $content, array $processedBlocks, array $metadata): void
-    {
-        $revisionData = new CreateRevisionData(
-            contentId: $content->id,
-            title: $this->title,
-            excerpt: $this->excerpt ?: null,
-            body: $this->body,
-            blocks: $processedBlocks,
-            metadata: $metadata,
-            categoryIds: $this->categoryIds,
-        );
-
-        app(CreateContentRevision::class)->execute($revisionData, auth()->id());
+        $this->submitted = true;
     }
 
     public function render()

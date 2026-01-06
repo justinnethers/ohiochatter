@@ -4,8 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Scout\Searchable;
 
@@ -64,21 +62,6 @@ class Content extends Model
     public function comments()
     {
         return $this->morphMany(Comment::class, 'commentable');
-    }
-
-    public function revisions(): HasMany
-    {
-        return $this->hasMany(ContentRevision::class);
-    }
-
-    public function pendingRevision(): HasOne
-    {
-        return $this->hasOne(ContentRevision::class)->where('status', 'pending')->latest();
-    }
-
-    public function hasPendingRevision(): bool
-    {
-        return $this->revisions()->where('status', 'pending')->exists();
     }
 
     public function getRouteKeyName()

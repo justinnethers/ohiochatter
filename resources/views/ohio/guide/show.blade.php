@@ -13,11 +13,6 @@
     <div class="container mx-auto">
         <div class="md:rounded-2xl md:bg-gradient-to-br md:from-steel-800/50 md:to-steel-900/50 md:backdrop-blur-sm md:border md:border-steel-700/30 p-2 md:p-8 md:mt-4">
             <article class="bg-gradient-to-br from-steel-800 to-steel-850 p-4 md:p-8 text-steel-100 rounded-xl shadow-lg shadow-black/20 border border-steel-700/50">
-                {{-- Pending Revision Review (Admin Only) --}}
-                @if(auth()->user()?->isAdmin() && $content->hasPendingRevision())
-                    @livewire('review-revision', ['revision' => $content->pendingRevision])
-                @endif
-
                 <header class="mb-6">
                     <div class="flex flex-wrap gap-2 mb-4">
                         @php
@@ -68,11 +63,7 @@
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                 </svg>
-                                @if(auth()->user()->isAdmin())
-                                    Edit Guide
-                                @else
-                                    Suggest Edit
-                                @endif
+                                Edit Guide
                             </a>
                         @endcan
                     </div>

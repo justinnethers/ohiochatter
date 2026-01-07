@@ -168,12 +168,18 @@ class GenerateSitemap
             return;
         }
 
+        // Only include publicly accessible forums (must match ArchiveController::PUBLIC_FORUM_IDS)
+        $publicForumIds = [
+            6, 12, 35, 36,      // Serious Business, Politics, Thread Bomber's Basement, Hall of Fame
+            8, 34, 10, 41,      // HS Sports: Football, Scores and Updates, Wrestling, The Rest
+            7, 32, 42, 15, 16,  // College and Pro Sports
+        ];
+
         $sitemap = Sitemap::create()
             ->add(Url::create('/archive')->setPriority(0.5)->setChangeFrequency(Url::CHANGE_FREQUENCY_NEVER));
 
-        // Add archive forums with SEO-friendly slugs
-        VbForum::where('parentid', '>', 0)
-            ->where('displayorder', '>', 0)
+        // Add archive forums with SEO-friendly slugs (only public forums)
+        VbForum::whereIn('forumid', $publicForumIds)
             ->each(function ($forum) use ($sitemap) {
                 $sitemap->add(
                     Url::create("/archive/forum/{$forum->getRouteKey()}")
@@ -182,8 +188,9 @@ class GenerateSitemap
                 );
             });
 
-        // Add archive threads with SEO-friendly slugs
+        // Add archive threads with SEO-friendly slugs (only from public forums)
         VbThread::where('visible', 1)
+            ->whereIn('forumid', $publicForumIds)
             ->each(function ($thread) use ($sitemap) {
                 $sitemap->add(
                     Url::create("/archive/thread/{$thread->getRouteKey()}")

@@ -88,8 +88,9 @@ test('sitemap handles null updated_at dates gracefully', function () {
 });
 
 test('archive sitemap uses SEO-friendly URLs with slugs', function () {
-    // Create test archive data
+    // Create test archive data with a public forum ID (must be in GenerateSitemap whitelist)
     $forum = VbForum::factory()->create([
+        'forumid' => 6, // Serious Business - a public forum ID
         'parentid' => 1,
         'displayorder' => 1,
     ]);
@@ -169,7 +170,7 @@ test('VbThread resolves from bare ID for backwards compatibility', function () {
 });
 
 test('archive thread route returns 200 with SEO-friendly URL', function () {
-    $forum = VbForum::factory()->create();
+    $forum = VbForum::factory()->create(['forumid' => 6]); // Public forum ID
     $thread = VbThread::factory()->create([
         'forumid' => $forum->forumid,
         'visible' => 1,
@@ -181,7 +182,7 @@ test('archive thread route returns 200 with SEO-friendly URL', function () {
 });
 
 test('archive thread route redirects bare ID to SEO-friendly URL', function () {
-    $forum = VbForum::factory()->create();
+    $forum = VbForum::factory()->create(['forumid' => 7]); // Public forum ID
     $thread = VbThread::factory()->create([
         'forumid' => $forum->forumid,
         'visible' => 1,
@@ -194,7 +195,7 @@ test('archive thread route redirects bare ID to SEO-friendly URL', function () {
 });
 
 test('legacy showthread.php URL redirects to archive with slug', function () {
-    $forum = VbForum::factory()->create();
+    $forum = VbForum::factory()->create(['forumid' => 8]); // Public forum ID
     $thread = VbThread::factory()->create([
         'forumid' => $forum->forumid,
         'title' => 'Test Thread Title',

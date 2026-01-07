@@ -10,6 +10,16 @@ use Illuminate\Support\Str;
 
 class ArchiveController extends Controller
 {
+    /**
+     * Forum IDs that are publicly accessible in the archive.
+     * Forums not in this list require admin access.
+     */
+    private const PUBLIC_FORUM_IDS = [
+        6, 12, 35, 36,      // Serious Business, Politics, Thread Bomber's Basement, Hall of Fame
+        8, 34, 10, 41,      // HS Sports: Football, Scores and Updates, Wrestling, The Rest
+        7, 32, 42, 15, 16,  // College and Pro Sports
+    ];
+
     public function index()
     {
         // Define forum groups
@@ -66,6 +76,8 @@ class ArchiveController extends Controller
 
     public function forum(Request $request, VbForum $forum)
     {
+        $this->authorizeForumAccess($request, $forum->forumid);
+
         // Redirect to canonical URL if slug is missing or incorrect
         $canonicalKey = $forum->getRouteKey();
         $currentKey = $request->segment(3); // Get raw URL segment: /archive/forum/{this}
@@ -81,6 +93,8 @@ class ArchiveController extends Controller
 
     public function thread(Request $request, VbThread $thread)
     {
+        $this->authorizeForumAccess($request, $thread->forumid);
+
         // Redirect to canonical URL if slug is missing or incorrect
         $canonicalKey = $thread->getRouteKey();
         $currentKey = $request->segment(3); // Get raw URL segment: /archive/thread/{this}
@@ -93,5 +107,19 @@ class ArchiveController extends Controller
         $posts = $thread->posts()->with(['creator.avatar'])->orderBy('dateline')->paginate(25);
 
         return view('archive/thread', compact('posts', 'thread'));
+    }
+
+    /**
+     * Abort with 404 if the forum is not public and the user is not an admin.
+     */
+    private function authorizeForumAccess(Request $request, int $forumId): void
+    {
+        if (in_array($forumId, self::PUBLIC_FORUM_IDS)) {
+            return;
+        }
+
+        if (! $request->user() || ! $request->user()->is_admin) {
+            abort(404);
+        }
     }
 }

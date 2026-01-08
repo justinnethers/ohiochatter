@@ -2,11 +2,10 @@
 
 namespace App\Livewire;
 
-use App\Actions\Threads\CacheThreads;
 use App\Actions\Threads\ToggleLockAction;
 use App\Models\Thread;
-use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Component;
 
 class ThreadLockToggle extends Component
 {
@@ -16,17 +15,14 @@ class ThreadLockToggle extends Component
     public function mount(Thread $thread)
     {
         $this->thread = $thread;
-        $this->isLocked = (bool) $thread->locked;
+        $this->isLocked = (bool)$thread->locked;
     }
 
-    public function toggleLock(ToggleLockAction $action, CacheThreads $cacheAction)
+    public function toggleLock(ToggleLockAction $action)
     {
         try {
             $this->thread = $action->execute($this->thread);
-            $this->isLocked = (bool) $this->thread->locked;
-
-            // clear the thread cache so the lock is displayed on the thread listing
-            $cacheAction->execute($this->thread->id);
+            $this->isLocked = (bool)$this->thread->locked;
 
             $status = $this->isLocked ? 'locked' : 'unlocked';
             $this->dispatch('notify', [

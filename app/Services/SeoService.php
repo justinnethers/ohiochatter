@@ -75,6 +75,42 @@ class SeoService
                     'query-input' => 'required name=search_term_string',
                 ],
             ],
+            $this->buildSiteNavigationSchema(),
+        ];
+    }
+
+    protected function buildSiteNavigationSchema(): array
+    {
+        return [
+            '@type' => 'SiteNavigationElement',
+            'name' => 'Main Navigation',
+            'hasPart' => [
+                [
+                    '@type' => 'SiteNavigationElement',
+                    'name' => 'Home',
+                    'url' => $this->siteUrl,
+                ],
+                [
+                    '@type' => 'SiteNavigationElement',
+                    'name' => 'Serious Business',
+                    'url' => $this->siteUrl . '/forum/serious-business',
+                ],
+                [
+                    '@type' => 'SiteNavigationElement',
+                    'name' => 'Sports',
+                    'url' => $this->siteUrl . '/forum/sports',
+                ],
+                [
+                    '@type' => 'SiteNavigationElement',
+                    'name' => 'Forum Archive',
+                    'url' => route('archive.index'),
+                ],
+//                [
+//                    '@type' => 'SiteNavigationElement',
+//                    'name' => 'BuckEYE Game',
+//                    'url' => route('buckeye.index'),
+//                ],
+            ],
         ];
     }
 

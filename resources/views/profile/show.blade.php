@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-app-layout :seo="$seo ?? null">
     <x-slot name="title">{{ $user->username }}'s Profile</x-slot>
     <x-slot name="header">
         <div class="flex justify-between items-center">

@@ -6,10 +6,15 @@ use App\Models\Content;
 use App\Models\Reply;
 use App\Models\Thread;
 use App\Models\User;
+use App\Services\SeoService;
 use Illuminate\Support\Facades\Cache;
 
 class HomeController extends Controller
 {
+    public function __construct(
+        private SeoService $seoService
+    ) {}
+
     public function __invoke()
     {
         $isAuthenticated = auth()->check();
@@ -49,10 +54,13 @@ class HomeController extends Controller
             ];
         });
 
+        $seo = $this->seoService->forHomepage();
+
         return view('home', compact(
             'threads',
             'featuredGuides',
-            'stats'
+            'stats',
+            'seo'
         ));
     }
 }

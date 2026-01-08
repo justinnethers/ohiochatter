@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-app-layout :seo="$seo ?? null">
     <x-slot name="title">Profile Settings</x-slot>
     <x-slot name="header">
         <h2 class="font-bold text-xl text-white leading-tight flex items-center gap-3">

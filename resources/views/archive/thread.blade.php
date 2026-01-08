@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-app-layout :seo="$seo ?? null">
     <x-slot name="title">{{ $thread->title }} - Forum Archive</x-slot>
     <x-slot name="meta">{{ Str::limit(strip_tags($posts->first()?->pagetext ?? ''), 160) }}</x-slot>
     <x-slot name="header">

@@ -1,5 +1,5 @@
 <!-- resources/views/buckeye/index.blade.php -->
-<x-app-layout>
+<x-app-layout :seo="$seo ?? null">
     <x-slot name="title">BuckEYE: Ohio's Ultimate Daily Puzzle Game | Test Your Buckeye State Knowledge</x-slot>
 
     <x-slot name="head">

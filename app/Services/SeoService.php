@@ -39,6 +39,55 @@ class SeoService
         );
     }
 
+    protected function absoluteUrl(string $path): string
+    {
+        if (str_starts_with($path, 'http')) {
+            return $path;
+        }
+
+        return rtrim($this->siteUrl, '/') . '/' . ltrim($path, '/');
+    }
+
+    /**
+     * Build breadcrumb schema for JSON-LD
+     */
+    protected function buildBreadcrumbs(array $items): array
+    {
+        $breadcrumbs = [['name' => 'Home', 'url' => $this->siteUrl]];
+
+        return array_merge($breadcrumbs, $items);
+    }
+
+    protected function buildHomepageSchema(): array
+    {
+        return [
+            $this->buildOrganizationSchema(),
+            [
+                '@type' => 'WebSite',
+                'name' => $this->siteName,
+                'url' => $this->siteUrl,
+                'potentialAction' => [
+                    '@type' => 'SearchAction',
+                    'target' => [
+                        '@type' => 'EntryPoint',
+                        'urlTemplate' => $this->siteUrl . '/search?q={search_term_string}',
+                    ],
+                    'query-input' => 'required name=search_term_string',
+                ],
+            ],
+        ];
+    }
+
+    protected function buildOrganizationSchema(): array
+    {
+        return [
+            '@type' => 'Organization',
+            'name' => $this->siteName,
+            'url' => $this->siteUrl,
+            'logo' => $this->absoluteUrl('/images/logo.png'),
+        ];
+    }
+
     /**
      * Generate SEO data for a thread page
      */
@@ -67,6 +116,61 @@ class SeoService
             breadcrumbs: $breadcrumbs,
             jsonLd: $this->buildThreadSchema($thread, $canonical),
         );
+    }
+
+    protected function buildThreadSchema(Thread $thread, string $canonical): array
+    {
+        $schema = [
+            $this->buildBreadcrumbSchema($this->buildBreadcrumbs([
+                ['name' => 'Forums', 'url' => route('thread.index')],
+                ['name' => $thread->forum->name, 'url' => route('forum.show', $thread->forum)],
+                ['name' => $thread->title],
+            ])),
+            [
+                '@type' => 'DiscussionForumPosting',
+                'headline' => $thread->title,
+                'text' => Str::limit(strip_tags($thread->body), 500),
+                'url' => $canonical,
+                'dateCreated' => $thread->created_at->toIso8601String(),
+                'datePublished' => $thread->created_at->toIso8601String(),
+                'dateModified' => $thread->updated_at->toIso8601String(),
+                'author' => [
+                    '@type' => 'Person',
+                    'name' => $thread->owner->username ?? 'Anonymous',
+                ],
+                'interactionStatistic' => [
+                    '@type' => 'InteractionCounter',
+                    'interactionType' => 'https://schema.org/CommentAction',
+                    'userInteractionCount' => $thread->replies_count ?? $thread->replies()->count(),
+                ],
+            ],
+        ];
+
+        return $schema;
+    }
+
+    protected function buildBreadcrumbSchema(array $breadcrumbs): array
+    {
+        $items = [];
+
+        foreach ($breadcrumbs as $position => $crumb) {
+            $item = [
+                '@type' => 'ListItem',
+                'position' => $position + 1,
+                'name' => $crumb['name'],
+            ];
+
+            if (isset($crumb['url'])) {
+                $item['item'] = $crumb['url'];
+            }
+
+            $items[] = $item;
+        }
+
+        return [
+            '@type' => 'BreadcrumbList',
+            'itemListElement' => $items,
+        ];
     }
 
     /**
@@ -102,101 +206,6 @@ class SeoService
         );
     }
 
-    /**
-     * Build breadcrumb schema for JSON-LD
-     */
-    protected function buildBreadcrumbs(array $items): array
-    {
-        $breadcrumbs = [['name' => 'Home', 'url' => $this->siteUrl]];
-
-        return array_merge($breadcrumbs, $items);
-    }
-
-    protected function buildBreadcrumbSchema(array $breadcrumbs): array
-    {
-        $items = [];
-
-        foreach ($breadcrumbs as $position => $crumb) {
-            $item = [
-                '@type' => 'ListItem',
-                'position' => $position + 1,
-                'name' => $crumb['name'],
-            ];
-
-            if (isset($crumb['url'])) {
-                $item['item'] = $crumb['url'];
-            }
-
-            $items[] = $item;
-        }
-
-        return [
-            '@type' => 'BreadcrumbList',
-            'itemListElement' => $items,
-        ];
-    }
-
-    protected function buildHomepageSchema(): array
-    {
-        return [
-            $this->buildOrganizationSchema(),
-            [
-                '@type' => 'WebSite',
-                'name' => $this->siteName,
-                'url' => $this->siteUrl,
-                'potentialAction' => [
-                    '@type' => 'SearchAction',
-                    'target' => [
-                        '@type' => 'EntryPoint',
-                        'urlTemplate' => $this->siteUrl . '/search?q={search_term_string}',
-                    ],
-                    'query-input' => 'required name=search_term_string',
-                ],
-            ],
-        ];
-    }
-
-    protected function buildOrganizationSchema(): array
-    {
-        return [
-            '@type' => 'Organization',
-            'name' => $this->siteName,
-            'url' => $this->siteUrl,
-            'logo' => $this->absoluteUrl('/images/logo.png'),
-        ];
-    }
-
-    protected function buildThreadSchema(Thread $thread, string $canonical): array
-    {
-        $schema = [
-            $this->buildBreadcrumbSchema($this->buildBreadcrumbs([
-                ['name' => 'Forums', 'url' => route('thread.index')],
-                ['name' => $thread->forum->name, 'url' => route('forum.show', $thread->forum)],
-                ['name' => $thread->title],
-            ])),
-            [
-                '@type' => 'DiscussionForumPosting',
-                'headline' => $thread->title,
-                'text' => Str::limit(strip_tags($thread->body), 500),
-                'url' => $canonical,
-                'dateCreated' => $thread->created_at->toIso8601String(),
-                'datePublished' => $thread->created_at->toIso8601String(),
-                'dateModified' => $thread->updated_at->toIso8601String(),
-                'author' => [
-                    '@type' => 'Person',
-                    'name' => $thread->owner->name ?? 'Anonymous',
-                ],
-                'interactionStatistic' => [
-                    '@type' => 'InteractionCounter',
-                    'interactionType' => 'https://schema.org/CommentAction',
-                    'userInteractionCount' => $thread->replies_count ?? $thread->replies()->count(),
-                ],
-            ],
-        ];
-
-        return $schema;
-    }
-
     protected function buildForumSchema(Forum $forum): array
     {
         return [
@@ -213,12 +222,235 @@ class SeoService
         ];
     }
 
-    protected function absoluteUrl(string $path): string
+    /**
+     * Generate SEO data for the BuckEYE game page
+     */
+    public function forBuckEyeGame(): SeoData
     {
-        if (str_starts_with($path, 'http')) {
-            return $path;
-        }
+        $description = "Play BuckEYE, Ohio's ultimate daily puzzle game! Test your knowledge of the Buckeye State by identifying pixelated Ohio-themed images. 5 guesses, 5 pixelation levels.";
 
-        return rtrim($this->siteUrl, '/') . '/' . ltrim($path, '/');
+        return new SeoData(
+            title: "BuckEYE - Ohio's Daily Picture Puzzle Game",
+            description: $description,
+            canonical: route('buckeye.index'),
+            ogTitle: "BuckEYE - Ohio's Daily Picture Puzzle Game",
+            ogDescription: $description,
+            ogImage: $this->absoluteUrl('/images/buckeye-og.jpg'),
+            ogType: 'website',
+            ogUrl: route('buckeye.index'),
+            breadcrumbs: $this->buildBreadcrumbs([
+                ['name' => 'BuckEYE'],
+            ]),
+            jsonLd: $this->buildBuckEyeSchema(),
+        );
+    }
+
+    protected function buildBuckEyeSchema(): array
+    {
+        return [
+            $this->buildBreadcrumbSchema($this->buildBreadcrumbs([
+                ['name' => 'BuckEYE'],
+            ])),
+            [
+                '@type' => 'WebApplication',
+                'name' => 'BuckEYE',
+                'description' => "Ohio's daily picture puzzle game. Identify pixelated Ohio-themed images in 5 guesses.",
+                'url' => route('buckeye.index'),
+                'applicationCategory' => 'Game',
+                'operatingSystem' => 'Any',
+                'offers' => [
+                    '@type' => 'Offer',
+                    'price' => '0',
+                    'priceCurrency' => 'USD',
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Generate SEO data for the search results page
+     */
+    public function forSearch(string $query, int $resultCount): SeoData
+    {
+        $title = "Search: {$query}";
+        $description = "Search results for \"{$query}\" on OhioChatter. Found {$resultCount} results in forums and discussions.";
+
+        return new SeoData(
+            title: $title,
+            description: $description,
+            canonical: route('search.show', ['q' => $query]),
+            robots: 'noindex, follow',
+            breadcrumbs: $this->buildBreadcrumbs([
+                ['name' => 'Search'],
+                ['name' => $query],
+            ]),
+            jsonLd: [
+                $this->buildBreadcrumbSchema($this->buildBreadcrumbs([
+                    ['name' => 'Search'],
+                    ['name' => $query],
+                ])),
+            ],
+        );
+    }
+
+    /**
+     * Generate SEO data for a user profile page
+     */
+    public function forProfile(\App\Models\User $user): SeoData
+    {
+        $description = "{$user->username}'s profile on OhioChatter. Member since " . $user->created_at->format('F Y') . ".";
+
+        return new SeoData(
+            title: "{$user->username}'s Profile",
+            description: $description,
+            canonical: route('profile.show', $user),
+            ogTitle: "{$user->username} - OhioChatter Member",
+            ogDescription: $description,
+            ogImage: $user->avatar_url ?? $this->absoluteUrl($this->defaultImage),
+            ogType: 'profile',
+            ogUrl: route('profile.show', $user),
+            breadcrumbs: $this->buildBreadcrumbs([
+                ['name' => 'Members'],
+                ['name' => $user->username],
+            ]),
+            jsonLd: $this->buildProfileSchema($user),
+        );
+    }
+
+    protected function buildProfileSchema(\App\Models\User $user): array
+    {
+        return [
+            $this->buildBreadcrumbSchema($this->buildBreadcrumbs([
+                ['name' => 'Members'],
+                ['name' => $user->username],
+            ])),
+            [
+                '@type' => 'ProfilePage',
+                'mainEntity' => [
+                    '@type' => 'Person',
+                    'name' => $user->username,
+                    'url' => route('profile.show', $user),
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Generate SEO data for the archive index page
+     */
+    public function forArchiveIndex(): SeoData
+    {
+        $description = "Browse the OhioChatter forum archive. Explore classic discussions from Ohio's online community.";
+
+        return new SeoData(
+            title: 'Forum Archive',
+            description: $description,
+            canonical: route('archive.index'),
+            ogTitle: 'Forum Archive - OhioChatter',
+            ogDescription: $description,
+            ogImage: $this->absoluteUrl($this->defaultImage),
+            ogType: 'website',
+            ogUrl: route('archive.index'),
+            breadcrumbs: $this->buildBreadcrumbs([
+                ['name' => 'Archive'],
+            ]),
+            jsonLd: [
+                $this->buildBreadcrumbSchema($this->buildBreadcrumbs([
+                    ['name' => 'Archive'],
+                ])),
+                [
+                    '@type' => 'CollectionPage',
+                    'name' => 'Forum Archive',
+                    'description' => $description,
+                    'url' => route('archive.index'),
+                ],
+            ],
+        );
+    }
+
+    /**
+     * Generate SEO data for an archived forum page
+     */
+    public function forArchiveForum(\App\Models\VbForum $forum): SeoData
+    {
+        $description = $forum->description ?: "Browse archived threads from {$forum->title} on OhioChatter.";
+
+        return new SeoData(
+            title: "{$forum->title} - Forum Archive",
+            description: $description,
+            canonical: route('archive.forum', $forum),
+            ogTitle: "{$forum->title} - Forum Archive",
+            ogDescription: $description,
+            ogImage: $this->absoluteUrl($this->defaultImage),
+            ogType: 'website',
+            ogUrl: route('archive.forum', $forum),
+            breadcrumbs: $this->buildBreadcrumbs([
+                ['name' => 'Archive', 'url' => route('archive.index')],
+                ['name' => $forum->title],
+            ]),
+            jsonLd: [
+                $this->buildBreadcrumbSchema($this->buildBreadcrumbs([
+                    ['name' => 'Archive', 'url' => route('archive.index')],
+                    ['name' => $forum->title],
+                ])),
+                [
+                    '@type' => 'CollectionPage',
+                    'name' => $forum->title,
+                    'description' => $description,
+                    'url' => route('archive.forum', $forum),
+                ],
+            ],
+        );
+    }
+
+    /**
+     * Generate SEO data for an archived thread page
+     */
+    public function forArchiveThread(\App\Models\VbThread $thread, $firstPost): SeoData
+    {
+        $description = Str::limit(strip_tags($firstPost?->pagetext ?? ''), 160);
+
+        return new SeoData(
+            title: "{$thread->title} - Forum Archive",
+            description: $description,
+            canonical: route('archive.thread', $thread),
+            ogTitle: $thread->title,
+            ogDescription: $description,
+            ogImage: $this->absoluteUrl($this->defaultImage),
+            ogType: 'article',
+            ogUrl: route('archive.thread', $thread),
+            breadcrumbs: $this->buildBreadcrumbs([
+                ['name' => 'Archive', 'url' => route('archive.index')],
+                ['name' => $thread->forum->title ?? 'Forum', 'url' => $thread->forum ? route('archive.forum', $thread->forum) : null],
+                ['name' => Str::limit($thread->title, 50)],
+            ]),
+            jsonLd: $this->buildArchiveThreadSchema($thread, $firstPost),
+        );
+    }
+
+    protected function buildArchiveThreadSchema(\App\Models\VbThread $thread, $firstPost): array
+    {
+        $breadcrumbs = [
+            ['name' => 'Archive', 'url' => route('archive.index')],
+            ['name' => $thread->forum->title ?? 'Forum', 'url' => $thread->forum ? route('archive.forum', $thread->forum) : null],
+            ['name' => Str::limit($thread->title, 50)],
+        ];
+
+        return [
+            $this->buildBreadcrumbSchema($this->buildBreadcrumbs($breadcrumbs)),
+            [
+                '@type' => 'DiscussionForumPosting',
+                'headline' => $thread->title,
+                'text' => Str::limit(strip_tags($firstPost?->pagetext ?? ''), 500),
+                'url' => route('archive.thread', $thread),
+                'dateCreated' => $thread->dateline ? date('c', $thread->dateline) : null,
+                'datePublished' => $thread->dateline ? date('c', $thread->dateline) : null,
+                'interactionStatistic' => [
+                    '@type' => 'InteractionCounter',
+                    'interactionType' => 'https://schema.org/CommentAction',
+                    'userInteractionCount' => $thread->replycount ?? 0,
+                ],
+            ],
+        ];
     }
 }

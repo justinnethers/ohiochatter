@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-app-layout :seo="$seo ?? null">
     <x-slot name="title">{{ $pickem->title }}</x-slot>
 
     <x-slot name="head">

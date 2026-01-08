@@ -1,5 +1,5 @@
 {{-- resources/views/ohio/cities/index.blade.php --}}
-<x-app-layout>
+<x-app-layout :seo="$seo ?? null">
     <x-slot name="title">Ohio Cities</x-slot>
     <x-slot name="header">
         <h2 class="font-semibold text-3xl text-gray-200 dark:text-gray-200 leading-tight">

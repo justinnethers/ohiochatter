@@ -6,10 +6,15 @@ use App\Models\Thread;
 use App\Models\Reply;
 use App\Models\User;
 use App\Services\ReplyPaginationService;
+use App\Services\SeoService;
 use Illuminate\Http\Request;
 
 class SearchController extends Controller
 {
+    public function __construct(
+        private SeoService $seoService
+    ) {}
+
     public function show(Request $request)
     {
         $query = $request->input('q') ?? $request->query('query');
@@ -45,11 +50,15 @@ class SearchController extends Controller
             ->orderByDesc('created_at')
             ->paginate(10, ['*'], 'user_page');
 
+        $totalResults = $threads->total() + $posts->total() + $users->total();
+        $seo = $this->seoService->forSearch($query, $totalResults);
+
         return view('search.show', [
             'query' => $query,
             'threads' => $threads,
             'posts' => $posts,
             'users' => $users,
+            'seo' => $seo,
         ]);
     }
 }

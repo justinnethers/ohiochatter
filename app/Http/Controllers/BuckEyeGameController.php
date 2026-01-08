@@ -5,12 +5,17 @@ namespace App\Http\Controllers;
 use App\Models\Puzzle;
 use App\Models\UserGameStats;
 use App\Services\PuzzleService;
+use App\Services\SeoService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class BuckEyeGameController extends Controller
 {
+    public function __construct(
+        private SeoService $seoService
+    ) {}
+
     /**
      * Display the BuckEye game page for authenticated users
      */
@@ -24,8 +29,9 @@ class BuckEyeGameController extends Controller
 
         // Get today's puzzle
         $puzzle = $puzzleService->getTodaysPuzzle();
+        $seo = $this->seoService->forBuckEyeGame();
 
-        return view('buckeye.index', compact('userStats', 'puzzle'));
+        return view('buckeye.index', compact('userStats', 'puzzle', 'seo'));
     }
 
     /**
@@ -35,8 +41,9 @@ class BuckEyeGameController extends Controller
     {
         // Get today's puzzle
         $puzzle = $puzzleService->getTodaysPuzzle();
+        $seo = $this->seoService->forBuckEyeGame();
 
-        return view('buckeye.guest', compact('puzzle'));
+        return view('buckeye.guest', compact('puzzle', 'seo'));
     }
 
     /**
@@ -95,7 +102,8 @@ class BuckEyeGameController extends Controller
         return view('buckeye.stats', [
             'userStats' => $userStats,
             'recentPuzzles' => $playedPuzzles,
-            'puzzleProgress' => $progress
+            'puzzleProgress' => $progress,
+            'seo' => $this->seoService->forBuckEyeGame(),
         ]);
     }
 

@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-app-layout :seo="$seo ?? null">
     <x-slot name="meta">{{ $thread->meta_description }}</x-slot>
     <x-slot name="title">{{ $thread->title }}</x-slot>
     <x-slot name="header">

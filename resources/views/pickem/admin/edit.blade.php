@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-app-layout :seo="$seo ?? null">
     <x-slot name="title">Edit: {{ $pickem->title }}</x-slot>
     <x-slot name="header">
         <div class="flex items-center gap-3">

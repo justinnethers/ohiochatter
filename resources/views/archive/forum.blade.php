@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-app-layout :seo="$seo ?? null">
     <x-slot name="title">{{ $forum->title }} - Forum Archive</x-slot>
     <x-slot name="meta">{{ $forum->description ?: "Browse archived threads from {$forum->title} on OhioChatter." }}</x-slot>
     <x-slot name="header">

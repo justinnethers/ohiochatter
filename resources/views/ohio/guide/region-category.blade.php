@@ -1,5 +1,5 @@
 {{-- resources/views/ohio/guide/region-category.blade.php --}}
-<x-app-layout>
+<x-app-layout :seo="$seo ?? null">
     <x-slot name="title">{{ $category->name }} in {{ $region->name }}</x-slot>
     <x-slot name="header">
         <div class="flex justify-between items-center">

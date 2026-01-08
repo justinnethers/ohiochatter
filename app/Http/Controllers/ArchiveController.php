@@ -4,12 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\VbForum;
 use App\Models\VbThread;
+use App\Services\SeoService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class ArchiveController extends Controller
 {
+    public function __construct(
+        private SeoService $seoService
+    ) {}
     /**
      * Forum IDs that are publicly accessible in the archive.
      * Forums not in this list require admin access.
@@ -71,7 +75,9 @@ class ArchiveController extends Controller
             ];
         }
 
-        return view('archive/index', compact('groupedForums'));
+        $seo = $this->seoService->forArchiveIndex();
+
+        return view('archive/index', compact('groupedForums', 'seo'));
     }
 
     public function forum(Request $request, VbForum $forum)
@@ -87,8 +93,9 @@ class ArchiveController extends Controller
         }
 
         $threads = $forum->threads()->with(['creator.avatar'])->paginate(50);
+        $seo = $this->seoService->forArchiveForum($forum);
 
-        return view('archive/forum', compact('forum', 'threads'));
+        return view('archive/forum', compact('forum', 'threads', 'seo'));
     }
 
     public function thread(Request $request, VbThread $thread)
@@ -105,8 +112,9 @@ class ArchiveController extends Controller
 
         $thread->load('forum');
         $posts = $thread->posts()->with(['creator.avatar'])->orderBy('dateline')->paginate(25);
+        $seo = $this->seoService->forArchiveThread($thread, $posts->first());
 
-        return view('archive/thread', compact('posts', 'thread'));
+        return view('archive/thread', compact('posts', 'thread', 'seo'));
     }
 
     /**

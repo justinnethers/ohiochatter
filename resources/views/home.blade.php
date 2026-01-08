@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-app-layout :seo="$seo ?? null">
     <x-slot name="title">Ohio's Community Forum</x-slot>
 
     <div class="container mx-auto pt-4">

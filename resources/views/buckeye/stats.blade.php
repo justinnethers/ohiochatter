@@ -1,5 +1,5 @@
 <!-- resources/views/buckeye/stats.blade.php -->
-<x-app-layout>
+<x-app-layout :seo="$seo ?? null">
     <x-slot name="title">Your BuckEYE Stats</x-slot>
     <x-slot name="header">
         <div class="flex justify-between">

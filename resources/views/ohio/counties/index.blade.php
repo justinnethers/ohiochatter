@@ -1,5 +1,5 @@
 {{-- resources/views/ohio/counties/index.blade.php --}}
-<x-app-layout>
+<x-app-layout :seo="$seo ?? null">
     <x-slot name="title">Ohio Counties</x-slot>
     <x-slot name="header">
         <h2 class="font-semibold text-3xl text-gray-200 dark:text-gray-200 leading-tight">

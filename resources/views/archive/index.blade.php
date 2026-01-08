@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-app-layout :seo="$seo ?? null">
     <x-slot name="title">Forum Archive - OhioChatter</x-slot>
     <x-slot name="meta">Browse the OhioChatter forum archive. Explore classic discussions from Ohio's online community.</x-slot>
     <x-slot name="header">

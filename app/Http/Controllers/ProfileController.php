@@ -9,6 +9,7 @@ use App\Models\Neg;
 use App\Models\Thread;
 use App\Models\User;
 use App\Services\ReplyPaginationService;
+use App\Services\SeoService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,6 +19,9 @@ use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
+    public function __construct(
+        private SeoService $seoService
+    ) {}
     /**
      * Display a user's public profile.
      */
@@ -92,6 +96,8 @@ class ProfileController extends Controller
             : $user->created_at;
         $accountAge = $joinDate->diffForHumans(null, true);
 
+        $seo = $this->seoService->forProfile($user);
+
         return view('profile.show', compact(
             'user',
             'recentPosts',
@@ -102,7 +108,8 @@ class ProfileController extends Controller
             'gameStats',
             'lastPostDate',
             'joinDate',
-            'accountAge'
+            'accountAge',
+            'seo'
         ));
     }
 

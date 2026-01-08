@@ -1,5 +1,5 @@
 {{-- resources/views/ohio/counties/show.blade.php --}}
-<x-app-layout>
+<x-app-layout :seo="$seo ?? null">
     <x-slot name="title">{{ $county->name }} County</x-slot>
     <x-slot name="header">
         <div class="flex justify-between items-center">

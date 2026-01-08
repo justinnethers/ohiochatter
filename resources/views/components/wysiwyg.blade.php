@@ -129,11 +129,9 @@
                 window.addEventListener('giphy-selected', function (e) {
                     if (e.detail && e.detail.url) {
                         var imgHtml = '<img src="' + e.detail.url + '" alt="GIF">';
-                        editor.trumbowyg('execCmd', {
-                            cmd: 'insertHTML',
-                            param: imgHtml,
-                            forceCss: false
-                        });
+                        // Append GIF to the end of the content
+                        var currentHtml = editor.trumbowyg('html');
+                        editor.trumbowyg('html', currentHtml + imgHtml);
                     }
                 });
 

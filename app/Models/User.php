@@ -8,6 +8,7 @@ use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -18,7 +19,7 @@ use Laravel\Scout\Searchable;
 
 class User extends Authenticatable implements FilamentUser
 {
-    use HasApiTokens, HasFactory, Notifiable, Messagable, Searchable;
+    use HasApiTokens, HasFactory, Notifiable, Messagable, Searchable, SoftDeletes;
 
     /**
      * Cache of thread view records for this request.
@@ -29,7 +30,10 @@ class User extends Authenticatable implements FilamentUser
         'username',
         'email',
         'password',
-        'name'
+        'name',
+        'is_flagged_spam',
+        'spam_flag_reason',
+        'spam_flagged_at',
     ];
 
     protected $hidden = [
@@ -39,7 +43,9 @@ class User extends Authenticatable implements FilamentUser
 
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'last_activity' => 'datetime'
+        'last_activity' => 'datetime',
+        'is_flagged_spam' => 'boolean',
+        'spam_flagged_at' => 'datetime',
     ];
 
     public function searches(): HasMany
@@ -220,5 +226,15 @@ class User extends Authenticatable implements FilamentUser
     public function isAdmin()
     {
         return $this->is_admin;
+    }
+
+    public function scopeFlaggedAsSpam($query)
+    {
+        return $query->where('is_flagged_spam', true);
+    }
+
+    public function scopeNotFlaggedAsSpam($query)
+    {
+        return $query->where('is_flagged_spam', false);
     }
 }

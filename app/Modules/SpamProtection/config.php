@@ -12,7 +12,7 @@ return [
         'blocked_tlds' => env('SPAM_BLOCKED_TLDS', true),
         'disposable_detection' => env('SPAM_DISPOSABLE_DETECTION', true),
         'ip_rate_limiting' => env('SPAM_IP_RATE_LIMITING', true),
-        'pattern_detection' => env('SPAM_PATTERN_DETECTION', true),
+        'pattern_detection' => env('SPAM_PATTERN_DETECTION', false),
         'stopforumspam' => env('SPAM_STOPFORUMSPAM', true),
         'captcha' => env('SPAM_CAPTCHA', false),
     ],

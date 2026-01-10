@@ -7,6 +7,7 @@ use App\Modules\SpamProtection\Services\PatternDetector;
 use App\Modules\SpamProtection\Services\RateLimiter;
 use App\Modules\SpamProtection\Services\SpamProtectionService;
 use App\Modules\SpamProtection\Services\StopForumSpamChecker;
+use App\Modules\SpamProtection\Services\UserSpamScanner;
 use Illuminate\Support\ServiceProvider;
 
 class SpamProtectionServiceProvider extends ServiceProvider
@@ -31,6 +32,13 @@ class SpamProtectionServiceProvider extends ServiceProvider
                 $app->make(StopForumSpamChecker::class),
             );
         });
+
+        $this->app->singleton(UserSpamScanner::class, function ($app) {
+            return new UserSpamScanner(
+                $app->make(DisposableEmailChecker::class),
+                $app->make(StopForumSpamChecker::class),
+            );
+        });
     }
 
     public function boot(): void
@@ -39,6 +47,7 @@ class SpamProtectionServiceProvider extends ServiceProvider
             $this->commands([
                 Commands\ImportDisposableDomains::class,
                 Commands\CleanupRegistrationLogs::class,
+                Commands\ScanUsersForSpam::class,
             ]);
         }
     }

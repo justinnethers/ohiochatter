@@ -27,7 +27,7 @@ Route::get('forums/{forum}/{thread}', [ThreadController::class, 'show'])->name('
 // Ohio routes are now loaded from the Geography module
 // See: app/Modules/Geography/routes.php
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('threads/create', [ThreadController::class, 'create']);
     Route::get('forums/{forum}/threads/create', [ThreadController::class, 'create']);
     Route::post('threads', [ThreadController::class, 'store']);

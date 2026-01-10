@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
+use App\Modules\SpamProtection\Rules\NotSpammer;
 
 class RegisteredUserController extends Controller
 {
@@ -27,7 +28,7 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'username' => ['required', 'string', 'max:255', 'unique:' . User::class],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:' . User::class],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:' . User::class, new NotSpammer()],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 

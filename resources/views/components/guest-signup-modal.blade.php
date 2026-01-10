@@ -2,9 +2,10 @@
     @php
         $pageViews = session('guest_page_views', 0);
         $dismissed = session('signup_modal_dismissed', false);
+        $onAuthPage = request()->routeIs('login', 'register', 'password.*', 'verification.*');
     @endphp
 
-    @if($pageViews > 3 && !$dismissed)
+    @if($pageViews > 3 && !$dismissed && !$onAuthPage)
         <div
             x-data="{ show: true }"
             x-show="show"

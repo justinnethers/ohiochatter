@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Notifications\VerifyEmailNotification;
 use Cmgmyr\Messenger\Traits\Messagable;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
@@ -48,6 +49,14 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         'is_flagged_spam' => 'boolean',
         'spam_flagged_at' => 'datetime',
     ];
+
+    /**
+     * Send the email verification notification.
+     */
+    public function sendEmailVerificationNotification(): void
+    {
+        $this->notify(new VerifyEmailNotification);
+    }
 
     public function searches(): HasMany
     {

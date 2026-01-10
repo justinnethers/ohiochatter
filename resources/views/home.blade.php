@@ -5,6 +5,19 @@
         {{-- Welcome Section --}}
         <x-home.welcome />
 
+        {{-- Mobile Ad - Small ad after search, mobile only --}}
+        <div class="block lg:hidden mt-4">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-4406607721782655"
+                 data-ad-slot="3473533118"
+                 data-ad-format="horizontal"
+                 data-full-width-responsive="false"></ins>
+            <script>
+                (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+
         {{-- Main Content Grid --}}
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6 relative z-0">
             {{-- Main Column - Recent Threads --}}
@@ -45,8 +58,8 @@
                     <livewire:active-users />
                 </div>
 
-                {{-- Sidebar Ad --}}
-                <div class="bg-steel-800/50 p-3 rounded-xl shadow-lg shadow-black/20 border border-steel-700/30">
+                {{-- Sidebar Ad - Desktop only --}}
+                <div class="hidden lg:block bg-steel-800/50 p-3 rounded-xl shadow-lg shadow-black/20 border border-steel-700/30">
                     <ins class="adsbygoogle"
                          style="display:block"
                          data-ad-client="ca-pub-4406607721782655"

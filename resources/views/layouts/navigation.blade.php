@@ -11,28 +11,31 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a class="text-white font-bold text-xl flex items-center gap-2 group" href="{{ route('home') }}">
-                        <x-application-logo
-                            class="block h-9 w-auto fill-current text-white group-hover:text-accent-400 transition-colors duration-200"/>
+                    <a class="flex items-center group" href="{{ route('home') }}">
+                        <x-application-logo />
                     </a>
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden space-x-6 sm:-my-px sm:ml-10 sm:flex">
+                <div class="hidden space-x-6 sm:-my-px sm:ml-10 sm:flex items-center">
                     <x-nav-link :href="route('thread.index')" :active="request()->routeIs('thread.index')">
                         {{ __('All Threads') }}
                     </x-nav-link>
 
-                    <x-nav-link href="/forums/serious-business" :active="request()->is('forums/serious-business')">
-                        {{ __('Serious Business') }}
+                    {{-- Forums Megamenu (tablet and desktop) --}}
+                    <x-forums-megamenu class="hidden md:block" />
+
+                    {{-- Simple Forums link for small tablets (640-767px) --}}
+                    <x-nav-link
+                        href="/forums/serious-business"
+                        :active="request()->is('forums/*') || request()->routeIs('archive.*')"
+                        class="md:hidden"
+                    >
+                        {{ __('Forums') }}
                     </x-nav-link>
 
-                    <x-nav-link href="/forums/sports" :active="request()->is('forums/sports')">
-                        {{ __('Sports') }}
-                    </x-nav-link>
-
-                    <x-nav-link href="{{ route('archive.index') }}" :active="request()->routeIs('archive.*')">
-                        {{ __('Archive') }}
+                    <x-nav-link href="{{ route('pickem.index') }}" :active="request()->routeIs('pickem.*')">
+                        {{ __('Pick \'ems') }}
                     </x-nav-link>
                 </div>
             </div>

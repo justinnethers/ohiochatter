@@ -177,6 +177,7 @@ return [
          */
         App\Modules\Geography\GeographyServiceProvider::class,
         App\Modules\Pickem\PickemServiceProvider::class,
+        App\Modules\SpamProtection\SpamProtectionServiceProvider::class,
     ])->toArray(),
 
     /*

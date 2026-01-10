@@ -8,13 +8,13 @@
         <img
             src="/images/logo.png"
             alt="Ohio Chatter"
-            class="w-auto transition-all duration-200"
+            class="w-auto h-6 transition-all duration-200"
             :class="$store.scroll.scrolled ? 'h-5' : 'h-6'"
         >
     </div>
     @if($showText)
         <span
-            class="text-white font-bold hidden sm:inline group-hover:text-accent-400 transition-all duration-200"
+            class="text-white font-bold text-xl hidden sm:inline group-hover:text-accent-400 transition-all duration-200"
             :class="$store.scroll.scrolled ? 'text-lg' : 'text-xl'"
         >Ohio Chatter</span>
     @endif

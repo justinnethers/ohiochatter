@@ -62,67 +62,73 @@
             role="menu"
             aria-orientation="vertical"
         >
-        <div class="w-[500px] bg-gradient-to-b from-steel-800 to-steel-900 rounded-xl shadow-2xl shadow-black/40 border border-steel-700/50 overflow-hidden">
-            {{-- Header --}}
-            <div class="px-4 py-3 border-b border-steel-700/50 bg-steel-800/50">
-                <h3 class="text-sm font-semibold text-steel-200">Browse Forums</h3>
+            <div
+                class="w-[500px] bg-gradient-to-b from-steel-800 to-steel-900 rounded-xl shadow-2xl shadow-black/40 border border-steel-700/50 overflow-hidden">
+                {{-- Header --}}
+                <div class="px-4 py-3 border-b border-steel-700/50 bg-steel-800/50">
+                    <h3 class="text-sm font-semibold text-steel-200">Browse Forums</h3>
+                </div>
+
+                {{-- Forum Grid --}}
+                <div class="p-4 grid grid-cols-2 gap-3">
+                    {{-- Serious Business --}}
+                    <a
+                        href="/forums/serious-business"
+                        class="group p-3 rounded-lg hover:bg-steel-700/50 transition-colors"
+                        role="menuitem"
+                    >
+                        <div class="flex items-center gap-2 mb-1">
+                            <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+                            <span
+                                class="text-sm font-semibold text-white group-hover:text-accent-300 transition-colors">Serious Business</span>
+                        </div>
+                        <p class="text-xs text-steel-400 leading-relaxed">General discussion for Ohio topics and
+                            beyond</p>
+                    </a>
+
+                    {{-- Sports --}}
+                    <a
+                        href="/forums/sports"
+                        class="group p-3 rounded-lg hover:bg-steel-700/50 transition-colors"
+                        role="menuitem"
+                    >
+                        <div class="flex items-center gap-2 mb-1">
+                            <div class="w-2 h-2 rounded-full bg-red-500"></div>
+                            <span
+                                class="text-sm font-semibold text-white group-hover:text-accent-300 transition-colors">Sports</span>
+                        </div>
+                        <p class="text-xs text-steel-400 leading-relaxed">Ohio State, Browns, Bengals & more</p>
+                    </a>
+
+                    {{-- Politics --}}
+                    <a
+                        href="/forums/politics"
+                        class="group p-3 rounded-lg hover:bg-steel-700/50 transition-colors"
+                        role="menuitem"
+                    >
+                        <div class="flex items-center gap-2 mb-1">
+                            <div class="w-2 h-2 rounded-full bg-orange-500"></div>
+                            <span
+                                class="text-sm font-semibold text-white group-hover:text-accent-300 transition-colors">Politics</span>
+                        </div>
+                        <p class="text-xs text-steel-400 leading-relaxed">Political news and civil debate</p>
+                    </a>
+
+                    {{-- Forum Archive --}}
+                    <a
+                        href="{{ route('archive.index') }}"
+                        class="group p-3 rounded-lg hover:bg-steel-700/50 transition-colors"
+                        role="menuitem"
+                    >
+                        <div class="flex items-center gap-2 mb-1">
+                            <div class="w-2 h-2 rounded-full bg-steel-500"></div>
+                            <span
+                                class="text-sm font-semibold text-white group-hover:text-accent-300 transition-colors">Forum Archive</span>
+                        </div>
+                        <p class="text-xs text-steel-400 leading-relaxed">Classic threads from years past</p>
+                    </a>
+                </div>
             </div>
-
-            {{-- Forum Grid --}}
-            <div class="p-4 grid grid-cols-2 gap-3">
-                {{-- Serious Business --}}
-                <a
-                    href="/forums/serious-business"
-                    class="group p-3 rounded-lg hover:bg-steel-700/50 transition-colors"
-                    role="menuitem"
-                >
-                    <div class="flex items-center gap-2 mb-1">
-                        <div class="w-2 h-2 rounded-full bg-blue-500"></div>
-                        <span class="text-sm font-semibold text-white group-hover:text-accent-300 transition-colors">Serious Business</span>
-                    </div>
-                    <p class="text-xs text-steel-400 leading-relaxed">General discussion for Ohio topics and beyond</p>
-                </a>
-
-                {{-- Sports --}}
-                <a
-                    href="/forums/sports"
-                    class="group p-3 rounded-lg hover:bg-steel-700/50 transition-colors"
-                    role="menuitem"
-                >
-                    <div class="flex items-center gap-2 mb-1">
-                        <div class="w-2 h-2 rounded-full bg-green-500"></div>
-                        <span class="text-sm font-semibold text-white group-hover:text-accent-300 transition-colors">Sports</span>
-                    </div>
-                    <p class="text-xs text-steel-400 leading-relaxed">Ohio State, Buckeyes, Browns, Bengals & more</p>
-                </a>
-
-                {{-- Politics --}}
-                <a
-                    href="/forums/politics"
-                    class="group p-3 rounded-lg hover:bg-steel-700/50 transition-colors"
-                    role="menuitem"
-                >
-                    <div class="flex items-center gap-2 mb-1">
-                        <div class="w-2 h-2 rounded-full bg-red-500"></div>
-                        <span class="text-sm font-semibold text-white group-hover:text-accent-300 transition-colors">Politics</span>
-                    </div>
-                    <p class="text-xs text-steel-400 leading-relaxed">Political news and civil debate</p>
-                </a>
-
-                {{-- Forum Archive --}}
-                <a
-                    href="{{ route('archive.index') }}"
-                    class="group p-3 rounded-lg hover:bg-steel-700/50 transition-colors"
-                    role="menuitem"
-                >
-                    <div class="flex items-center gap-2 mb-1">
-                        <div class="w-2 h-2 rounded-full bg-orange-500"></div>
-                        <span class="text-sm font-semibold text-white group-hover:text-accent-300 transition-colors">Forum Archive</span>
-                    </div>
-                    <p class="text-xs text-steel-400 leading-relaxed">Classic threads from years past</p>
-                </a>
-            </div>
-        </div>
         </div>
     </div>
 </div>

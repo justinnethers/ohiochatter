@@ -61,7 +61,7 @@ class Thread extends Model implements Sitemapable
 
     public function owner(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'user_id')->withTrashed();
     }
 
     public function poll(): HasOne

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Livewire;
+namespace App\Modules\BuckEYE\Livewire;
 
-use App\Models\UserGameStats;
+use App\Modules\BuckEYE\Models\UserGameStats;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 

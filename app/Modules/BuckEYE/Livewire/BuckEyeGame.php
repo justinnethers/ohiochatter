@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Livewire;
+namespace App\Modules\BuckEYE\Livewire;
 
-use App\Models\AnonymousGameProgress;
-use App\Models\UserGameProgress;
-use App\Models\UserGameStats;
-use App\Services\PuzzleService;
+use App\Modules\BuckEYE\Models\AnonymousGameProgress;
+use App\Modules\BuckEYE\Models\UserGameProgress;
+use App\Modules\BuckEYE\Models\UserGameStats;
+use App\Modules\BuckEYE\Services\PuzzleService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Livewire\Component;
@@ -158,6 +158,10 @@ class BuckEyeGame extends Component
                 'user_agent' => request()->userAgent()
             ]
         );
+
+        if ($this->gameState['gameComplete']) {
+            app(PuzzleService::class)->clearPuzzleStatsCache($this->puzzle);
+        }
     }
 
     public function render()

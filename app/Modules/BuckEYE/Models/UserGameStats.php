@@ -1,13 +1,20 @@
 <?php
 
-namespace App\Models;
+namespace App\Modules\BuckEYE\Models;
 
+use App\Models\User;
+use Database\Factories\UserGameStatsFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class UserGameStats extends Model
 {
     use HasFactory;
+
+    protected static function newFactory()
+    {
+        return UserGameStatsFactory::new();
+    }
 
     /**
      * The attributes that are mass assignable.

@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Models;
+namespace App\Modules\BuckEYE\Models;
 
-use App\Actions\BuckEye\OpenAIAnswerCheck;
-use App\Actions\BuckEye\RobustAnswerCheck;
+use App\Modules\BuckEYE\Actions\RobustAnswerCheck;
+use Database\Factories\PuzzleFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
@@ -19,7 +19,6 @@ class Puzzle extends Model
      * @var array
      */
     protected $guarded = [];
-
     /**
      * The attributes that should be cast.
      *
@@ -38,6 +37,11 @@ class Puzzle extends Model
     public static function getTodaysPuzzle()
     {
         return self::where('publish_date', Carbon::today()->toDateString())->first();
+    }
+
+    protected static function newFactory()
+    {
+        return PuzzleFactory::new();
     }
 
     /**

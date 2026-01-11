@@ -1,28 +1,26 @@
 <?php
 
-namespace App\Models;
+namespace App\Modules\BuckEYE\Models;
 
+use Database\Factories\AnonymousGameProgressFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class UserGameProgress extends Model
+class AnonymousGameProgress extends Model
 {
     use HasFactory;
+
+    protected static function newFactory()
+    {
+        return AnonymousGameProgressFactory::new();
+    }
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = [
-        'user_id',
-        'puzzle_id',
-        'solved',
-        'attempts',
-        'guesses_taken',
-        'previous_guesses',
-        'completed_at',
-    ];
+    protected $guarded = [];
 
     /**
      * The attributes that should be cast.
@@ -34,14 +32,6 @@ class UserGameProgress extends Model
         'previous_guesses' => 'array',
         'completed_at' => 'datetime',
     ];
-
-    /**
-     * Get the user that owns the progress
-     */
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
 
     /**
      * Get the puzzle related to this progress

@@ -304,6 +304,51 @@ class SeoService
     }
 
     /**
+     * Generate SEO data for the OhioWordle game page
+     */
+    public function forOhioWordle(): SeoData
+    {
+        $description = "Play OhioWordle, Ohio's daily word puzzle! Guess the Ohio-themed word in 6 tries. Test your knowledge of the Buckeye State with our Wordle-style game.";
+
+        return new SeoData(
+            title: "OhioWordle - Ohio's Daily Word Puzzle Game",
+            description: $description,
+            canonical: route('ohiowordle.index'),
+            ogTitle: "OhioWordle - Ohio's Daily Word Puzzle Game",
+            ogDescription: $description,
+            ogImage: $this->absoluteUrl('/images/ohiowordle-og.jpg'),
+            ogType: 'website',
+            ogUrl: route('ohiowordle.index'),
+            breadcrumbs: $this->buildBreadcrumbs([
+                ['name' => 'OhioWordle'],
+            ]),
+            jsonLd: $this->buildOhioWordleSchema(),
+        );
+    }
+
+    protected function buildOhioWordleSchema(): array
+    {
+        return [
+            $this->buildBreadcrumbSchema($this->buildBreadcrumbs([
+                ['name' => 'OhioWordle'],
+            ])),
+            [
+                '@type' => 'WebApplication',
+                'name' => 'OhioWordle',
+                'description' => "Ohio's daily word puzzle game. Guess the Ohio-themed word in 6 tries.",
+                'url' => route('ohiowordle.index'),
+                'applicationCategory' => 'Game',
+                'operatingSystem' => 'Any',
+                'offers' => [
+                    '@type' => 'Offer',
+                    'price' => '0',
+                    'priceCurrency' => 'USD',
+                ],
+            ],
+        ];
+    }
+
+    /**
      * Generate SEO data for the search results page
      */
     public function forSearch(string $query, int $resultCount): SeoData

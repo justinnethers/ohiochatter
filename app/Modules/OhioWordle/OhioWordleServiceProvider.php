@@ -2,9 +2,12 @@
 
 namespace App\Modules\OhioWordle;
 
+use App\Modules\OhioWordle\Livewire\OhioWordleGame;
+use App\Modules\OhioWordle\Livewire\OhioWordleUserStats;
 use App\Modules\OhioWordle\Services\DictionaryService;
 use App\Modules\OhioWordle\Services\WordleService;
 use Illuminate\Support\ServiceProvider;
+use Livewire\Livewire;
 
 class OhioWordleServiceProvider extends ServiceProvider
 {
@@ -23,8 +26,7 @@ class OhioWordleServiceProvider extends ServiceProvider
     {
         $this->loadRoutesFrom(__DIR__.'/routes.php');
 
-        // Register Livewire components when they're created
-        // Livewire::component('ohio-wordle-game', OhioWordleGame::class);
-        // Livewire::component('ohio-wordle-user-stats', OhioWordleUserStats::class);
+        Livewire::component('ohio-wordle-game', OhioWordleGame::class);
+        Livewire::component('ohio-wordle-user-stats', OhioWordleUserStats::class);
     }
 }

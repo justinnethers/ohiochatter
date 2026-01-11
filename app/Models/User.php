@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Modules\BuckEYE\Models\Puzzle;
 use App\Modules\BuckEYE\Models\UserGameProgress;
+use App\Modules\OhioWordle\Models\WordleUserProgress;
 use App\Notifications\VerifyEmailNotification;
 use Cmgmyr\Messenger\Traits\Messagable;
 use Filament\Models\Contracts\FilamentUser;
@@ -210,6 +211,14 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
     public function gameProgress(): HasMany
     {
         return $this->hasMany(UserGameProgress::class);
+    }
+
+    /**
+     * Get OhioWordle progress records for the user
+     */
+    public function wordleProgress(): HasMany
+    {
+        return $this->hasMany(WordleUserProgress::class);
     }
 
     /**

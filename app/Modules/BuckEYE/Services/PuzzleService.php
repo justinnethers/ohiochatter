@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Services;
+namespace App\Modules\BuckEYE\Services;
 
-use App\Models\AnonymousGameProgress;
-use App\Models\Puzzle;
 use App\Models\User;
-use App\Models\UserGameProgress;
-use App\Models\UserGameStats;
+use App\Modules\BuckEYE\Models\AnonymousGameProgress;
+use App\Modules\BuckEYE\Models\Puzzle;
+use App\Modules\BuckEYE\Models\UserGameProgress;
+use App\Modules\BuckEYE\Models\UserGameStats;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
@@ -24,6 +24,11 @@ class PuzzleService
         return Cache::remember("puzzle_stats_{$puzzle->id}", 300, function () use ($puzzle) {
             return $this->calculatePuzzleStats($puzzle);
         });
+    }
+
+    public function clearPuzzleStatsCache(Puzzle $puzzle): void
+    {
+        Cache::forget("puzzle_stats_{$puzzle->id}");
     }
 
     private function calculatePuzzleStats(Puzzle $puzzle): array
@@ -132,11 +137,13 @@ class PuzzleService
 
             $stats = UserGameStats::getOrCreateForUser($user->id);
             $stats->updateAfterGame(true, $userGameProgress->attempts);
+            $this->clearPuzzleStatsCache($puzzle);
         } elseif ($userGameProgress->attempts >= self::MAX_GUESSES) {
             $userGameProgress->completed_at = now();
 
             $stats = UserGameStats::getOrCreateForUser($user->id);
             $stats->updateAfterGame(false);
+            $this->clearPuzzleStatsCache($puzzle);
         }
 
         $userGameProgress->save();

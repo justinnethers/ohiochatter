@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\BuckEye;
+namespace App\Modules\BuckEYE\Actions;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;

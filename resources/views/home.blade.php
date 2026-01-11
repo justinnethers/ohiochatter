@@ -64,6 +64,9 @@
 
             {{-- Sidebar - Desktop only --}}
             <div class="hidden lg:block lg:order-none space-y-6">
+                {{-- Latest Poll --}}
+                <livewire:latest-poll />
+
                 {{-- Members Online --}}
                 <div class="bg-gradient-to-br from-steel-800 to-steel-850 rounded-xl border border-steel-700/50 p-4">
                     <livewire:active-users />
@@ -81,9 +84,6 @@
                         (adsbygoogle = window.adsbygoogle || []).push({});
                     </script>
                 </div>
-
-                {{-- Latest Poll --}}
-                <livewire:latest-poll />
 
                 {{-- Active Pick 'Em --}}
                 <livewire:active-pickem />

@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Modules\BuckEYE\Filament\Resources;
 
-use App\Filament\Resources\PuzzleResource\Pages;
-use App\Filament\Resources\PuzzleResource\RelationManagers\UserProgressRelationManager;
-use App\Models\Puzzle;
-use App\Models\UserGameProgress;
+use App\Modules\BuckEYE\Filament\Resources\PuzzleResource\Pages;
+use App\Modules\BuckEYE\Filament\Resources\PuzzleResource\RelationManagers\UserProgressRelationManager;
+use App\Modules\BuckEYE\Models\Puzzle;
+use App\Modules\BuckEYE\Models\UserGameProgress;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TagsInput;

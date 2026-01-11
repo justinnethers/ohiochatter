@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\PuzzleResource\RelationManagers;
+namespace App\Modules\BuckEYE\Filament\Resources\PuzzleResource\RelationManagers;
 
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;

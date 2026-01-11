@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\PuzzleResource\Pages;
+namespace App\Modules\BuckEYE\Filament\Resources\PuzzleResource\Pages;
 
-use App\Filament\Resources\PuzzleResource;
+use App\Modules\BuckEYE\Filament\Resources\PuzzleResource;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreatePuzzle extends CreateRecord

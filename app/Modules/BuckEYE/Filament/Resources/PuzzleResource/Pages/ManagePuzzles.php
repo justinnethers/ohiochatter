@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Filament\Resources\PuzzleResource\Pages;
+namespace App\Modules\BuckEYE\Filament\Resources\PuzzleResource\Pages;
 
-use App\Filament\Resources\PuzzleResource;
+use App\Modules\BuckEYE\Filament\Resources\PuzzleResource;
 use Filament\Actions;
-use Filament\Resources\Pages\ListRecords;
+use Filament\Resources\Pages\ManageRecords;
 
-class ListPuzzles extends ListRecords
+class ManagePuzzles extends ManageRecords
 {
     protected static string $resource = PuzzleResource::class;
 

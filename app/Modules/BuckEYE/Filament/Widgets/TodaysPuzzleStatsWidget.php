@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Filament\Widgets;
+namespace App\Modules\BuckEYE\Filament\Widgets;
 
-use App\Models\AnonymousGameProgress;
-use App\Models\Puzzle;
-use App\Models\UserGameProgress;
+use App\Modules\BuckEYE\Models\AnonymousGameProgress;
+use App\Modules\BuckEYE\Models\Puzzle;
+use App\Modules\BuckEYE\Models\UserGameProgress;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Carbon;

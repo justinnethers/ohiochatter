@@ -42,7 +42,8 @@ class HandleThreadNavigation
             ->get();
 
         if ($repliesSinceLastView->count() > 0) {
-            $page = ceil(($repliesCount - $repliesSinceLastView->count()) / $repliesPerPage);
+            $firstUnreadPosition = $repliesCount - $repliesSinceLastView->count() + 1;
+            $page = (int) ceil($firstUnreadPosition / $repliesPerPage);
 
             return "/forums/{$forum->slug}/{$thread->slug}/?page={$page}#reply-{$repliesSinceLastView->first()->id}";
         }

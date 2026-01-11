@@ -60,6 +60,9 @@ Uses Pest as primary testing framework with feature tests covering:
 - Livewire component interactions
 - BuckEYE game mechanics
 
+### Development Requirements
+- **TDD Required**: All new features must be developed using Test-Driven Development. Write tests first, then implementation.
+
 ### Asset Pipeline
 - Tailwind CSS with custom Ohio-themed styling
 - Alpine.js for interactive elements

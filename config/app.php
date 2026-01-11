@@ -177,6 +177,7 @@ return [
          */
         App\Modules\BuckEYE\BuckEYEServiceProvider::class,
         App\Modules\Geography\GeographyServiceProvider::class,
+        App\Modules\OhioWordle\OhioWordleServiceProvider::class,
         App\Modules\Pickem\PickemServiceProvider::class,
         App\Modules\SpamProtection\SpamProtectionServiceProvider::class,
     ])->toArray(),

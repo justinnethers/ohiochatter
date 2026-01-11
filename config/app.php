@@ -175,6 +175,7 @@ return [
         /*
          * Module Service Providers...
          */
+        App\Modules\BuckEYE\BuckEYEServiceProvider::class,
         App\Modules\Geography\GeographyServiceProvider::class,
         App\Modules\Pickem\PickemServiceProvider::class,
         App\Modules\SpamProtection\SpamProtectionServiceProvider::class,

@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Api\UserSearchController;
 use App\Http\Controllers\ArchiveController;
-use App\Http\Controllers\BuckEyeGameController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ForumController;
 use App\Http\Controllers\HomeController;
@@ -143,26 +142,3 @@ Route::get('forum/showthread.php', function () {
 Route::permanentRedirect('/forum', '/forums');
 Route::permanentRedirect('/forum/{any}', '/forums/{any}')
     ->where('any', '.*');
-
-
-// Main game routes
-Route::get('/buckEYE', [BuckEyeGameController::class, 'index'])
-    ->name('buckeye.index');
-
-// Guest play route (no authentication required)
-Route::get('/buckEYE/play', [BuckEyeGameController::class, 'guestPlay'])
-    ->name('buckeye.guest');
-
-// Stats page (authenticated users only)
-Route::middleware(['auth'])->group(function () {
-    Route::get('/buckEYE/stats', [BuckEyeGameController::class, 'stats'])
-        ->name('buckeye.stats');
-});
-
-// In your routes/web.php file
-Route::get('/buckEYE/social-image/{date}.jpg', [BuckEyeGameController::class, 'socialImage'])
-    ->name('buckeye.social-image');
-
-Route::redirect('buckeye', '/buckEYE');
-Route::redirect('buckeye/stats', '/buckEYE/stats');
-Route::redirect('buckeye/play', '/buckEYE/play');

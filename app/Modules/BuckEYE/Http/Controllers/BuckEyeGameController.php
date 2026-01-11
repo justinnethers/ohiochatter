@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Modules\BuckEYE\Http\Controllers;
 
-use App\Models\Puzzle;
-use App\Models\UserGameStats;
-use App\Services\PuzzleService;
+use App\Http\Controllers\Controller;
+use App\Modules\BuckEYE\Models\Puzzle;
+use App\Modules\BuckEYE\Models\UserGameStats;
+use App\Modules\BuckEYE\Services\PuzzleService;
 use App\Services\SeoService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;

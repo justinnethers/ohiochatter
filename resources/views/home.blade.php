@@ -2,7 +2,7 @@
     <x-slot name="title">Ohio's Community Forum</x-slot>
 
     <div class="container mx-auto pt-4">
-        {{-- Welcome Section --}}
+        {{-- Welcome Section with Search --}}
         <x-home.welcome />
 
         {{-- Mobile Ad - Small ad after search, mobile only --}}
@@ -19,9 +19,15 @@
         </div>
 
         {{-- Main Content Grid --}}
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6 relative z-0">
-            {{-- Main Column - Recent Threads --}}
-            <div class="lg:col-span-2">
+        <div class="flex flex-col lg:grid lg:grid-cols-3 gap-6 mt-6 relative z-0">
+
+            {{-- Latest Poll - Mobile: order 1, Desktop: in sidebar --}}
+            <div class="order-1 lg:hidden">
+                <livewire:latest-poll />
+            </div>
+
+            {{-- Main Column - Recent Threads - Mobile: order 2 --}}
+            <div class="order-2 lg:order-none lg:col-span-2">
                 <div class="md:rounded-2xl md:bg-gradient-to-br md:from-steel-800/50 md:to-steel-900/50 md:backdrop-blur-sm md:border md:border-steel-700/30 p-2 md:p-6">
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-lg font-semibold text-white flex items-center gap-2">
@@ -51,15 +57,20 @@
                 </div>
             </div>
 
-            {{-- Sidebar --}}
-            <div class="space-y-6">
+            {{-- Quick Stats - Mobile: order 3 --}}
+            <div class="order-3 lg:hidden">
+                <x-home.quick-stats :stats="$stats" />
+            </div>
+
+            {{-- Sidebar - Desktop only --}}
+            <div class="hidden lg:block lg:order-none space-y-6">
                 {{-- Members Online --}}
                 <div class="bg-gradient-to-br from-steel-800 to-steel-850 rounded-xl border border-steel-700/50 p-4">
                     <livewire:active-users />
                 </div>
 
-                {{-- Sidebar Ad - Desktop only --}}
-                <div class="hidden lg:block bg-steel-800/50 p-3 rounded-xl shadow-lg shadow-black/20 border border-steel-700/30">
+                {{-- Sidebar Ad --}}
+                <div class="bg-steel-800/50 p-3 rounded-xl shadow-lg shadow-black/20 border border-steel-700/30">
                     <ins class="adsbygoogle"
                          style="display:block"
                          data-ad-client="ca-pub-4406607721782655"

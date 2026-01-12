@@ -1,24 +1,22 @@
 <div>
     @if($userStats)
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-6 text-center">
-            <x-well space="0">
-                <div class="text-xs text-amber-400 uppercase font-semibold">Games Played</div>
-                <div class="text-3xl font-bold text-gray-100">{{ $userStats->games_played }}</div>
-            </x-well>
-            <x-well space="0">
-                <div class="text-xs text-amber-400 uppercase font-semibold">Winning Percentage</div>
-                <div class="text-3xl font-bold text-gray-100">
-                    {{ $userStats->games_played ? round(($userStats->games_won / $userStats->games_played) * 100) : 0 }}%
-                </div>
-            </x-well>
-            <x-well space="0">
-                <div class="text-xs text-amber-400 uppercase font-semibold">Current Streak</div>
-                <div class="text-3xl font-bold text-gray-100">{{ $userStats->current_streak }}</div>
-            </x-well>
-            <x-well space="0">
-                <div class="text-xs text-amber-400 uppercase font-semibold">Longest Streak</div>
-                <div class="text-3xl font-bold text-gray-100">{{ $userStats->max_streak }}</div>
-            </x-well>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6 text-center">
+            <div class="p-3 bg-gray-800 rounded-lg border border-gray-600">
+                <div class="text-2xl font-bold text-white">{{ $userStats->games_played }}</div>
+                <div class="text-xs text-gray-400 font-medium uppercase tracking-wide">Played</div>
+            </div>
+            <div class="p-3 bg-gray-800 rounded-lg border border-gray-600">
+                <div class="text-2xl font-bold text-white">{{ $userStats->games_played ? round(($userStats->games_won / $userStats->games_played) * 100) : 0 }}%</div>
+                <div class="text-xs text-gray-400 font-medium uppercase tracking-wide">Win Rate</div>
+            </div>
+            <div class="p-3 bg-gray-800 rounded-lg border border-gray-600">
+                <div class="text-2xl font-bold text-white">{{ $userStats->current_streak }}</div>
+                <div class="text-xs text-gray-400 font-medium uppercase tracking-wide">Streak</div>
+            </div>
+            <div class="p-3 bg-gray-800 rounded-lg border border-gray-600">
+                <div class="text-2xl font-bold text-red-400">{{ $userStats->max_streak }}</div>
+                <div class="text-xs text-gray-400 font-medium uppercase tracking-wide">Best</div>
+            </div>
         </div>
 
         @if($userStats->guess_distribution && count($userStats->guess_distribution) > 0)
@@ -36,7 +34,7 @@
                             <div class="flex-1 ml-2">
                                 <div
                                     class="text-right px-2 py-1 text-sm font-extrabold rounded-sm bg-red-600 text-white"
-                                    style="width: {{ max(5, $percentage) }}%"
+                                    style="width: max(28px, {{ $percentage }}%)"
                                 >
                                     {{ $count }}
                                 </div>

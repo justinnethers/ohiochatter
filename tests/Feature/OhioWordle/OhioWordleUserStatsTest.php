@@ -20,7 +20,7 @@ class OhioWordleUserStatsTest extends TestCase
         Livewire::actingAs($user)
             ->test(OhioWordleUserStats::class)
             ->assertStatus(200)
-            ->assertSee('Games Played');
+            ->assertSee('Played');
     }
 
     public function test_stats_component_shows_user_statistics(): void

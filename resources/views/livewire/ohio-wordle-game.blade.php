@@ -79,77 +79,69 @@
 
             {{-- Game Complete State --}}
             @if($gameState['gameComplete'])
-                <x-well class="mb-4">
-                    <div class="text-center space-y-3">
-                        <div class="font-bold text-xl {{ $gameState['gameWon'] ? 'text-green-400' : 'text-red-400' }}">
+                <div class="space-y-4">
+                    {{-- Answer Card --}}
+                    <div class="bg-gray-900 rounded-xl border-2 border-gray-700 p-6 text-center shadow-lg">
+                        <div class="font-bold text-2xl {{ $gameState['gameWon'] ? 'text-green-400' : 'text-red-400' }} mb-3">
                             {{ $gameState['gameWon'] ? 'Excellent!' : 'Better luck tomorrow!' }}
                         </div>
-                        <div class="text-lg">
-                            The answer was <span class="font-bold text-amber-400">{{ $gameState['answer'] }}</span>
+                        <div class="text-lg text-gray-200 mb-1">
+                            The answer was <span class="font-bold text-red-400 text-xl">{{ $gameState['answer'] }}</span>
                         </div>
-                        <p class="text-sm text-gray-400">Come back tomorrow for a new puzzle!</p>
-
-                        <button
-                            type="button"
-                            class="share-button inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 active:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150"
-                            onclick="shareResults()"
-                        >
+                        <p class="text-sm text-gray-400 mb-4">Come back tomorrow for a new puzzle!</p>
+                        <x-primary-button type="button" onclick="shareResults()">
                             Share Results
-                        </button>
+                        </x-primary-button>
                     </div>
-                </x-well>
 
-                {{-- Word Stats --}}
-                @if($showWordStats && $wordStats)
-                    <x-well class="mb-4">
-                        <h3 class="text-lg font-semibold text-white mb-3">Today's Stats</h3>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-center">
-                            <div class="bg-gray-700 p-2 rounded">
-                                <div class="text-2xl font-bold text-white">{{ $wordStats['totalPlayers'] }}</div>
-                                <div class="text-xs text-gray-400">Players</div>
-                            </div>
-                            <div class="bg-gray-700 p-2 rounded">
-                                <div class="text-2xl font-bold text-white">{{ $wordStats['completionRate'] }}%</div>
-                                <div class="text-xs text-gray-400">Solved</div>
-                            </div>
-                            <div class="bg-gray-700 p-2 rounded">
-                                <div class="text-2xl font-bold text-white">{{ $wordStats['averageGuesses'] }}</div>
-                                <div class="text-xs text-gray-400">Avg Guesses</div>
-                            </div>
-                            <div class="bg-gray-700 p-2 rounded">
-                                <div class="text-2xl font-bold text-white">{{ $wordStats['solvedCount'] }}</div>
-                                <div class="text-xs text-gray-400">Winners</div>
-                            </div>
-                        </div>
-
-                        @if($wordStats['guessDistribution'])
-                            <div class="mt-4">
-                                <h4 class="text-sm font-semibold text-gray-300 mb-2">Guess Distribution</h4>
-                                <div class="space-y-1">
-                                    @php
-                                        $maxCount = max($wordStats['guessDistribution'] ?: [0]);
-                                    @endphp
-                                    @foreach($wordStats['guessDistribution'] as $guessNum => $count)
-                                        @php
-                                            $percentage = $maxCount > 0 ? ($count / $maxCount) * 100 : 0;
-                                        @endphp
-                                        <div class="flex items-center gap-2">
-                                            <div class="w-4 text-gray-400 text-sm">{{ $guessNum }}</div>
-                                            <div class="flex-1">
-                                                <div
-                                                    class="bg-red-600 text-white text-xs px-2 py-1 rounded-sm text-right font-bold"
-                                                    style="width: {{ max(8, $percentage) }}%"
-                                                >
-                                                    {{ $count }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
+                    {{-- Word Stats Card --}}
+                    @if($showWordStats && $wordStats)
+                        <div class="bg-gray-900 rounded-xl border-2 border-gray-700 p-6 shadow-lg">
+                            <h3 class="text-lg font-bold text-white mb-4">Today's Stats</h3>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+                                <div class="p-3 bg-gray-800 rounded-lg border border-gray-600">
+                                    <div class="text-2xl font-bold text-white">{{ $wordStats['totalPlayers'] }}</div>
+                                    <div class="text-xs text-gray-400 font-medium uppercase tracking-wide">Players</div>
+                                </div>
+                                <div class="p-3 bg-gray-800 rounded-lg border border-gray-600">
+                                    <div class="text-2xl font-bold text-white">{{ $wordStats['completionRate'] }}%</div>
+                                    <div class="text-xs text-gray-400 font-medium uppercase tracking-wide">Solved</div>
+                                </div>
+                                <div class="p-3 bg-gray-800 rounded-lg border border-gray-600">
+                                    <div class="text-2xl font-bold text-white">{{ $wordStats['averageGuesses'] }}</div>
+                                    <div class="text-xs text-gray-400 font-medium uppercase tracking-wide">Average</div>
+                                </div>
+                                <div class="p-3 bg-gray-800 rounded-lg border border-gray-600">
+                                    <div class="text-2xl font-bold text-white">{{ $wordStats['solvedCount'] }}</div>
+                                    <div class="text-xs text-gray-400 font-medium uppercase tracking-wide">Winners</div>
                                 </div>
                             </div>
-                        @endif
-                    </x-well>
-                @endif
+
+                            @if($wordStats['guessDistribution'])
+                                <div class="mt-5 pt-4 border-t border-gray-700">
+                                    <h4 class="text-sm font-bold text-gray-300 mb-3 uppercase tracking-wide">Guess Distribution</h4>
+                                    <div class="space-y-2">
+                                        @php $maxCount = max($wordStats['guessDistribution'] ?: [0]); @endphp
+                                        @foreach($wordStats['guessDistribution'] as $guessNum => $count)
+                                            @php $percentage = $maxCount > 0 ? ($count / $maxCount) * 100 : 0; @endphp
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-4 text-gray-400 text-sm font-bold">{{ $guessNum }}</div>
+                                                <div class="flex-1">
+                                                    <div
+                                                        class="bg-red-600 text-white text-xs px-2 py-1 rounded text-right font-bold"
+                                                        style="width: max(28px, {{ $percentage }}%)"
+                                                    >
+                                                        {{ $count }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                    @endif
+                </div>
             @endif
 
             {{-- Virtual Keyboard --}}
@@ -182,7 +174,7 @@
                                 <button
                                     type="button"
                                     wire:click="{{ $key === 'ENTER' ? 'submitGuess' : ($key === 'BACK' ? 'removeLetter' : 'addLetter(\'' . $key . '\')') }}"
-                                    class="{{ $width }} h-12 md:h-14 px-1 md:px-2 rounded font-bold text-white text-sm md:text-base {{ $bgColor }} transition-colors duration-150 flex items-center justify-center"
+                                    class="{{ $width }} h-12 md:h-14 px-1 md:px-2 rounded font-bold text-white text-sm md:text-base {{ $bgColor }} transition-all duration-150 flex items-center justify-center active:scale-95 active:brightness-90 shadow-sm hover:shadow-md"
                                 >
                                     @if($key === 'BACK')
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -108,19 +108,16 @@
                         wire:key="current-guess-input"
                         type="text"
                         wire:model="currentGuess"
-                        class="text-black flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                        class="bg-steel-800 text-gray-100 flex-1 px-4 py-2 rounded-lg border border-steel-600 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent placeholder-steel-400"
                         placeholder="Enter your guess..."
                         {{ $gameState['gameComplete'] ? 'disabled' : '' }}
                     >
-                    <x-primary-button
-                        class="px-4 py-2 bg-blue-600 text-white justify-center rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-
-                    >
+                    <x-primary-button class="justify-center">
                         {{ __('Submit Guess') }}
                     </x-primary-button>
                 </div>
                 @error('currentGuess')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
                 @enderror
             </form>
         @endif

@@ -16,18 +16,16 @@ class Pickem extends Model
     use HasFactory, SoftDeletes;
 
     protected $guarded = [];
+    protected $casts = [
+        'picks_lock_at' => 'datetime',
+        'is_finalized' => 'boolean',
+    ];
+    protected $with = ['owner', 'matchups'];
 
     protected static function newFactory()
     {
         return PickemFactory::new();
     }
-
-    protected $casts = [
-        'picks_lock_at' => 'datetime',
-        'is_finalized' => 'boolean',
-    ];
-
-    protected $with = ['owner', 'matchups'];
 
     protected static function boot(): void
     {
@@ -47,6 +45,11 @@ class Pickem extends Model
         });
     }
 
+    public function matchups(): HasMany
+    {
+        return $this->hasMany(PickemMatchup::class)->orderBy('display_order');
+    }
+
     public function getRouteKeyName(): string
     {
         return 'slug';
@@ -62,14 +65,14 @@ class Pickem extends Model
         return $this->belongsTo(PickemGroup::class, 'pickem_group_id');
     }
 
-    public function matchups(): HasMany
-    {
-        return $this->hasMany(PickemMatchup::class)->orderBy('display_order');
-    }
-
     public function comments(): HasMany
     {
         return $this->hasMany(PickemComment::class);
+    }
+
+    public function isActive(): bool
+    {
+        return !$this->isLocked();
     }
 
     public function isLocked(): bool
@@ -77,14 +80,68 @@ class Pickem extends Model
         return $this->picks_lock_at && $this->picks_lock_at->isPast();
     }
 
-    public function isActive(): bool
-    {
-        return ! $this->isLocked();
-    }
-
     public function path(): string
     {
         return route('pickem.show', $this);
+    }
+
+    /**
+     * Get all unique users who submitted picks for this pickem.
+     */
+    public function getParticipantCount(): int
+    {
+        return PickemPick::whereIn('pickem_matchup_id', $this->matchups->pluck('id'))
+            ->distinct('user_id')
+            ->count('user_id');
+    }
+
+    /**
+     * Check if a user has submitted picks for this pickem.
+     */
+    public function hasUserSubmitted(?User $user): bool
+    {
+        if (!$user) {
+            return false;
+        }
+
+        return PickemPick::whereIn('pickem_matchup_id', $this->matchups->pluck('id'))
+            ->where('user_id', $user->id)
+            ->exists();
+    }
+
+    /**
+     * Get the winner (highest scorer) for this pickem.
+     */
+    public function getWinner(): ?array
+    {
+        $leaderboard = $this->getLeaderboard(1);
+        return $leaderboard[0] ?? null;
+    }
+
+    /**
+     * Get the leaderboard for this specific pickem.
+     */
+    public function getLeaderboard(int $limit = 100): array
+    {
+        $participants = PickemPick::whereIn('pickem_matchup_id', $this->matchups->pluck('id'))
+            ->distinct('user_id')
+            ->pluck('user_id');
+
+        $scores = [];
+        foreach ($participants as $userId) {
+            $user = User::find($userId);
+            if ($user) {
+                $scores[] = [
+                    'user' => $user,
+                    'score' => $this->getUserScore($user),
+                    'max' => $this->getMaxPossibleScore(),
+                ];
+            }
+        }
+
+        usort($scores, fn($a, $b) => $b['score'] <=> $a['score']);
+
+        return array_slice($scores, 0, $limit);
     }
 
     public function getUserScore(User $user): int
@@ -94,7 +151,7 @@ class Pickem extends Model
         foreach ($this->matchups as $matchup) {
             $pick = $matchup->picks()->where('user_id', $user->id)->first();
 
-            if (! $pick || ! $matchup->winner) {
+            if (!$pick || !$matchup->winner) {
                 continue;
             }
 
@@ -125,61 +182,18 @@ class Pickem extends Model
     }
 
     /**
-     * Get all unique users who submitted picks for this pickem.
+     * Get all winners (handles ties for top score).
      */
-    public function getParticipantCount(): int
+    public function getWinners(): array
     {
-        return PickemPick::whereIn('pickem_matchup_id', $this->matchups->pluck('id'))
-            ->distinct('user_id')
-            ->count('user_id');
-    }
+        $leaderboard = $this->getLeaderboard();
 
-    /**
-     * Check if a user has submitted picks for this pickem.
-     */
-    public function hasUserSubmitted(?User $user): bool
-    {
-        if (! $user) {
-            return false;
+        if (empty($leaderboard)) {
+            return [];
         }
 
-        return PickemPick::whereIn('pickem_matchup_id', $this->matchups->pluck('id'))
-            ->where('user_id', $user->id)
-            ->exists();
-    }
+        $topScore = $leaderboard[0]['score'];
 
-    /**
-     * Get the leaderboard for this specific pickem.
-     */
-    public function getLeaderboard(int $limit = 10): array
-    {
-        $participants = PickemPick::whereIn('pickem_matchup_id', $this->matchups->pluck('id'))
-            ->distinct('user_id')
-            ->pluck('user_id');
-
-        $scores = [];
-        foreach ($participants as $userId) {
-            $user = User::find($userId);
-            if ($user) {
-                $scores[] = [
-                    'user' => $user,
-                    'score' => $this->getUserScore($user),
-                    'max' => $this->getMaxPossibleScore(),
-                ];
-            }
-        }
-
-        usort($scores, fn($a, $b) => $b['score'] <=> $a['score']);
-
-        return array_slice($scores, 0, $limit);
-    }
-
-    /**
-     * Get the winner (highest scorer) for this pickem.
-     */
-    public function getWinner(): ?array
-    {
-        $leaderboard = $this->getLeaderboard(1);
-        return $leaderboard[0] ?? null;
+        return array_filter($leaderboard, fn($entry) => $entry['score'] === $topScore);
     }
 }

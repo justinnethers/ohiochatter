@@ -35,7 +35,7 @@ class PickemController extends Controller
             ->latest()
             ->paginate(20);
 
-        $leaderboard = $group->getLeaderboard()->take(10);
+        $leaderboard = $group->getLeaderboard();
 
         return view('pickem.group', compact('group', 'pickems', 'leaderboard'));
     }

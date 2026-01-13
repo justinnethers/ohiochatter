@@ -29,7 +29,7 @@
                             @foreach($pickems as $pickem)
                                 @php
                                     $participantCount = $pickem->getParticipantCount();
-                                    $winner = $pickem->getWinner();
+                                    $winners = $pickem->getWinners();
                                     $isComplete = $pickem->isLocked() || $pickem->is_finalized;
                                 @endphp
                                 <a href="{{ route('pickem.show', $pickem) }}"
@@ -82,14 +82,19 @@
                                         </div>
 
                                         {{-- Winner display for completed pickems --}}
-                                        @if($winner && $isComplete)
+                                        @if(!empty($winners) && $isComplete)
                                             <div class="flex items-center gap-2">
-                                                <img src="{{ $winner['user']->avatar_path }}" alt=""
-                                                     class="w-6 h-6 rounded-full ring-2 ring-yellow-500/50">
-                                                <span
-                                                    class="text-yellow-400 font-medium">{{ $winner['user']->username }}</span>
-                                                <span
-                                                    class="text-sm text-steel-400">{{ $winner['score'] }}/{{ $winner['max'] }}</span>
+                                                @foreach($winners as $winner)
+                                                    <img src="{{ $winner['user']->avatar_path }}" alt="{{ $winner['user']->username }}"
+                                                         class="w-6 h-6 rounded-full ring-2 ring-yellow-500/50 {{ !$loop->first ? '-ml-2' : '' }}"
+                                                         title="{{ $winner['user']->username }}">
+                                                @endforeach
+                                                @if(count($winners) === 1)
+                                                    <span class="text-yellow-400 font-medium">{{ $winners[0]['user']->username }}</span>
+                                                @else
+                                                    <span class="text-yellow-400 font-medium">{{ count($winners) }}-way tie</span>
+                                                @endif
+                                                <span class="text-sm text-steel-400">{{ $winners[0]['score'] }}/{{ $winners[0]['max'] }}</span>
                                             </div>
                                         @endif
                                     </div>
@@ -116,15 +121,14 @@
                         <div class="space-y-0.5">
                             @foreach($leaderboard as $entry)
                                 <div class="flex items-center gap-2 py-1.5">
-                                    @if($loop->first)
+                                    @if($entry->rank === 1)
                                         <span class="w-5 text-center text-yellow-400 font-bold text-sm">1</span>
-                                    @elseif($loop->index == 1)
+                                    @elseif($entry->rank === 2)
                                         <span class="w-5 text-center text-gray-300 font-bold text-sm">2</span>
-                                    @elseif($loop->index == 2)
+                                    @elseif($entry->rank === 3)
                                         <span class="w-5 text-center text-amber-500 font-bold text-sm">3</span>
                                     @else
-                                        <span
-                                            class="w-5 text-center text-white font-medium text-sm">{{ $loop->iteration }}</span>
+                                        <span class="w-5 text-center text-white font-medium text-sm">{{ $entry->rank }}</span>
                                     @endif
                                     <img
                                         src="{{ $entry->avatar_path ? url($entry->avatar_path) : asset('images/avatars/default.png') }}"

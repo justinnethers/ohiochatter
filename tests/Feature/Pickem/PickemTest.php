@@ -317,6 +317,153 @@ describe('comments', function () {
     });
 });
 
+describe('getWinners - single pickem', function () {
+    it('returns single winner when no tie', function () {
+        $pickem = Pickem::factory()->simple()->create(['is_finalized' => true]);
+        $matchup1 = PickemMatchup::factory()->for($pickem)->withWinner('a')->create();
+        $matchup2 = PickemMatchup::factory()->for($pickem)->withWinner('a')->create();
+
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+
+        // User1: 2 correct picks
+        PickemPick::factory()->for($matchup1, 'matchup')->for($user1)->pickA()->create();
+        PickemPick::factory()->for($matchup2, 'matchup')->for($user1)->pickA()->create();
+
+        // User2: 1 correct pick
+        PickemPick::factory()->for($matchup1, 'matchup')->for($user2)->pickA()->create();
+        PickemPick::factory()->for($matchup2, 'matchup')->for($user2)->pickB()->create();
+
+        $winners = $pickem->fresh()->getWinners();
+
+        expect($winners)->toHaveCount(1);
+        expect($winners[0]['user']->id)->toBe($user1->id);
+        expect($winners[0]['score'])->toBe(2);
+    });
+
+    it('returns all tied winners', function () {
+        $pickem = Pickem::factory()->simple()->create(['is_finalized' => true]);
+        $matchup1 = PickemMatchup::factory()->for($pickem)->withWinner('a')->create();
+        $matchup2 = PickemMatchup::factory()->for($pickem)->withWinner('b')->create();
+
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+        $user3 = User::factory()->create();
+
+        // User1: picks a, b - 2 correct
+        PickemPick::factory()->for($matchup1, 'matchup')->for($user1)->pickA()->create();
+        PickemPick::factory()->for($matchup2, 'matchup')->for($user1)->pickB()->create();
+
+        // User2: picks a, b - 2 correct (tied with user1)
+        PickemPick::factory()->for($matchup1, 'matchup')->for($user2)->pickA()->create();
+        PickemPick::factory()->for($matchup2, 'matchup')->for($user2)->pickB()->create();
+
+        // User3: picks b, a - 0 correct
+        PickemPick::factory()->for($matchup1, 'matchup')->for($user3)->pickB()->create();
+        PickemPick::factory()->for($matchup2, 'matchup')->for($user3)->pickA()->create();
+
+        $winners = $pickem->fresh()->getWinners();
+
+        expect($winners)->toHaveCount(2);
+        $winnerIds = collect($winners)->pluck('user.id')->all();
+        expect($winnerIds)->toContain($user1->id);
+        expect($winnerIds)->toContain($user2->id);
+        expect($winners[0]['score'])->toBe(2);
+    });
+
+    it('returns empty array when no participants', function () {
+        $pickem = Pickem::factory()->simple()->create(['is_finalized' => true]);
+        PickemMatchup::factory()->for($pickem)->withWinner('a')->create();
+
+        $winners = $pickem->fresh()->getWinners();
+
+        expect($winners)->toBeEmpty();
+    });
+
+    it('returns three-way tie correctly', function () {
+        $pickem = Pickem::factory()->simple()->create(['is_finalized' => true]);
+        $matchup = PickemMatchup::factory()->for($pickem)->withWinner('a')->create();
+
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+        $user3 = User::factory()->create();
+
+        // All users pick correctly
+        PickemPick::factory()->for($matchup, 'matchup')->for($user1)->pickA()->create();
+        PickemPick::factory()->for($matchup, 'matchup')->for($user2)->pickA()->create();
+        PickemPick::factory()->for($matchup, 'matchup')->for($user3)->pickA()->create();
+
+        $winners = $pickem->fresh()->getWinners();
+
+        expect($winners)->toHaveCount(3);
+    });
+});
+
+describe('group leaderboard - rank ties', function () {
+    it('assigns same rank to tied users', function () {
+        $group = PickemGroup::factory()->create();
+        $pickem = Pickem::factory()->simple()->for($group, 'group')->create();
+        $matchup = PickemMatchup::factory()->for($pickem)->withWinner('a')->create();
+
+        $user1 = User::factory()->create(['username' => 'alice']);
+        $user2 = User::factory()->create(['username' => 'bob']);
+
+        // Both users pick correctly - tied at 1 point each
+        PickemPick::factory()->for($matchup, 'matchup')->for($user1)->pickA()->create();
+        PickemPick::factory()->for($matchup, 'matchup')->for($user2)->pickA()->create();
+
+        $leaderboard = $group->getLeaderboard();
+
+        expect($leaderboard)->toHaveCount(2);
+        expect($leaderboard[0]->rank)->toBe(1);
+        expect($leaderboard[1]->rank)->toBe(1); // Tied, so also rank 1
+    });
+
+    it('uses competition ranking - skips ranks after tie', function () {
+        $group = PickemGroup::factory()->create();
+        $pickem = Pickem::factory()->simple()->for($group, 'group')->create();
+        $matchup1 = PickemMatchup::factory()->for($pickem)->withWinner('a')->create();
+        $matchup2 = PickemMatchup::factory()->for($pickem)->withWinner('a')->create();
+
+        $user1 = User::factory()->create(['username' => 'alice']);
+        $user2 = User::factory()->create(['username' => 'bob']);
+        $user3 = User::factory()->create(['username' => 'charlie']);
+
+        // User1 and User2: 2 points each (tied for 1st)
+        PickemPick::factory()->for($matchup1, 'matchup')->for($user1)->pickA()->create();
+        PickemPick::factory()->for($matchup2, 'matchup')->for($user1)->pickA()->create();
+        PickemPick::factory()->for($matchup1, 'matchup')->for($user2)->pickA()->create();
+        PickemPick::factory()->for($matchup2, 'matchup')->for($user2)->pickA()->create();
+
+        // User3: 1 point (should be rank 3, not rank 2)
+        PickemPick::factory()->for($matchup1, 'matchup')->for($user3)->pickA()->create();
+        PickemPick::factory()->for($matchup2, 'matchup')->for($user3)->pickB()->create();
+
+        $leaderboard = $group->getLeaderboard();
+
+        expect($leaderboard)->toHaveCount(3);
+        expect($leaderboard[0]->rank)->toBe(1);
+        expect($leaderboard[1]->rank)->toBe(1);
+        expect($leaderboard[2]->rank)->toBe(3); // Skips rank 2
+    });
+
+    it('returns all participants without limit', function () {
+        $group = PickemGroup::factory()->create();
+        $pickem = Pickem::factory()->simple()->for($group, 'group')->create();
+        $matchup = PickemMatchup::factory()->for($pickem)->withWinner('a')->create();
+
+        // Create 15 users with picks
+        $users = User::factory()->count(15)->create();
+        foreach ($users as $user) {
+            PickemPick::factory()->for($matchup, 'matchup')->for($user)->pickA()->create();
+        }
+
+        $leaderboard = $group->getLeaderboard();
+
+        expect($leaderboard)->toHaveCount(15);
+    });
+});
+
 describe('matchup winner label', function () {
     it('returns option_a name when winner is a', function () {
         $matchup = PickemMatchup::factory()->create([

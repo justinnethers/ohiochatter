@@ -63,6 +63,7 @@
                 <!-- Lock/Unlock Thread -->
                 <button
                     wire:click="toggleLock"
+                    wire:confirm="{{ $isLocked ? 'Are you sure you want to unlock this thread?' : 'Are you sure you want to lock this thread?' }}"
                     wire:loading.attr="disabled"
                     class="inline-flex items-center px-3 py-1.5 rounded-lg font-semibold text-sm shadow-lg transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 {{ $isLocked ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:from-emerald-600 hover:to-emerald-700' : 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-amber-500/25 hover:shadow-amber-500/40 hover:from-amber-600 hover:to-amber-700' }}"
                 >

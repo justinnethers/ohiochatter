@@ -24,6 +24,7 @@ class ThreadAdminToolbar extends Component
         $this->isLocked = (bool) $thread->locked;
         $this->forums = Forum::where('is_active', true)
             ->where('id', '!=', $thread->forum_id)
+            ->where('name', '!=', 'Moderator Discussion')
             ->orderBy('name')
             ->get();
     }

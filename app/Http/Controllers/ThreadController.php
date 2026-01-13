@@ -116,7 +116,7 @@ class ThreadController extends Controller
     )
     {
         if ($forum->slug !== $thread->forum->slug) {
-            abort(404);
+            return redirect($thread->path(), 301);
         }
 
         if (!auth()->check() && ($forum->is_restricted || $forum->id == 3)) {

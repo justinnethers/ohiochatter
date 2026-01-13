@@ -13,6 +13,10 @@ class InvalidateThreadCaches
         Cache::forget('all_threads_base_query');
         Cache::forget('all_threads_base_query_guest');
 
+        // Clear homepage thread caches
+        Cache::forget('homepage_threads_auth');
+        Cache::forget('homepage_threads_guest');
+
         // If forum ID provided, clear that forum's paginated caches
         if ($forumId) {
             // Clear first 10 pages of forum cache (most commonly accessed)

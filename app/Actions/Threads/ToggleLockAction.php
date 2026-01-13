@@ -8,11 +8,14 @@ use Illuminate\Support\Facades\Auth;
 
 class ToggleLockAction
 {
+    public function __construct(
+        private InvalidateThreadCaches $invalidateCaches
+    ) {}
+
     /**
      * Execute the action to toggle thread lock status.
      *
      * @param Thread $thread
-     * @param mixed $user
      * @return Thread
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
@@ -25,6 +28,8 @@ class ToggleLockAction
         $thread->update([
             'locked' => !$thread->locked
         ]);
+
+        $this->invalidateCaches->execute($thread->forum_id);
 
         return $thread->fresh();
     }

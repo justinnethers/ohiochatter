@@ -5,6 +5,7 @@
             ['title' => $thread->forum->name, 'url' => '/forums/' . $thread->forum->slug],
             ['title' => $thread->title],
         ]"/>
+        <livewire:thread-admin-toolbar :thread="$thread"/>
         @if($thread->poll)
             <livewire:poll-component :poll="$thread->poll"/>
         @endif
@@ -95,7 +96,6 @@
                             </svg>
                             <span x-text="submitting ? 'Submitting...' : 'Submit Post'"></span>
                         </x-primary-button>
-                        <livewire:thread-lock-toggle :thread="$thread"/>
                     </div>
                 </form>
             @else

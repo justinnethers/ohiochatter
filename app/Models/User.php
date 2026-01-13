@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Modules\BuckEYE\Models\Puzzle;
 use App\Modules\BuckEYE\Models\UserGameProgress;
+use App\Modules\BuckEYE\Models\UserGameStats;
 use App\Notifications\VerifyEmailNotification;
 use Cmgmyr\Messenger\Traits\Messagable;
 use Filament\Models\Contracts\FilamentUser;

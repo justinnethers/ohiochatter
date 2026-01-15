@@ -14,6 +14,8 @@ class ReplyObserver
             'replies_count' => $reply->thread->replies()->whereNull('deleted_at')->count()
         ]);
 
+        $reply->owner->increment('post_count');
+
         app(InvalidateThreadCaches::class)->execute($reply->thread->forum_id);
     }
 
@@ -23,6 +25,8 @@ class ReplyObserver
             'replies_count' => $reply->thread->replies()->whereNull('deleted_at')->count()
         ]);
 
+        $reply->owner->decrement('post_count');
+
         app(InvalidateThreadCaches::class)->execute($reply->thread->forum_id);
     }
 
@@ -31,6 +35,8 @@ class ReplyObserver
         $reply->thread()->update([
             'replies_count' => $reply->thread->replies()->whereNull('deleted_at')->count()
         ]);
+
+        $reply->owner->increment('post_count');
 
         app(InvalidateThreadCaches::class)->execute($reply->thread->forum_id);
     }

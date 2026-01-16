@@ -1,23 +1,40 @@
 <div
     x-data="{
-        currentGuess: @entangle('currentGuess'),
+        currentGuess: '',
+        isSubmitting: false,
+        addLetter(letter) {
+            if (this.isSubmitting || $wire.gameState.gameComplete) return;
+            if (this.currentGuess.length < {{ $wordLength }}) {
+                this.currentGuess += letter.toUpperCase();
+            }
+        },
+        removeLetter() {
+            if (this.isSubmitting || $wire.gameState.gameComplete) return;
+            this.currentGuess = this.currentGuess.slice(0, -1);
+        },
+        async submitGuess() {
+            if (this.isSubmitting || $wire.gameState.gameComplete) return;
+            if (this.currentGuess.length !== {{ $wordLength }}) return;
+            this.isSubmitting = true;
+            await $wire.submitGuess(this.currentGuess);
+            this.currentGuess = '';
+            this.isSubmitting = false;
+        },
         handleKeydown(event) {
-            // Ignore keystrokes with modifier keys (Cmd, Ctrl, Alt)
             if (event.metaKey || event.ctrlKey || event.altKey) return;
-
             if ($wire.gameState.gameComplete) return;
 
             const key = event.key.toUpperCase();
 
             if (key === 'ENTER') {
                 event.preventDefault();
-                $wire.submitGuess();
+                this.submitGuess();
             } else if (key === 'BACKSPACE') {
                 event.preventDefault();
-                $wire.removeLetter();
+                this.removeLetter();
             } else if (key.length === 1 && key.match(/[A-Z]/)) {
                 event.preventDefault();
-                $wire.addLetter(key);
+                this.addLetter(key);
             }
         }
     }"
@@ -42,40 +59,46 @@
             {{-- Game Grid --}}
             <div class="flex flex-col items-center gap-1 mb-4">
                 @for($row = 0; $row < 6; $row++)
-                    <div class="flex gap-1">
-                        @for($col = 0; $col < $wordLength; $col++)
-                            @php
-                                $letter = '';
-                                $status = 'empty';
-
-                                if (isset($gameState['guesses'][$row])) {
-                                    // This is a submitted guess
+                    <div class="flex gap-1" wire:key="row-{{ $row }}">
+                        @if(isset($gameState['guesses'][$row]))
+                            {{-- Submitted guess row - rendered by server --}}
+                            @for($col = 0; $col < $wordLength; $col++)
+                                @php
                                     $guess = $gameState['guesses'][$row];
                                     $letter = strtoupper($guess[$col] ?? '');
                                     $status = $gameState['feedback'][$row][$col] ?? 'empty';
-                                } elseif ($row === count($gameState['guesses']) && !$gameState['gameComplete']) {
-                                    // This is the current input row
-                                    $letter = strtoupper($currentGuess[$col] ?? '');
-                                    $status = $letter ? 'pending' : 'empty';
-                                }
-
-                                $bgColor = match($status) {
-                                    'correct' => 'bg-green-600',
-                                    'present' => 'bg-yellow-500',
-                                    'absent' => 'bg-gray-700',
-                                    'pending' => 'bg-gray-600',
-                                    default => 'bg-gray-800',
-                                };
-                            @endphp
-                            <div
-                                class="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center text-2xl font-bold text-white rounded {{ $bgColor }} transition-all duration-200"
-                                @if($status !== 'empty' && $status !== 'pending')
+                                    $bgColor = match($status) {
+                                        'correct' => 'bg-green-600',
+                                        'present' => 'bg-yellow-500',
+                                        'absent' => 'bg-gray-700',
+                                        default => 'bg-gray-800',
+                                    };
+                                @endphp
+                                <div
+                                    wire:key="tile-{{ $row }}-{{ $col }}"
+                                    class="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center text-2xl font-bold text-white rounded {{ $bgColor }}"
                                     style="animation: flip 0.3s ease-in-out {{ $col * 0.1 }}s"
-                                @endif
-                            >
-                                {{ $letter }}
-                            </div>
-                        @endfor
+                                >{{ $letter }}</div>
+                            @endfor
+                        @elseif($row === count($gameState['guesses']) && !$gameState['gameComplete'])
+                            {{-- Current input row - rendered by Alpine (no server round-trip) --}}
+                            @for($col = 0; $col < $wordLength; $col++)
+                                <div
+                                    wire:key="input-{{ $col }}"
+                                    class="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center text-2xl font-bold text-white rounded transition-colors duration-100"
+                                    :class="currentGuess.length > {{ $col }} ? 'bg-gray-600' : 'bg-gray-800'"
+                                    x-text="currentGuess[{{ $col }}] || ''"
+                                ></div>
+                            @endfor
+                        @else
+                            {{-- Empty future row --}}
+                            @for($col = 0; $col < $wordLength; $col++)
+                                <div
+                                    wire:key="empty-{{ $row }}-{{ $col }}"
+                                    class="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center text-2xl font-bold text-white rounded bg-gray-800"
+                                ></div>
+                            @endfor
+                        @endif
                     </div>
                 @endfor
             </div>
@@ -109,7 +132,15 @@
                                 @endphp
                                 <button
                                     type="button"
-                                    wire:click="{{ $key === 'ENTER' ? 'submitGuess' : ($key === 'BACK' ? 'removeLetter' : 'addLetter(\'' . $key . '\')') }}"
+                                    @if($key === 'ENTER')
+                                        @click="submitGuess()"
+                                        :disabled="isSubmitting"
+                                        :class="isSubmitting ? 'opacity-50 cursor-not-allowed' : ''"
+                                    @elseif($key === 'BACK')
+                                        @click="removeLetter()"
+                                    @else
+                                        @click="addLetter('{{ $key }}')"
+                                    @endif
                                     class="{{ $width }} h-12 md:h-14 px-1 md:px-2 rounded font-bold text-white text-sm md:text-base {{ $bgColor }} transition-all duration-150 flex items-center justify-center active:scale-95 active:brightness-90 shadow-sm hover:shadow-md"
                                 >
                                     @if($key === 'BACK')
@@ -329,18 +360,6 @@
         }
 
         document.addEventListener('livewire:init', () => {
-            Livewire.on('clearCurrentGuess', () => {
-                const errorMessage = document.querySelector('.error-message');
-                if (errorMessage) {
-                    setTimeout(() => {
-                        window.scrollTo({
-                            top: errorMessage.getBoundingClientRect().top + window.pageYOffset - 100,
-                            behavior: 'smooth'
-                        });
-                    }, 300);
-                }
-            });
-
             Livewire.on('gameCompleted', () => {
                 setTimeout(() => {
                     const answerCard = document.getElementById('answer-card');

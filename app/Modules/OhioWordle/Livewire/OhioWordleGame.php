@@ -22,8 +22,6 @@ class OhioWordleGame extends Component
         'answer' => null,
     ];
 
-    public $currentGuess = '';
-
     public $keyboardState = [];
 
     public $errorMessage;
@@ -118,35 +116,7 @@ class OhioWordleGame extends Component
         $this->showWordStats = true;
     }
 
-    public function addLetter(string $letter): void
-    {
-        if ($this->gameState['gameComplete']) {
-            return;
-        }
-
-        $letter = strtoupper($letter);
-
-        if (strlen($letter) !== 1 || !ctype_alpha($letter)) {
-            return;
-        }
-
-        if (strlen($this->currentGuess) < $this->wordLength) {
-            $this->currentGuess .= $letter;
-        }
-    }
-
-    public function removeLetter(): void
-    {
-        if ($this->gameState['gameComplete']) {
-            return;
-        }
-
-        if (strlen($this->currentGuess) > 0) {
-            $this->currentGuess = substr($this->currentGuess, 0, -1);
-        }
-    }
-
-    public function submitGuess(WordleService $wordleService): void
+    public function submitGuess(string $guess, WordleService $wordleService): void
     {
         if ($this->gameState['gameComplete']) {
             $this->errorMessage = 'This game is already complete.';
@@ -157,7 +127,7 @@ class OhioWordleGame extends Component
         $this->errorMessage = null;
 
         $user = Auth::check() ? Auth::user() : null;
-        $result = $wordleService->processGuess($user, $this->currentGuess);
+        $result = $wordleService->processGuess($user, $guess);
 
         if (!$result['valid']) {
             $this->errorMessage = $result['error'];
@@ -173,7 +143,7 @@ class OhioWordleGame extends Component
         $this->gameState['gameWon'] = $result['gameWon'];
 
         // Update keyboard state with latest guess feedback
-        $this->updateKeyboardFromFeedback($this->currentGuess, $result['feedback']);
+        $this->updateKeyboardFromFeedback($guess, $result['feedback']);
 
         if ($result['gameComplete']) {
             $this->gameState['answer'] = $result['answer'];
@@ -189,9 +159,6 @@ class OhioWordleGame extends Component
 
             $this->showWordStats();
         }
-
-        $this->currentGuess = '';
-        $this->dispatch('clearCurrentGuess');
     }
 
     public function getShareText(): string

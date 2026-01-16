@@ -48,54 +48,6 @@ class OhioWordleGameTest extends TestCase
             ->assertSeeHtml('No puzzle available for today');
     }
 
-    public function test_user_can_add_letter(): void
-    {
-        WordleWord::factory()->create([
-            'word' => 'AKRON',
-            'publish_date' => now()->toDateString(),
-            'is_active' => true,
-        ]);
-
-        Livewire::test(OhioWordleGame::class)
-            ->call('addLetter', 'A')
-            ->assertSet('currentGuess', 'A')
-            ->call('addLetter', 'K')
-            ->assertSet('currentGuess', 'AK');
-    }
-
-    public function test_user_can_remove_letter(): void
-    {
-        WordleWord::factory()->create([
-            'word' => 'AKRON',
-            'publish_date' => now()->toDateString(),
-            'is_active' => true,
-        ]);
-
-        Livewire::test(OhioWordleGame::class)
-            ->call('addLetter', 'A')
-            ->call('addLetter', 'K')
-            ->call('removeLetter')
-            ->assertSet('currentGuess', 'A');
-    }
-
-    public function test_user_cannot_add_more_letters_than_word_length(): void
-    {
-        WordleWord::factory()->create([
-            'word' => 'AKRON',
-            'publish_date' => now()->toDateString(),
-            'is_active' => true,
-        ]);
-
-        Livewire::test(OhioWordleGame::class)
-            ->call('addLetter', 'A')
-            ->call('addLetter', 'K')
-            ->call('addLetter', 'R')
-            ->call('addLetter', 'O')
-            ->call('addLetter', 'N')
-            ->call('addLetter', 'X') // Should be ignored
-            ->assertSet('currentGuess', 'AKRON');
-    }
-
     public function test_authenticated_user_can_submit_correct_guess(): void
     {
         $user = User::factory()->create();
@@ -108,8 +60,7 @@ class OhioWordleGameTest extends TestCase
 
         Livewire::actingAs($user)
             ->test(OhioWordleGame::class)
-            ->set('currentGuess', 'AKRON')
-            ->call('submitGuess')
+            ->call('submitGuess', 'AKRON')
             ->assertSet('gameState.gameComplete', true)
             ->assertSet('gameState.gameWon', true);
     }
@@ -126,8 +77,7 @@ class OhioWordleGameTest extends TestCase
 
         Livewire::actingAs($user)
             ->test(OhioWordleGame::class)
-            ->set('currentGuess', 'AUDIO')
-            ->call('submitGuess')
+            ->call('submitGuess', 'AUDIO')
             ->assertSet('gameState.gameComplete', false)
             ->assertSet('gameState.remainingGuesses', 5);
     }
@@ -144,8 +94,7 @@ class OhioWordleGameTest extends TestCase
 
         $component = Livewire::actingAs($user)
             ->test(OhioWordleGame::class)
-            ->set('currentGuess', 'AUDIO')
-            ->call('submitGuess');
+            ->call('submitGuess', 'AUDIO');
 
         $keyboardState = $component->get('keyboardState');
 
@@ -178,7 +127,7 @@ class OhioWordleGameTest extends TestCase
         $wrongGuesses = ['AUDIO', 'LIGHT', 'COULD', 'FOUND', 'WRITE', 'QUITE'];
 
         foreach ($wrongGuesses as $guess) {
-            $component->set('currentGuess', $guess)->call('submitGuess');
+            $component->call('submitGuess', $guess);
         }
 
         $component
@@ -199,8 +148,7 @@ class OhioWordleGameTest extends TestCase
 
         $component = Livewire::actingAs($user)
             ->test(OhioWordleGame::class)
-            ->set('currentGuess', 'AKRON')
-            ->call('submitGuess');
+            ->call('submitGuess', 'AKRON');
 
         $shareText = $component->invade()->getShareText();
 
@@ -227,8 +175,7 @@ class OhioWordleGameTest extends TestCase
 
         Livewire::actingAs($user)
             ->test(OhioWordleGame::class)
-            ->set('currentGuess', 'XXXXX')
-            ->call('submitGuess')
+            ->call('submitGuess', 'XXXXX')
             ->assertSet('errorMessage', "'XXXXX' is not a valid word");
     }
 
@@ -244,8 +191,7 @@ class OhioWordleGameTest extends TestCase
 
         Livewire::actingAs($user)
             ->test(OhioWordleGame::class)
-            ->set('currentGuess', 'HI')
-            ->call('submitGuess')
+            ->call('submitGuess', 'HI')
             ->assertSet('errorMessage', 'Guess must be 5 letters');
     }
 }

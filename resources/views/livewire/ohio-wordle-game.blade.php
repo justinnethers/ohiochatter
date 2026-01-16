@@ -1,6 +1,7 @@
 <div
     x-data="{
         currentGuess: '',
+        submittedGuess: '',
         isSubmitting: false,
         addLetter(letter) {
             if (this.isSubmitting || $wire.gameState.gameComplete) return;
@@ -16,8 +17,10 @@
             if (this.isSubmitting || $wire.gameState.gameComplete) return;
             if (this.currentGuess.length !== {{ $wordLength }}) return;
             this.isSubmitting = true;
-            await $wire.submitGuess(this.currentGuess);
+            this.submittedGuess = this.currentGuess;
             this.currentGuess = '';
+            await $wire.submitGuess(this.submittedGuess);
+            this.submittedGuess = '';
             this.isSubmitting = false;
         },
         handleKeydown(event) {
@@ -86,8 +89,12 @@
                                 <div
                                     wire:key="input-{{ $col }}"
                                     class="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center text-2xl font-bold text-white rounded transition-colors duration-100"
-                                    :class="currentGuess.length > {{ $col }} ? 'bg-gray-600' : 'bg-gray-800'"
-                                    x-text="currentGuess[{{ $col }}] || ''"
+                                    :class="{
+                                        'bg-gray-600 animate-pulse': isSubmitting && submittedGuess[{{ $col }}],
+                                        'bg-gray-600': !isSubmitting && currentGuess.length > {{ $col }},
+                                        'bg-gray-800': !isSubmitting && currentGuess.length <= {{ $col }} && !submittedGuess[{{ $col }}]
+                                    }"
+                                    x-text="isSubmitting ? (submittedGuess[{{ $col }}] || '') : (currentGuess[{{ $col }}] || '')"
                                 ></div>
                             @endfor
                         @else
@@ -146,6 +153,12 @@
                                     @if($key === 'BACK')
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414a2 2 0 001.414.586H19a2 2 0 002-2V7a2 2 0 00-2-2h-8.172a2 2 0 00-1.414.586L3 12z" />
+                                        </svg>
+                                    @elseif($key === 'ENTER')
+                                        <span x-show="!isSubmitting">ENTER</span>
+                                        <svg x-show="isSubmitting" x-cloak class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
                                     @else
                                         {{ $key }}

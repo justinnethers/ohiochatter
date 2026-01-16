@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Storage;
 
 class DictionaryService
 {
-    private const ENGLISH_DICTIONARY_PATH = 'dictionary/english.txt';
+    private const SOWPODS_DICTIONARY_PATH = 'dictionary/sowpods.txt';
     private const OHIO_WORDS_PATH = 'dictionary/ohio.txt';
     private const CACHE_TTL = 60 * 60 * 24; // 24 hours
 
@@ -53,20 +53,20 @@ class DictionaryService
     public function getAllWords(): array
     {
         return Cache::remember('dictionary_all_words', self::CACHE_TTL, function () {
-            $englishWords = $this->getEnglishWords();
+            $sowpodsWords = $this->getSowpodsWords();
             $ohioWords = $this->getOhioWords();
 
-            return array_unique(array_merge($englishWords, $ohioWords));
+            return array_unique(array_merge($sowpodsWords, $ohioWords));
         });
     }
 
     /**
-     * Get English dictionary words.
+     * Get SOWPODS dictionary words.
      */
-    public function getEnglishWords(): array
+    public function getSowpodsWords(): array
     {
-        return Cache::remember('dictionary_english', self::CACHE_TTL, function () {
-            return $this->loadWordsFromFile(self::ENGLISH_DICTIONARY_PATH);
+        return Cache::remember('dictionary_sowpods', self::CACHE_TTL, function () {
+            return $this->loadWordsFromFile(self::SOWPODS_DICTIONARY_PATH);
         });
     }
 

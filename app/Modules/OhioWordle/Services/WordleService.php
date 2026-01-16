@@ -104,6 +104,11 @@ class WordleService
             return $this->errorResult('Game already completed');
         }
 
+        // Check if word was already guessed
+        if (in_array($guess, $progress->guesses ?? [], true)) {
+            return $this->errorResult('You already guessed that word');
+        }
+
         // Calculate feedback
         $feedback = $this->calculateFeedback($guess, $word->word);
 
@@ -122,6 +127,9 @@ class WordleService
                 $stats = WordleUserStats::getOrCreateForUser($user->id);
                 $stats->updateAfterGame($isCorrect, $isCorrect ? $progress->attempts : null);
             }
+
+            // Clear word stats cache so the new completion is reflected
+            Cache::forget("wordle_stats_{$word->id}");
         }
 
         $progress->save();
@@ -247,10 +255,8 @@ class WordleService
     public function loadWordStats(WordleWord $word): array
     {
         return Cache::remember("wordle_stats_{$word->id}", self::CACHE_TTL_STATS, function () use ($word) {
-            // Get authenticated user progress (exclude admin user id 1)
-            $userProgress = WordleUserProgress::where('word_id', $word->id)
-                ->where('user_id', '!=', 1)
-                ->get();
+            // Get authenticated user progress
+            $userProgress = WordleUserProgress::where('word_id', $word->id)->get();
 
             // Get anonymous progress
             $anonymousProgress = WordleAnonymousProgress::where('word_id', $word->id)->get();

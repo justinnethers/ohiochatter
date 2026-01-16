@@ -175,12 +175,12 @@ class OhioWordleGame extends Component
 
             if (Auth::check()) {
                 $this->userStats = WordleUserStats::getOrCreateForUser(Auth::id());
-
-                $this->dispatch('gameCompleted', [
-                    'won' => $result['gameWon'],
-                    'guesses' => count($result['previousGuesses']),
-                ]);
             }
+
+            $this->dispatch('gameCompleted', [
+                'won' => $result['gameWon'],
+                'guesses' => count($result['previousGuesses']),
+            ]);
 
             $this->showWordStats();
         }

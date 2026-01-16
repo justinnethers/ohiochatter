@@ -57,15 +57,15 @@
                                 }
 
                                 $bgColor = match($status) {
-                                    'correct' => 'bg-red-600',
-                                    'present' => 'bg-gray-400',
+                                    'correct' => 'bg-green-600',
+                                    'present' => 'bg-yellow-500',
                                     'absent' => 'bg-gray-700',
-                                    'pending' => 'bg-gray-600 border-gray-400',
-                                    default => 'bg-gray-800 border-gray-600',
+                                    'pending' => 'bg-gray-600',
+                                    default => 'bg-gray-800',
                                 };
                             @endphp
                             <div
-                                class="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center text-2xl font-bold text-white border-2 rounded {{ $bgColor }} transition-all duration-200"
+                                class="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center text-2xl font-bold text-white rounded {{ $bgColor }} transition-all duration-200"
                                 @if($status !== 'empty' && $status !== 'pending')
                                     style="animation: flip 0.3s ease-in-out {{ $col * 0.1 }}s"
                                 @endif
@@ -76,73 +76,6 @@
                     </div>
                 @endfor
             </div>
-
-            {{-- Game Complete State --}}
-            @if($gameState['gameComplete'])
-                <div class="space-y-4">
-                    {{-- Answer Card --}}
-                    <div class="bg-gray-900 rounded-xl border-2 border-gray-700 p-6 text-center shadow-lg">
-                        <div class="font-bold text-2xl {{ $gameState['gameWon'] ? 'text-green-400' : 'text-red-400' }} mb-3">
-                            {{ $gameState['gameWon'] ? 'Excellent!' : 'Better luck tomorrow!' }}
-                        </div>
-                        <div class="text-lg text-gray-200 mb-1">
-                            The answer was <span class="font-bold text-red-400 text-xl">{{ $gameState['answer'] }}</span>
-                        </div>
-                        <p class="text-sm text-gray-400 mb-4">Come back tomorrow for a new puzzle!</p>
-                        <x-primary-button type="button" onclick="shareResults()">
-                            Share Results
-                        </x-primary-button>
-                    </div>
-
-                    {{-- Word Stats Card --}}
-                    @if($showWordStats && $wordStats)
-                        <div class="bg-gray-900 rounded-xl border-2 border-gray-700 p-6 shadow-lg">
-                            <h3 class="text-lg font-bold text-white mb-4">Today's Stats</h3>
-                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
-                                <div class="p-3 bg-gray-800 rounded-lg border border-gray-600">
-                                    <div class="text-2xl font-bold text-white">{{ $wordStats['totalPlayers'] }}</div>
-                                    <div class="text-xs text-gray-400 font-medium uppercase tracking-wide">Players</div>
-                                </div>
-                                <div class="p-3 bg-gray-800 rounded-lg border border-gray-600">
-                                    <div class="text-2xl font-bold text-white">{{ $wordStats['completionRate'] }}%</div>
-                                    <div class="text-xs text-gray-400 font-medium uppercase tracking-wide">Solved</div>
-                                </div>
-                                <div class="p-3 bg-gray-800 rounded-lg border border-gray-600">
-                                    <div class="text-2xl font-bold text-white">{{ $wordStats['averageGuesses'] }}</div>
-                                    <div class="text-xs text-gray-400 font-medium uppercase tracking-wide">Average</div>
-                                </div>
-                                <div class="p-3 bg-gray-800 rounded-lg border border-gray-600">
-                                    <div class="text-2xl font-bold text-white">{{ $wordStats['solvedCount'] }}</div>
-                                    <div class="text-xs text-gray-400 font-medium uppercase tracking-wide">Winners</div>
-                                </div>
-                            </div>
-
-                            @if($wordStats['guessDistribution'])
-                                <div class="mt-5 pt-4 border-t border-gray-700">
-                                    <h4 class="text-sm font-bold text-gray-300 mb-3 uppercase tracking-wide">Guess Distribution</h4>
-                                    <div class="space-y-2">
-                                        @php $maxCount = max($wordStats['guessDistribution'] ?: [0]); @endphp
-                                        @foreach($wordStats['guessDistribution'] as $guessNum => $count)
-                                            @php $percentage = $maxCount > 0 ? ($count / $maxCount) * 100 : 0; @endphp
-                                            <div class="flex items-center gap-2">
-                                                <div class="w-4 text-gray-400 text-sm font-bold">{{ $guessNum }}</div>
-                                                <div class="flex-1">
-                                                    <div
-                                                        class="bg-red-600 text-white text-xs px-2 py-1 rounded text-right font-bold"
-                                                        style="width: max(28px, {{ $percentage }}%)"
-                                                    >
-                                                        {{ $count }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            @endif
-                        </div>
-                    @endif
-                </div>
-            @endif
 
             {{-- Virtual Keyboard --}}
             @if(!$gameState['gameComplete'])
@@ -163,8 +96,8 @@
                                     $keyState = $keyboardState[$key] ?? 'unused';
 
                                     $bgColor = match($keyState) {
-                                        'correct' => 'bg-red-600 hover:bg-red-500',
-                                        'present' => 'bg-gray-400 hover:bg-gray-300',
+                                        'correct' => 'bg-green-600 hover:bg-green-500',
+                                        'present' => 'bg-yellow-500 hover:bg-yellow-400',
                                         'absent' => 'bg-gray-700 hover:bg-gray-600',
                                         default => 'bg-gray-500 hover:bg-gray-400',
                                     };
@@ -194,6 +127,145 @@
                 </p>
             @endif
         </div>
+
+        {{-- Game Complete State - Answer Card (outside max-w-lg for full width) --}}
+        @if($gameState['gameComplete'])
+            <div id="answer-card" class="relative overflow-hidden rounded-xl border-2 {{ $gameState['gameWon'] ? 'border-green-500/50 bg-gradient-to-br from-green-900/40 via-gray-900 to-gray-900' : 'border-red-500/50 bg-gradient-to-br from-red-900/40 via-gray-900 to-gray-900' }} p-6 text-center shadow-lg mt-6">
+                {{-- Decorative background glow --}}
+                <div class="absolute inset-0 {{ $gameState['gameWon'] ? 'bg-green-500/5' : 'bg-red-500/5' }} blur-3xl"></div>
+
+                <div class="relative">
+                    {{-- Result icon --}}
+                    @if($gameState['gameWon'])
+                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-500/20 mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    @else
+                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-500/20 mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    @endif
+
+                    {{-- Result message --}}
+                    <div class="font-bold text-2xl {{ $gameState['gameWon'] ? 'text-green-400' : 'text-red-400' }} mb-2">
+                        {{ $gameState['gameWon'] ? 'Excellent!' : 'Better luck tomorrow!' }}
+                    </div>
+
+                    @if($gameState['gameWon'])
+                        <p class="text-gray-400 text-sm mb-4">You got it in {{ count($gameState['guesses']) }} {{ count($gameState['guesses']) === 1 ? 'guess' : 'guesses' }}!</p>
+                    @endif
+
+                    {{-- Answer tiles --}}
+                    <div class="flex justify-center gap-1 mb-4">
+                        @foreach(str_split($gameState['answer']) as $letter)
+                            <div class="w-10 h-10 md:w-12 md:h-12 bg-green-600 rounded flex items-center justify-center text-lg md:text-xl font-bold text-white shadow-lg">
+                                {{ $letter }}
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <p class="text-sm text-gray-400 mb-5">Come back tomorrow for a new puzzle!</p>
+
+                    <x-primary-button type="button" onclick="shareResults()" class="inline-flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
+                        </svg>
+                        Share Results
+                    </x-primary-button>
+                </div>
+            </div>
+        @endif
+
+        {{-- Stats Row (outside max-w-lg for full width) --}}
+        @if($gameState['gameComplete'] && $showWordStats && $wordStats)
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 mt-6">
+                {{-- Today's Stats Card --}}
+                <div class="bg-gray-900 rounded-xl border-2 border-gray-700 p-6 shadow-lg">
+                    <h3 class="text-lg font-bold text-white mb-4">Today's Stats</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+                        <div class="p-3 bg-gray-800 rounded-lg border border-gray-600">
+                            <div class="text-2xl font-bold text-white">{{ $wordStats['totalPlayers'] }}</div>
+                            <div class="text-xs text-gray-400 font-medium uppercase tracking-wide">Players</div>
+                        </div>
+                        <div class="p-3 bg-gray-800 rounded-lg border border-gray-600">
+                            <div class="text-2xl font-bold text-white">{{ $wordStats['completionRate'] }}%</div>
+                            <div class="text-xs text-gray-400 font-medium uppercase tracking-wide">Solved</div>
+                        </div>
+                        <div class="p-3 bg-gray-800 rounded-lg border border-gray-600">
+                            <div class="text-2xl font-bold text-white">{{ $wordStats['averageGuesses'] }}</div>
+                            <div class="text-xs text-gray-400 font-medium uppercase tracking-wide">Average</div>
+                        </div>
+                        <div class="p-3 bg-gray-800 rounded-lg border border-gray-600">
+                            <div class="text-2xl font-bold text-white">{{ $wordStats['solvedCount'] }}</div>
+                            <div class="text-xs text-gray-400 font-medium uppercase tracking-wide">Winners</div>
+                        </div>
+                    </div>
+
+                    @if($wordStats['guessDistribution'])
+                        <div class="mt-5 pt-4 border-t border-gray-700">
+                            <h4 class="text-sm font-bold text-gray-300 mb-3 uppercase tracking-wide">Guess Distribution</h4>
+                            <div class="space-y-2">
+                                @php
+                                    $maxCount = max($wordStats['guessDistribution'] ?: [0]);
+                                    $barColors = [
+                                        1 => 'bg-green-500',
+                                        2 => 'bg-green-600',
+                                        3 => 'bg-yellow-500',
+                                        4 => 'bg-orange-500',
+                                        5 => 'bg-orange-600',
+                                        6 => 'bg-red-500',
+                                    ];
+                                @endphp
+                                @foreach($wordStats['guessDistribution'] as $guessNum => $count)
+                                    @php $percentage = $maxCount > 0 ? ($count / $maxCount) * 100 : 0; @endphp
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-4 text-gray-400 text-sm font-bold">{{ $guessNum }}</div>
+                                        <div class="flex-1">
+                                            <div
+                                                class="{{ $barColors[$guessNum] ?? 'bg-gray-500' }} text-white text-xs px-2 py-1 rounded text-right font-bold"
+                                                style="width: max(28px, {{ $percentage }}%)"
+                                            >
+                                                {{ $count }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+                </div>
+
+                {{-- Your Stats Card --}}
+                @auth
+                    <div class="bg-gray-900 rounded-xl border-2 border-gray-700 p-6 shadow-lg">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold text-white">Your Stats</h3>
+                            <a href="{{ route('ohiowordle.stats') }}" class="text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors">
+                                View All →
+                            </a>
+                        </div>
+                        <livewire:ohio-wordle-user-stats />
+                    </div>
+                @else
+                    <div class="bg-gray-900 rounded-xl border-2 border-gray-700 p-6 shadow-lg">
+                        <h3 class="text-lg font-bold text-white mb-4">Track Your Progress</h3>
+                        <p class="text-gray-400 mb-4">Create a free account to save your stats, track streaks, and earn achievements.</p>
+                        <div class="flex flex-col sm:flex-row gap-3">
+                            <a href="{{ route('register') }}" class="flex-1">
+                                <x-primary-button class="w-full justify-center">Create Free Account</x-primary-button>
+                            </a>
+                            <a href="{{ route('login') }}" class="flex-1">
+                                <x-secondary-button class="w-full justify-center">Log In</x-secondary-button>
+                            </a>
+                        </div>
+                    </div>
+                @endauth
+            </div>
+        @endif
     @endif
 
     <style>
@@ -238,6 +310,15 @@
                         });
                     }, 300);
                 }
+            });
+
+            Livewire.on('gameCompleted', () => {
+                setTimeout(() => {
+                    const answerCard = document.getElementById('answer-card');
+                    if (answerCard) {
+                        answerCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }, 100);
             });
         });
     </script>

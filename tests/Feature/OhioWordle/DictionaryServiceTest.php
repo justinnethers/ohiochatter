@@ -102,12 +102,11 @@ describe('getWordsOfLength', function () {
 });
 
 describe('dictionary loading', function () {
-    it('loads english dictionary', function () {
-        // This verifies the dictionary file exists and can be loaded
-        $englishWords = $this->dictionaryService->getEnglishWords();
+    it('loads sowpods dictionary', function () {
+        $sowpodsWords = $this->dictionaryService->getSowpodsWords();
 
-        expect($englishWords)->toBeArray();
-        expect($englishWords)->not->toBeEmpty();
+        expect($sowpodsWords)->toBeArray();
+        expect($sowpodsWords)->not->toBeEmpty();
     });
 
     it('loads ohio words', function () {
@@ -117,5 +116,28 @@ describe('dictionary loading', function () {
         expect($ohioWords)->not->toBeEmpty();
         expect($ohioWords)->toContain('AKRON');
         expect($ohioWords)->toContain('OHIO');
+    });
+});
+
+describe('SOWPODS dictionary validation', function () {
+    it('accepts valid SOWPODS words', function () {
+        // Common words that should be in SOWPODS
+        expect($this->dictionaryService->isValidWord('ABOUT', 5))->toBeTrue();
+        expect($this->dictionaryService->isValidWord('ZEBRA', 5))->toBeTrue();
+        expect($this->dictionaryService->isValidWord('QUERY', 5))->toBeTrue();
+    });
+
+    it('accepts obscure but valid SOWPODS words', function () {
+        // Words that are valid in SOWPODS but might not be in a basic dictionary
+        expect($this->dictionaryService->isValidWord('AALII', 5))->toBeTrue(); // A Hawaiian shrub
+        expect($this->dictionaryService->isValidWord('ZAXES', 5))->toBeTrue(); // Plural of zax
+    });
+
+    it('includes sowpods in getAllWords', function () {
+        $allWords = $this->dictionaryService->getAllWords();
+
+        // SOWPODS words should be included
+        expect($allWords)->toContain('AALII');
+        expect($allWords)->toContain('ZAXES');
     });
 });

@@ -304,23 +304,23 @@ class SeoService
     }
 
     /**
-     * Generate SEO data for the OhioWordle game page
+     * Generate SEO data for the Wordio game page
      */
     public function forOhioWordle(): SeoData
     {
-        $description = "Play OhioWordle, Ohio's daily word puzzle! Guess the Ohio-themed word in 6 tries. Test your knowledge of the Buckeye State with our Wordle-style game.";
+        $description = "Play Wordio, Ohio's daily word puzzle! Guess the Ohio-themed word in 6 tries. Test your knowledge of the Buckeye State with our word game.";
 
         return new SeoData(
-            title: "OhioWordle - Ohio's Daily Word Puzzle Game",
+            title: "Wordio - Ohio's Daily Word Puzzle Game",
             description: $description,
             canonical: route('ohiowordle.index'),
-            ogTitle: "OhioWordle - Ohio's Daily Word Puzzle Game",
+            ogTitle: "Wordio - Ohio's Daily Word Puzzle Game",
             ogDescription: $description,
-            ogImage: $this->absoluteUrl('/images/ohiowordle-og.jpg'),
+            ogImage: $this->absoluteUrl('/images/wordio-og.jpg'),
             ogType: 'website',
             ogUrl: route('ohiowordle.index'),
             breadcrumbs: $this->buildBreadcrumbs([
-                ['name' => 'OhioWordle'],
+                ['name' => 'Wordio'],
             ]),
             jsonLd: $this->buildOhioWordleSchema(),
         );
@@ -330,11 +330,11 @@ class SeoService
     {
         return [
             $this->buildBreadcrumbSchema($this->buildBreadcrumbs([
-                ['name' => 'OhioWordle'],
+                ['name' => 'Wordio'],
             ])),
             [
                 '@type' => 'WebApplication',
-                'name' => 'OhioWordle',
+                'name' => 'Wordio',
                 'description' => "Ohio's daily word puzzle game. Guess the Ohio-themed word in 6 tries.",
                 'url' => route('ohiowordle.index'),
                 'applicationCategory' => 'Game',

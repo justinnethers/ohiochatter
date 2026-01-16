@@ -3,12 +3,11 @@
 namespace App\Modules\OhioWordle\Services;
 
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Storage;
 
 class DictionaryService
 {
-    private const SOWPODS_DICTIONARY_PATH = 'dictionary/sowpods.txt';
-    private const OHIO_WORDS_PATH = 'dictionary/ohio.txt';
+    private const SOWPODS_DICTIONARY_PATH = 'resources/data/dictionary/sowpods.txt';
+    private const OHIO_WORDS_PATH = 'resources/data/dictionary/ohio.txt';
     private const CACHE_TTL = 60 * 60 * 24; // 24 hours
 
     /**
@@ -81,15 +80,31 @@ class DictionaryService
     }
 
     /**
-     * Load words from a file in storage.
+     * Clear all dictionary caches.
+     */
+    public function clearCache(): void
+    {
+        Cache::forget('dictionary_ohio');
+        Cache::forget('dictionary_all_words');
+        Cache::forget('dictionary_sowpods');
+
+        for ($length = 3; $length <= 15; $length++) {
+            Cache::forget("dictionary_words_{$length}");
+        }
+    }
+
+    /**
+     * Load words from a file.
      */
     private function loadWordsFromFile(string $path): array
     {
-        if (! Storage::exists($path)) {
+        $fullPath = base_path($path);
+
+        if (! file_exists($fullPath)) {
             return [];
         }
 
-        $content = Storage::get($path);
+        $content = file_get_contents($fullPath);
         $lines = explode("\n", $content);
 
         $words = [];

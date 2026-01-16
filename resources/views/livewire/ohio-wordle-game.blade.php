@@ -2,6 +2,9 @@
     x-data="{
         currentGuess: @entangle('currentGuess'),
         handleKeydown(event) {
+            // Ignore keystrokes with modifier keys (Cmd, Ctrl, Alt)
+            if (event.metaKey || event.ctrlKey || event.altKey) return;
+
             if ($wire.gameState.gameComplete) return;
 
             const key = event.key.toUpperCase();
@@ -288,12 +291,12 @@
 
             if (navigator.share) {
                 navigator.share({
-                    title: 'OhioWordle',
+                    title: 'Wordio',
                     text: shareText,
-                    url: 'https://ohiochatter.com/ohiowordle'
+                    url: 'https://ohiochatter.com/wordio'
                 }).catch(console.error);
             } else if (navigator.clipboard) {
-                navigator.clipboard.writeText(shareText + '\nhttps://ohiochatter.com/ohiowordle').then(() => {
+                navigator.clipboard.writeText(shareText + '\nhttps://ohiochatter.com/wordio').then(() => {
                     alert('Results copied to clipboard!');
                 }).catch(console.error);
             }

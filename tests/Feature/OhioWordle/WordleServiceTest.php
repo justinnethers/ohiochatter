@@ -187,10 +187,10 @@ describe('processGuess - incorrect answer', function () {
     });
 
     it('completes game after 6 wrong guesses', function () {
-        for ($i = 1; $i <= 5; $i++) {
-            $this->wordleService->processGuess($this->user, 'HOUSE');
+        $wrongGuesses = ['HOUSE', 'MOUSE', 'LOUSE', 'DOUSE', 'ROUSE', 'SOUSE'];
+        foreach ($wrongGuesses as $guess) {
+            $result = $this->wordleService->processGuess($this->user, $guess);
         }
-        $result = $this->wordleService->processGuess($this->user, 'MOUSE');
 
         expect($result['gameComplete'])->toBeTrue();
         expect($result['gameWon'])->toBeFalse();
@@ -200,8 +200,9 @@ describe('processGuess - incorrect answer', function () {
     it('resets streak on loss', function () {
         WordleUserStats::factory()->for($this->user)->withStreak(5)->create();
 
-        for ($i = 1; $i <= 6; $i++) {
-            $this->wordleService->processGuess($this->user, 'HOUSE');
+        $wrongGuesses = ['HOUSE', 'MOUSE', 'LOUSE', 'DOUSE', 'ROUSE', 'SOUSE'];
+        foreach ($wrongGuesses as $guess) {
+            $this->wordleService->processGuess($this->user, $guess);
         }
 
         $stats = WordleUserStats::where('user_id', $this->user->id)->first();
@@ -219,8 +220,9 @@ describe('processGuess - winning on later attempts', function () {
     });
 
     it('can win on sixth guess', function () {
-        for ($i = 1; $i <= 5; $i++) {
-            $this->wordleService->processGuess($this->user, 'HOUSE');
+        $wrongGuesses = ['HOUSE', 'MOUSE', 'LOUSE', 'DOUSE', 'ROUSE'];
+        foreach ($wrongGuesses as $guess) {
+            $this->wordleService->processGuess($this->user, $guess);
         }
         $result = $this->wordleService->processGuess($this->user, 'AKRON');
 

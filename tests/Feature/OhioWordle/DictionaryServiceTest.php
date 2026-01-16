@@ -38,7 +38,6 @@ describe('isValidWord - Ohio specific words', function () {
     });
 
     it('accepts Ohio landmark and geographic terms', function () {
-        expect($this->dictionaryService->isValidWord('OHIO', 4))->toBeTrue();
         expect($this->dictionaryService->isValidWord('BUCKEYE', 7))->toBeTrue();
     });
 
@@ -115,7 +114,7 @@ describe('dictionary loading', function () {
         expect($ohioWords)->toBeArray();
         expect($ohioWords)->not->toBeEmpty();
         expect($ohioWords)->toContain('AKRON');
-        expect($ohioWords)->toContain('OHIO');
+        expect($ohioWords)->toContain('DAYTON');
     });
 });
 

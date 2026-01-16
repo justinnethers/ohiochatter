@@ -1,5 +1,5 @@
 <x-app-layout :seo="$seo ?? null">
-    <x-slot name="title">Your OhioWordle Stats</x-slot>
+    <x-slot name="title">Your Wordio Stats</x-slot>
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <div class="flex items-center gap-4">
@@ -9,7 +9,7 @@
                     </svg>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-bold text-white">Your OhioWordle Stats</h1>
+                    <h1 class="text-2xl font-bold text-white">Your Wordio Stats</h1>
                     <p class="text-steel-400 text-sm">Track your progress and achievements</p>
                 </div>
             </div>

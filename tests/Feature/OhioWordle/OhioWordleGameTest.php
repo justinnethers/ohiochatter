@@ -204,7 +204,7 @@ class OhioWordleGameTest extends TestCase
 
         $shareText = $component->invade()->getShareText();
 
-        $this->assertStringContainsString('OhioWordle', $shareText);
+        $this->assertStringContainsString('Wordio', $shareText);
         $this->assertStringContainsString('1/6', $shareText);
     }
 

@@ -205,7 +205,7 @@ class OhioWordleGame extends Component
         $guessCount = $this->gameState['gameWon'] ? count($this->gameState['guesses']) : 'X';
         $date = $this->word->publish_date->format('M j, Y');
 
-        $text = "OhioWordle {$date} {$guessCount}/6\n\n";
+        $text = "Wordio {$date} {$guessCount}/6\n\n";
 
         foreach ($this->gameState['feedback'] as $feedbackRow) {
             foreach ($feedbackRow as $status) {

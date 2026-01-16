@@ -3,6 +3,7 @@
 namespace App\Console;
 
 use App\Console\Commands\ProcessThreadsForSeo;
+use App\Modules\OhioWordle\Commands\CreateDailyPuzzle;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -14,6 +15,12 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         $schedule->command(ProcessThreadsForSeo::class)->everyFiveMinutes();
+
+        $schedule->command(CreateDailyPuzzle::class)
+            ->dailyAt('00:00')
+            ->timezone('America/New_York')
+            ->withoutOverlapping()
+            ->appendOutputTo(storage_path('logs/wordle-scheduler.log'));
     }
 
     /**

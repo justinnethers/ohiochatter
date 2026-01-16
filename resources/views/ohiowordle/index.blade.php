@@ -1,20 +1,20 @@
 <x-app-layout :seo="$seo ?? null">
-    <x-slot name="title">OhioWordle: Ohio's Daily Word Puzzle Game</x-slot>
+    <x-slot name="title">Wordio: Ohio's Daily Word Puzzle Game</x-slot>
 
     <x-slot name="head">
-        <meta property="og:title" content="OhioWordle: Ohio's Daily Word Puzzle Game">
+        <meta property="og:title" content="Wordio: Ohio's Daily Word Puzzle Game">
         <meta property="og:description" content="Guess the Ohio-themed word in 6 tries! Test your knowledge of the Buckeye State with our daily word puzzle.">
         <meta property="og:type" content="website">
-        <meta property="og:url" content="{{ url('/ohiowordle') }}">
-        <meta property="og:image" content="{{ url('/images/ohiowordle-og.jpg') }}">
+        <meta property="og:url" content="{{ url('/wordio') }}">
+        <meta property="og:image" content="{{ url('/images/wordio-og.jpg') }}">
         <meta property="og:image:width" content="1200">
         <meta property="og:image:height" content="630">
 
         <meta name="twitter:card" content="summary_large_image">
-        <meta name="twitter:title" content="OhioWordle: Ohio's Daily Word Puzzle Game">
+        <meta name="twitter:title" content="Wordio: Ohio's Daily Word Puzzle Game">
         <meta name="twitter:description" content="Guess the Ohio-themed word in 6 tries! Test your knowledge of the Buckeye State with our daily word puzzle.">
-        <meta name="twitter:image" content="{{ url('/images/ohiowordle-og.jpg') }}">
-        <meta name="twitter:image:alt" content="OhioWordle - Ohio's Daily Word Puzzle">
+        <meta name="twitter:image" content="{{ url('/images/wordio-og.jpg') }}">
+        <meta name="twitter:image:alt" content="Wordio - Ohio's Daily Word Puzzle">
 
         <meta property="og:site_name" content="OhioChatter">
         <meta property="og:locale" content="en_US">
@@ -28,7 +28,7 @@
                     x-bind:class="{ 'truncate': $store.scroll.scrolled }"
                     class="text-xl font-semibold leading-tight"
                 >
-                    OhioWordle: Ohio's Daily Word Puzzle
+                    Wordio: Ohio's Daily Word Puzzle
                 </h1>
             </div>
         </div>

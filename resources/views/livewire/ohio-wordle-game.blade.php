@@ -292,6 +292,16 @@
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(shareText).then(() => {
                     showCopiedToast();
+
+                    // After copying, also open share menu if available
+                    if (navigator.share) {
+                        setTimeout(() => {
+                            navigator.share({
+                                title: 'Wordio',
+                                text: shareText,
+                            }).catch(() => {}); // Ignore if user cancels
+                        }, 500);
+                    }
                 }).catch(console.error);
             }
         }

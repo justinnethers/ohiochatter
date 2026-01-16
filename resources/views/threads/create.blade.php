@@ -8,14 +8,20 @@
     </x-slot>
 
     <div class="container mx-auto">
-        <div class="md:rounded-2xl md:bg-gradient-to-br md:from-steel-800/50 md:to-steel-900/50 md:backdrop-blur-sm md:border md:border-steel-700/30 p-4 md:p-8 md:mt-4">
-            <form action="/threads" method="POST">
+        <div
+            class="md:rounded-2xl md:bg-gradient-to-br md:from-steel-800/50 md:to-steel-900/50 md:backdrop-blur-sm md:border md:border-steel-700/30 p-4 md:p-8 md:mt-4">
+            <form action="/threads" method="POST"
+                  x-data="{ submitting: false }"
+                  x-on:submit="if(submitting) { $event.preventDefault(); return; } submitting = true;"
+            >
                 @csrf
                 @if ($errors->any())
-                    <div class="mb-6 p-4 bg-gradient-to-r from-red-500/20 to-red-600/20 border border-red-500/50 text-red-200 rounded-xl">
+                    <div
+                        class="mb-6 p-4 bg-gradient-to-r from-red-500/20 to-red-600/20 border border-red-500/50 text-red-200 rounded-xl">
                         <div class="flex items-center gap-2 mb-2">
                             <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
                             <span class="font-semibold">Please fix the following errors:</span>
                         </div>
@@ -124,11 +130,21 @@
                     </div>
 
                     <div class="pt-2">
-                        <x-primary-button>
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                        <x-primary-button x-bind:disabled="submitting"
+                                          x-bind:class="{ 'opacity-50 cursor-not-allowed': submitting }">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                 x-show="!submitting">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
                             </svg>
-                            Publish Thread
+                            <svg class="w-4 h-4 mr-2 animate-spin" fill="none" viewBox="0 0 24 24" x-show="submitting"
+                                 x-cloak>
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                        stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor"
+                                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span x-text="submitting ? 'Publishing...' : 'Publish Thread'"></span>
                         </x-primary-button>
                     </div>
                 </div>
@@ -137,7 +153,7 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const hasPoll = document.getElementById('has_poll');
             const pollFields = document.getElementById('poll-fields');
 
@@ -145,12 +161,12 @@
             pollFields.style.display = hasPoll.checked ? 'block' : 'none';
 
             // Toggle poll fields
-            hasPoll.addEventListener('change', function() {
+            hasPoll.addEventListener('change', function () {
                 pollFields.style.display = this.checked ? 'block' : 'none';
             });
 
             // Add new option
-            document.getElementById('add-option').addEventListener('click', function() {
+            document.getElementById('add-option').addEventListener('click', function () {
                 const container = document.getElementById('poll-options');
                 const optionCount = container.children.length + 1;
 
@@ -167,7 +183,7 @@
                 removeButton.type = 'button';
                 removeButton.className = 'text-red-400 hover:text-red-300 font-medium text-sm transition-colors';
                 removeButton.textContent = 'Remove';
-                removeButton.onclick = function() {
+                removeButton.onclick = function () {
                     wrapper.remove();
                 };
 
@@ -179,7 +195,7 @@
             // Handle old poll data if validation failed
             @if(old('has_poll'))
                 hasPoll.checked = true;
-                pollFields.style.display = 'block';
+            pollFields.style.display = 'block';
             @endif
         });
     </script>

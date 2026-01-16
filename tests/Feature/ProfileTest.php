@@ -2,6 +2,14 @@
 
 use App\Models\User;
 
+test('public profile page can be viewed', function () {
+    $user = User::factory()->create();
+
+    $response = $this->get(route('profile.show', $user->username));
+
+    $response->assertOk();
+});
+
 test('profile page is displayed', function () {
     $user = User::factory()->create();
 

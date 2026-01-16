@@ -50,6 +50,9 @@
             @else
                 <section>
                     @foreach($pickems as $pickem)
+                        @php
+                            $winners = $pickem->is_finalized ? $pickem->getWinners() : [];
+                        @endphp
                         <article class="group bg-gradient-to-br from-steel-800 to-steel-850 border-steel-700/50 hover:border-steel-600 hover:shadow-xl hover:-translate-y-0.5 p-3 md:p-4 text-steel-100 rounded-xl mb-2 md:mb-4 shadow-lg shadow-black/20 border transition-all duration-300 relative overflow-hidden">
                             <a class="group/title text-lg md:text-xl font-semibold transition-colors duration-200 block leading-snug" href="{{ route('pickem.show', $pickem) }}">
                                 <span class="text-white group-hover/title:text-accent-400 transition-colors duration-200">
@@ -81,7 +84,21 @@
                                             <span class="text-steel-600">&bull;</span>
                                         @endif
                                     @endauth
-                                    @if($pickem->picks_lock_at)
+                                    @if($pickem->is_finalized && !empty($winners))
+                                        <div class="flex items-center gap-2">
+                                            @foreach($winners as $winner)
+                                                <img src="{{ $winner['user']->avatar_path }}" alt="{{ $winner['user']->username }}"
+                                                     class="w-5 h-5 rounded-full ring-2 ring-yellow-500/50 {{ !$loop->first ? '-ml-2' : '' }}"
+                                                     title="{{ $winner['user']->username }}">
+                                            @endforeach
+                                            @if(count($winners) === 1)
+                                                <span class="text-yellow-400 font-medium">{{ $winners[0]['user']->username }}</span>
+                                            @else
+                                                <span class="text-yellow-400 font-medium">{{ count($winners) }}-way tie</span>
+                                            @endif
+                                            <span class="text-steel-400">{{ $winners[0]['score'] }}/{{ $winners[0]['max'] }}</span>
+                                        </div>
+                                    @elseif($pickem->picks_lock_at)
                                         @if($pickem->isLocked())
                                             <span class="text-steel-500">Locked</span>
                                         @else

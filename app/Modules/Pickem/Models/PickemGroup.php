@@ -45,7 +45,7 @@ class PickemGroup extends Model
 
     public function getLeaderboard(): Collection
     {
-        return DB::table('users')
+        $results = DB::table('users')
             ->select('users.*')
             ->selectRaw('COALESCE(SUM(
                 CASE
@@ -67,5 +67,19 @@ class PickemGroup extends Model
             ->orderByDesc('total_points')
             ->orderBy('users.username')
             ->get();
+
+        // Calculate ranks with tie handling (competition ranking)
+        $lastPoints = null;
+        $lastRank = 0;
+
+        return $results->map(function ($entry, $index) use (&$lastPoints, &$lastRank) {
+            if ($entry->total_points !== $lastPoints) {
+                $lastRank = $index + 1;
+                $lastPoints = $entry->total_points;
+            }
+            $entry->rank = $lastRank;
+
+            return $entry;
+        });
     }
 }

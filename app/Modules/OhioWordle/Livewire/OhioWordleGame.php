@@ -2,11 +2,9 @@
 
 namespace App\Modules\OhioWordle\Livewire;
 
-use App\Modules\OhioWordle\Models\WordleAnonymousProgress;
 use App\Modules\OhioWordle\Models\WordleUserStats;
 use App\Modules\OhioWordle\Services\WordleService;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
 use Livewire\Component;
 
 class OhioWordleGame extends Component
@@ -40,7 +38,7 @@ class OhioWordleGame extends Component
     {
         $this->word = $wordleService->getTodaysWord();
 
-        if (! $this->word) {
+        if (!$this->word) {
             $this->errorMessage = 'No puzzle available for today.';
 
             return;
@@ -78,7 +76,7 @@ class OhioWordleGame extends Component
         $this->gameState['guesses'] = $guesses;
         $this->gameState['feedback'] = $feedback;
         $this->gameState['remainingGuesses'] = WordleService::MAX_GUESSES - $attempts;
-        $this->gameState['gameComplete'] = (bool) $completedAt;
+        $this->gameState['gameComplete'] = (bool)$completedAt;
         $this->gameState['gameWon'] = $solved;
 
         // Rebuild keyboard state from previous feedback
@@ -113,6 +111,13 @@ class OhioWordleGame extends Component
         }
     }
 
+    public function showWordStats(): void
+    {
+        $wordleService = app(WordleService::class);
+        $this->wordStats = $wordleService->loadWordStats($this->word);
+        $this->showWordStats = true;
+    }
+
     public function addLetter(string $letter): void
     {
         if ($this->gameState['gameComplete']) {
@@ -121,7 +126,7 @@ class OhioWordleGame extends Component
 
         $letter = strtoupper($letter);
 
-        if (strlen($letter) !== 1 || ! ctype_alpha($letter)) {
+        if (strlen($letter) !== 1 || !ctype_alpha($letter)) {
             return;
         }
 
@@ -154,7 +159,7 @@ class OhioWordleGame extends Component
         $user = Auth::check() ? Auth::user() : null;
         $result = $wordleService->processGuess($user, $this->currentGuess);
 
-        if (! $result['valid']) {
+        if (!$result['valid']) {
             $this->errorMessage = $result['error'];
 
             return;
@@ -189,35 +194,30 @@ class OhioWordleGame extends Component
         $this->dispatch('clearCurrentGuess');
     }
 
-    public function showWordStats(): void
-    {
-        $wordleService = app(WordleService::class);
-        $this->wordStats = $wordleService->loadWordStats($this->word);
-        $this->showWordStats = true;
-    }
-
     public function getShareText(): string
     {
-        if (! $this->gameState['gameComplete']) {
+        if (!$this->gameState['gameComplete']) {
             return '';
         }
 
         $guessCount = $this->gameState['gameWon'] ? count($this->gameState['guesses']) : 'X';
         $date = $this->word->publish_date->format('M j, Y');
 
-        $text = "Wordio {$date} {$guessCount}/6\n\n";
+        $text = "Wordio \n {$date} {$guessCount}/6\n\n";
 
         foreach ($this->gameState['feedback'] as $feedbackRow) {
             foreach ($feedbackRow as $status) {
                 $text .= match ($status) {
-                    'correct' => "\u{1F7E5}", // Red square
-                    'present' => "\u{2B1C}",  // White square
+                    'correct' => "\u{1F7E9}", // Green square
+                    'present' => "\u{1F7E8}", // Yellow square
                     'absent' => "\u{2B1B}",   // Black square
                     default => '',
                 };
             }
             $text .= "\n";
         }
+
+        $text .= "\nhttps://ohiochatter.com/wordio";
 
         return $text;
     }

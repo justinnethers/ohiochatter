@@ -19,3 +19,4 @@ yarn-error.log
 /.idea
 /.vscode
 public/sitemap*.xml
+resources/data/dictionary/used_words.txt

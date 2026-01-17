@@ -4,6 +4,7 @@ Berea
 Canton
 Celina
 Clyde
+Columbus
 Dayton
 Dublin
 Elyria

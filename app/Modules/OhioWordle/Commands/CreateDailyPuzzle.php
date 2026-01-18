@@ -6,6 +6,7 @@ use App\Modules\OhioWordle\Models\WordleWord;
 use App\Modules\OhioWordle\Services\WordRotationService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class CreateDailyPuzzle extends Command
 {
@@ -18,7 +19,8 @@ class CreateDailyPuzzle extends Command
 
     public function __construct(
         private readonly WordRotationService $wordRotationService
-    ) {
+    )
+    {
         parent::__construct();
     }
 
@@ -27,7 +29,6 @@ class CreateDailyPuzzle extends Command
         $targetDate = $this->getTargetDate();
         if ($targetDate === null) {
             $this->error('Invalid date format. Please use YYYY-MM-DD.');
-
             return self::FAILURE;
         }
 
@@ -36,14 +37,15 @@ class CreateDailyPuzzle extends Command
 
         // Check for existing puzzle
         $existingPuzzle = WordleWord::whereDate('publish_date', $targetDate)->first();
-        if ($existingPuzzle && ! $isForce) {
+        if ($existingPuzzle && !$isForce) {
             $this->info("A puzzle already exists for {$targetDate->toDateString()}. Use --force to overwrite.");
 
+            Log::info('Puzzle already exists for ' . $targetDate->toDateString(), $existingPuzzle->toArray());
             return self::SUCCESS;
         }
 
         // Check for available words
-        if (! $this->wordRotationService->hasAvailableWords()) {
+        if (!$this->wordRotationService->hasAvailableWords()) {
             $this->error('No words available in ohio.txt');
 
             return self::FAILURE;
@@ -51,7 +53,7 @@ class CreateDailyPuzzle extends Command
 
         // Get available words not already in database
         $availableWords = $this->wordRotationService->getAvailableWords();
-        $existingWords = WordleWord::pluck('word')->map(fn ($w) => strtoupper($w))->toArray();
+        $existingWords = WordleWord::pluck('word')->map(fn($w) => strtoupper($w))->toArray();
         $unusedWords = array_values(array_diff($availableWords, $existingWords));
 
         if (empty($unusedWords)) {
@@ -65,7 +67,7 @@ class CreateDailyPuzzle extends Command
 
         if ($isDryRun) {
             $this->info("[DRY-RUN] Would create puzzle for {$targetDate->toDateString()} with word: {$selectedWord}");
-            $this->info("[DRY-RUN] Word length: ".strlen($selectedWord));
+            $this->info("[DRY-RUN] Word length: " . strlen($selectedWord));
             $this->info("[DRY-RUN] Would log '{$selectedWord}' to used_words.txt");
 
             return self::SUCCESS;

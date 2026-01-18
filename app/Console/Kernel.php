@@ -17,9 +17,7 @@ class Kernel extends ConsoleKernel
         $schedule->command(ProcessThreadsForSeo::class)->everyFiveMinutes();
 
         $schedule->command(CreateDailyPuzzle::class)
-            ->dailyAt('00:00')
-            ->timezone('America/New_York')
-            ->withoutOverlapping()
+            ->everyFiveMinutes()
             ->appendOutputTo(storage_path('logs/wordle-scheduler.log'));
     }
 
@@ -28,7 +26,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands(): void
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }

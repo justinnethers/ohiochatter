@@ -14,6 +14,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
+        \Log::info('Scheduler running at ' . now());
+
         $schedule->command(ProcessThreadsForSeo::class)->everyFiveMinutes();
 
         $schedule->command(CreateDailyPuzzle::class)

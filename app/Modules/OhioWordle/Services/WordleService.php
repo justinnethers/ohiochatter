@@ -3,6 +3,7 @@
 namespace App\Modules\OhioWordle\Services;
 
 use App\Models\User;
+use App\Modules\OhioWordle\Models\WordioRejectedGuess;
 use App\Modules\OhioWordle\Models\WordleAnonymousProgress;
 use App\Modules\OhioWordle\Models\WordleUserProgress;
 use App\Modules\OhioWordle\Models\WordleUserStats;
@@ -87,6 +88,14 @@ class WordleService
         // Validate the guess
         $validation = $this->validateGuess($guess, $word);
         if (! $validation['valid']) {
+            $this->logRejectedGuess(
+                $guess,
+                $validation['reason'],
+                $word->id,
+                $user?->id,
+                $user ? null : session()->getId()
+            );
+
             return $validation;
         }
 
@@ -154,17 +163,17 @@ class WordleService
         $guess = trim($guess);
 
         if (empty($guess)) {
-            return $this->errorResult('Please enter a guess');
+            return $this->errorResult('Please enter a guess', WordioRejectedGuess::REASON_EMPTY);
         }
 
         $wordLength = $word->word_length;
 
         if (strlen($guess) !== $wordLength) {
-            return $this->errorResult("Guess must be {$wordLength} letters");
+            return $this->errorResult("Guess must be {$wordLength} letters", WordioRejectedGuess::REASON_WRONG_LENGTH);
         }
 
         if (! $this->dictionaryService->isValidWord($guess, $wordLength)) {
-            return $this->errorResult("'{$guess}' is not a valid word");
+            return $this->errorResult("'{$guess}' is not a valid word", WordioRejectedGuess::REASON_NOT_IN_DICTIONARY);
         }
 
         return ['valid' => true];
@@ -196,12 +205,31 @@ class WordleService
     /**
      * Create an error result.
      */
-    private function errorResult(string $message): array
+    private function errorResult(string $message, ?string $reason = null): array
     {
-        return [
+        $result = [
             'valid' => false,
             'error' => $message,
         ];
+
+        if ($reason) {
+            $result['reason'] = $reason;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Log a rejected guess attempt.
+     */
+    private function logRejectedGuess(
+        string $guess,
+        string $reason,
+        ?int $wordId,
+        ?int $userId,
+        ?string $sessionId
+    ): void {
+        WordioRejectedGuess::log($guess, $reason, $wordId, $userId, $sessionId);
     }
 
     /**

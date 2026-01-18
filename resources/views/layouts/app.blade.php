@@ -171,6 +171,7 @@
         <main class="container max-w-7xl mx-auto {{ isset($header) ? 'mt-20 md:mt-24' : 'mt-16' }} relative z-10">
             <div class="{{ isset($header) ? '' : 'pt-8' }}">
                 <livewire:pickem-alert-bar/>
+                <livewire:wordio-alert-bar/>
             </div>
             {{ $slot }}
         </main>

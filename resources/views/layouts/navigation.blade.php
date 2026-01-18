@@ -37,6 +37,10 @@
                     <x-nav-link href="{{ route('pickem.index') }}" :active="request()->routeIs('pickem.*')">
                         {{ __('Pick \'ems') }}
                     </x-nav-link>
+
+                    <x-nav-link href="{{ route('ohiowordle.index') }}" :active="request()->routeIs('ohiowordle.*')">
+                        {{ __('Wordio') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -251,6 +255,15 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                         {{ __('Pick \'ems') }}
+                    </span>
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link href="{{ route('ohiowordle.index') }}" :active="request()->routeIs('ohiowordle.*')" @click="open = false">
+                    <span class="flex items-center gap-3">
+                        <svg class="w-5 h-5 text-steel-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/>
+                        </svg>
+                        {{ __('Wordio') }}
                     </span>
                 </x-responsive-nav-link>
             </div>

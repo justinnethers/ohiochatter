@@ -13,12 +13,12 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        \Log::info('Scheduler running at ' . now());
-
-//        $schedule->command(ProcessThreadsForSeo::class)->everyFiveMinutes();
+        $schedule->command(ProcessThreadsForSeo::class)->everyFiveMinutes();
 
         $schedule->command(CreateDailyPuzzle::class)
-            ->everyFiveMinutes()
+            ->dailyAt('00:00')
+            ->timezone('America/New_York')
+            ->withoutOverlapping()
             ->appendOutputTo(storage_path('logs/wordle-scheduler.log'));
     }
 

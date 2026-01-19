@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Console\Commands\ProcessThreadsForSeo;
 use App\Modules\OhioWordle\Commands\CreateDailyPuzzle;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;

@@ -43,8 +43,8 @@ function testFileExists($testDir, $filename): bool
 }
 
 describe('getAvailableWords', function () {
-    it('returns words from ohio.txt', function () {
-        putTestFile($this->testDir, 'ohio.txt', "AKRON\nDAYTON\nTOLEDO");
+    it('returns words from ohio.csv', function () {
+        putTestFile($this->testDir, 'ohio.csv', "word,category,description\nAKRON,place,A city in Ohio\nDAYTON,place,Another city\nTOLEDO,place,Yet another city");
 
         $service = createService($this->testDir);
         $words = $service->getAvailableWords();
@@ -64,7 +64,7 @@ describe('getAvailableWords', function () {
     });
 
     it('returns empty array when file is empty', function () {
-        putTestFile($this->testDir, 'ohio.txt', '');
+        putTestFile($this->testDir, 'ohio.csv', '');
 
         $service = createService($this->testDir);
         $words = $service->getAvailableWords();
@@ -74,7 +74,7 @@ describe('getAvailableWords', function () {
     });
 
     it('trims whitespace and converts to uppercase', function () {
-        putTestFile($this->testDir, 'ohio.txt', "  akron  \n  dayton  ");
+        putTestFile($this->testDir, 'ohio.csv', "word,category,description\n  akron  ,place,A city\n  dayton  ,place,Another city");
 
         $service = createService($this->testDir);
         $words = $service->getAvailableWords();
@@ -84,7 +84,7 @@ describe('getAvailableWords', function () {
     });
 
     it('filters out non-alphabetic entries', function () {
-        putTestFile($this->testDir, 'ohio.txt', "AKRON\n123\nDAYTON\n!@#\nTEST123");
+        putTestFile($this->testDir, 'ohio.csv', "word,category,description\nAKRON,place,A city\n123,place,Invalid\nDAYTON,place,Another city\n!@#,place,Invalid\nTEST123,place,Invalid");
 
         $service = createService($this->testDir);
         $words = $service->getAvailableWords();
@@ -97,7 +97,7 @@ describe('getAvailableWords', function () {
 
 describe('getRandomWord', function () {
     it('returns a random word from available words', function () {
-        putTestFile($this->testDir, 'ohio.txt', "AKRON\nDAYTON\nTOLEDO");
+        putTestFile($this->testDir, 'ohio.csv', "word,category,description\nAKRON,place,A city\nDAYTON,place,Another city\nTOLEDO,place,Yet another city");
 
         $service = createService($this->testDir);
         $word = $service->getRandomWord();
@@ -114,30 +114,30 @@ describe('getRandomWord', function () {
 });
 
 describe('removeWordFromAvailable', function () {
-    it('removes word from ohio.txt', function () {
-        putTestFile($this->testDir, 'ohio.txt', "AKRON\nDAYTON\nTOLEDO");
+    it('removes word from ohio.csv', function () {
+        putTestFile($this->testDir, 'ohio.csv', "word,category,description\nAKRON,place,A city\nDAYTON,place,Another city\nTOLEDO,place,Yet another city");
 
         $service = createService($this->testDir);
         $service->removeWordFromAvailable('DAYTON');
 
-        $content = getTestFile($this->testDir, 'ohio.txt');
+        $content = getTestFile($this->testDir, 'ohio.csv');
         expect($content)->not->toContain('DAYTON');
         expect($content)->toContain('AKRON');
         expect($content)->toContain('TOLEDO');
     });
 
     it('is case insensitive', function () {
-        putTestFile($this->testDir, 'ohio.txt', "AKRON\nDAYTON\nTOLEDO");
+        putTestFile($this->testDir, 'ohio.csv', "word,category,description\nAKRON,place,A city\nDAYTON,place,Another city\nTOLEDO,place,Yet another city");
 
         $service = createService($this->testDir);
         $service->removeWordFromAvailable('dayton');
 
-        $content = getTestFile($this->testDir, 'ohio.txt');
+        $content = getTestFile($this->testDir, 'ohio.csv');
         expect($content)->not->toContain('DAYTON');
     });
 
     it('does nothing if word not found', function () {
-        putTestFile($this->testDir, 'ohio.txt', "AKRON\nDAYTON");
+        putTestFile($this->testDir, 'ohio.csv', "word,category,description\nAKRON,place,A city\nDAYTON,place,Another city");
 
         $service = createService($this->testDir);
         $service->removeWordFromAvailable('TOLEDO');
@@ -147,12 +147,12 @@ describe('removeWordFromAvailable', function () {
     });
 
     it('handles empty file gracefully', function () {
-        putTestFile($this->testDir, 'ohio.txt', '');
+        putTestFile($this->testDir, 'ohio.csv', '');
 
         $service = createService($this->testDir);
         $service->removeWordFromAvailable('AKRON');
 
-        expect(testFileExists($this->testDir, 'ohio.txt'))->toBeTrue();
+        expect(testFileExists($this->testDir, 'ohio.csv'))->toBeTrue();
     });
 });
 
@@ -190,7 +190,7 @@ describe('addToUsedWords', function () {
 
 describe('hasAvailableWords', function () {
     it('returns true when words are available', function () {
-        putTestFile($this->testDir, 'ohio.txt', "AKRON\nDAYTON");
+        putTestFile($this->testDir, 'ohio.csv', "word,category,description\nAKRON,place,A city\nDAYTON,place,Another city");
 
         $service = createService($this->testDir);
 
@@ -204,7 +204,7 @@ describe('hasAvailableWords', function () {
     });
 
     it('returns false when file is empty', function () {
-        putTestFile($this->testDir, 'ohio.txt', '');
+        putTestFile($this->testDir, 'ohio.csv', '');
 
         $service = createService($this->testDir);
 
@@ -214,7 +214,7 @@ describe('hasAvailableWords', function () {
 
 describe('getAvailableWordCount', function () {
     it('returns count of available words', function () {
-        putTestFile($this->testDir, 'ohio.txt', "AKRON\nDAYTON\nTOLEDO");
+        putTestFile($this->testDir, 'ohio.csv', "word,category,description\nAKRON,place,A city\nDAYTON,place,Another city\nTOLEDO,place,Yet another city");
 
         $service = createService($this->testDir);
 
@@ -231,6 +231,8 @@ describe('getAvailableWordCount', function () {
 describe('clearDictionaryCache', function () {
     it('clears dictionary cache keys', function () {
         Cache::put('dictionary_ohio', ['AKRON']);
+        Cache::put('dictionary_ohio_csv', ['AKRON']);
+        Cache::put('dictionary_ohio_csv_full', [['word' => 'AKRON', 'category' => 'place', 'description' => 'A city']]);
         Cache::put('dictionary_all_words', ['AKRON', 'HELLO']);
         Cache::put('dictionary_sowpods', ['HELLO']);
         Cache::put('dictionary_words_5', ['AKRON', 'HELLO']);
@@ -239,6 +241,8 @@ describe('clearDictionaryCache', function () {
         $service->clearDictionaryCache();
 
         expect(Cache::has('dictionary_ohio'))->toBeFalse();
+        expect(Cache::has('dictionary_ohio_csv'))->toBeFalse();
+        expect(Cache::has('dictionary_ohio_csv_full'))->toBeFalse();
         expect(Cache::has('dictionary_all_words'))->toBeFalse();
         expect(Cache::has('dictionary_sowpods'))->toBeFalse();
         expect(Cache::has('dictionary_words_5'))->toBeFalse();
@@ -255,5 +259,37 @@ describe('clearDictionaryCache', function () {
         for ($i = 3; $i <= 15; $i++) {
             expect(Cache::has("dictionary_words_{$i}"))->toBeFalse();
         }
+    });
+});
+
+describe('getWordMetadata', function () {
+    it('returns metadata for a word', function () {
+        putTestFile($this->testDir, 'ohio.csv', "word,category,description\nAKRON,place,A city in Summit County\nDAYTON,person,A famous person");
+
+        $service = createService($this->testDir);
+        $metadata = $service->getWordMetadata('AKRON');
+
+        expect($metadata)->toBeArray();
+        expect($metadata['category'])->toBe('place');
+        expect($metadata['description'])->toBe('A city in Summit County');
+    });
+
+    it('returns null for non-existent word', function () {
+        putTestFile($this->testDir, 'ohio.csv', "word,category,description\nAKRON,place,A city");
+
+        $service = createService($this->testDir);
+        $metadata = $service->getWordMetadata('TOLEDO');
+
+        expect($metadata)->toBeNull();
+    });
+
+    it('is case insensitive', function () {
+        putTestFile($this->testDir, 'ohio.csv', "word,category,description\nAKRON,place,A city in Ohio");
+
+        $service = createService($this->testDir);
+        $metadata = $service->getWordMetadata('akron');
+
+        expect($metadata)->toBeArray();
+        expect($metadata['category'])->toBe('place');
     });
 });

@@ -6,36 +6,78 @@ use Illuminate\Support\Facades\Cache;
 
 class WordRotationService
 {
-    private string $ohioWordsPath;
+    private string $ohioWordsCsvPath;
     private string $usedWordsPath;
 
     public function __construct(?string $basePath = null)
     {
         $basePath = $basePath ?? base_path();
-        $this->ohioWordsPath = $basePath.'/resources/data/dictionary/ohio.txt';
+        $this->ohioWordsCsvPath = $basePath.'/resources/data/dictionary/ohio.csv';
         $this->usedWordsPath = $basePath.'/resources/data/dictionary/used_words.txt';
     }
 
     public function getAvailableWords(): array
     {
-        $fullPath = $this->ohioWordsPath;
+        $csvData = $this->loadCsvData();
 
-        if (! file_exists($fullPath)) {
-            return [];
-        }
+        return array_column($csvData, 'word');
+    }
 
-        $content = file_get_contents($fullPath);
-        $lines = explode("\n", $content);
+    /**
+     * Get metadata for a specific word.
+     */
+    public function getWordMetadata(string $word): ?array
+    {
+        $word = strtoupper(trim($word));
+        $csvData = $this->loadCsvData();
 
-        $words = [];
-        foreach ($lines as $line) {
-            $word = strtoupper(trim($line));
-            if (! empty($word) && ctype_alpha($word)) {
-                $words[] = $word;
+        foreach ($csvData as $entry) {
+            if ($entry['word'] === $word) {
+                return [
+                    'category' => $entry['category'] ?? null,
+                    'description' => $entry['description'] ?? null,
+                ];
             }
         }
 
-        return $words;
+        return null;
+    }
+
+    /**
+     * Load CSV data from file.
+     *
+     * @return array<int, array{word: string, category: string, description: string}>
+     */
+    private function loadCsvData(): array
+    {
+        if (! file_exists($this->ohioWordsCsvPath)) {
+            return [];
+        }
+
+        $handle = fopen($this->ohioWordsCsvPath, 'r');
+        if ($handle === false) {
+            return [];
+        }
+
+        $data = [];
+        $header = fgetcsv($handle); // Skip header row
+
+        while (($row = fgetcsv($handle)) !== false) {
+            if (count($row) >= 3) {
+                $word = strtoupper(trim($row[0]));
+                if (! empty($word) && ctype_alpha($word)) {
+                    $data[] = [
+                        'word' => $word,
+                        'category' => trim($row[1]),
+                        'description' => trim($row[2]),
+                    ];
+                }
+            }
+        }
+
+        fclose($handle);
+
+        return $data;
     }
 
     public function getRandomWord(): ?string
@@ -51,17 +93,29 @@ class WordRotationService
 
     public function removeWordFromAvailable(string $word): void
     {
-        $fullPath = $this->ohioWordsPath;
-
-        if (! file_exists($fullPath)) {
+        if (! file_exists($this->ohioWordsCsvPath)) {
             return;
         }
 
         $word = strtoupper(trim($word));
-        $words = $this->getAvailableWords();
-        $words = array_filter($words, fn ($w) => $w !== $word);
+        $csvData = $this->loadCsvData();
+        $filteredData = array_filter($csvData, fn ($entry) => $entry['word'] !== $word);
 
-        file_put_contents($fullPath, implode("\n", array_values($words)));
+        // Rewrite CSV file with remaining entries
+        $handle = fopen($this->ohioWordsCsvPath, 'w');
+        if ($handle === false) {
+            return;
+        }
+
+        // Write header
+        fputcsv($handle, ['word', 'category', 'description']);
+
+        // Write data rows
+        foreach ($filteredData as $entry) {
+            fputcsv($handle, [$entry['word'], $entry['category'], $entry['description']]);
+        }
+
+        fclose($handle);
     }
 
     public function addToUsedWords(string $word): void
@@ -87,6 +141,8 @@ class WordRotationService
     public function clearDictionaryCache(): void
     {
         Cache::forget('dictionary_ohio');
+        Cache::forget('dictionary_ohio_csv');
+        Cache::forget('dictionary_ohio_csv_full');
         Cache::forget('dictionary_all_words');
         Cache::forget('dictionary_sowpods');
 

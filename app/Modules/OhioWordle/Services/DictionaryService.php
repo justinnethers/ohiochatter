@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Cache;
 class DictionaryService
 {
     private const SOWPODS_DICTIONARY_PATH = 'resources/data/dictionary/sowpods.txt';
-    private const OHIO_WORDS_PATH = 'resources/data/dictionary/ohio.txt';
+    private const OHIO_WORDS_CSV_PATH = 'resources/data/dictionary/ohio.csv';
     private const CACHE_TTL = 60 * 60 * 24; // 24 hours
 
     /**
@@ -70,13 +70,37 @@ class DictionaryService
     }
 
     /**
-     * Get Ohio-specific words.
+     * Get Ohio-specific words (just the word list for backward compatibility).
      */
     public function getOhioWords(): array
     {
-        return Cache::remember('dictionary_ohio', self::CACHE_TTL, function () {
-            return $this->loadWordsFromFile(self::OHIO_WORDS_PATH);
+        return Cache::remember('dictionary_ohio_csv', self::CACHE_TTL, function () {
+            $csvData = $this->loadWordsFromCsv(self::OHIO_WORDS_CSV_PATH);
+
+            return array_column($csvData, 'word');
         });
+    }
+
+    /**
+     * Get metadata for a specific Ohio word.
+     */
+    public function getOhioWordMetadata(string $word): ?array
+    {
+        $word = strtoupper(trim($word));
+        $csvData = Cache::remember('dictionary_ohio_csv_full', self::CACHE_TTL, function () {
+            return $this->loadWordsFromCsv(self::OHIO_WORDS_CSV_PATH);
+        });
+
+        foreach ($csvData as $entry) {
+            if ($entry['word'] === $word) {
+                return [
+                    'category' => $entry['category'] ?? null,
+                    'description' => $entry['description'] ?? null,
+                ];
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -85,6 +109,8 @@ class DictionaryService
     public function clearCache(): void
     {
         Cache::forget('dictionary_ohio');
+        Cache::forget('dictionary_ohio_csv');
+        Cache::forget('dictionary_ohio_csv_full');
         Cache::forget('dictionary_all_words');
         Cache::forget('dictionary_sowpods');
 
@@ -116,5 +142,44 @@ class DictionaryService
         }
 
         return $words;
+    }
+
+    /**
+     * Load words from a CSV file with metadata.
+     *
+     * @return array<int, array{word: string, category: string, description: string}>
+     */
+    private function loadWordsFromCsv(string $path): array
+    {
+        $fullPath = base_path($path);
+
+        if (! file_exists($fullPath)) {
+            return [];
+        }
+
+        $handle = fopen($fullPath, 'r');
+        if ($handle === false) {
+            return [];
+        }
+
+        $data = [];
+        $header = fgetcsv($handle); // Skip header row
+
+        while (($row = fgetcsv($handle)) !== false) {
+            if (count($row) >= 3) {
+                $word = strtoupper(trim($row[0]));
+                if (! empty($word) && ctype_alpha($word)) {
+                    $data[] = [
+                        'word' => $word,
+                        'category' => trim($row[1]),
+                        'description' => trim($row[2]),
+                    ];
+                }
+            }
+        }
+
+        fclose($handle);
+
+        return $data;
     }
 }

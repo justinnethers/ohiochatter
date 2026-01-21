@@ -46,7 +46,7 @@ class CreateDailyPuzzle extends Command
 
         // Check for available words
         if (!$this->wordRotationService->hasAvailableWords()) {
-            $this->error('No words available in ohio.txt');
+            $this->error('No words available in ohio.csv');
 
             return self::FAILURE;
         }
@@ -57,7 +57,7 @@ class CreateDailyPuzzle extends Command
         $unusedWords = array_values(array_diff($availableWords, $existingWords));
 
         if (empty($unusedWords)) {
-            $this->error('No unused words available. All words in ohio.txt have already been used.');
+            $this->error('No unused words available. All words in ohio.csv have already been used.');
 
             return self::FAILURE;
         }
@@ -65,9 +65,14 @@ class CreateDailyPuzzle extends Command
         // Select random word from unused words
         $selectedWord = $unusedWords[array_rand($unusedWords)];
 
+        // Get metadata for the selected word
+        $metadata = $this->wordRotationService->getWordMetadata($selectedWord);
+
         if ($isDryRun) {
             $this->info("[DRY-RUN] Would create puzzle for {$targetDate->toDateString()} with word: {$selectedWord}");
             $this->info("[DRY-RUN] Word length: " . strlen($selectedWord));
+            $this->info("[DRY-RUN] Category: " . ($metadata['category'] ?? 'N/A'));
+            $this->info("[DRY-RUN] Description: " . ($metadata['description'] ?? 'N/A'));
             $this->info("[DRY-RUN] Would log '{$selectedWord}' to used_words.txt");
 
             return self::SUCCESS;
@@ -78,14 +83,16 @@ class CreateDailyPuzzle extends Command
             $existingPuzzle->delete();
         }
 
-        // Create the puzzle
+        // Create the puzzle with metadata
         WordleWord::create([
             'word' => $selectedWord,
             'publish_date' => $targetDate,
             'is_active' => true,
+            'category' => $metadata['category'] ?? null,
+            'hint' => $metadata['description'] ?? null,
         ]);
 
-        // Log the word to used_words.txt (but keep it in ohio.txt for guess validation)
+        // Log the word to used_words.txt (but keep it in ohio.csv for guess validation)
         $this->wordRotationService->addToUsedWords($selectedWord);
 
         // Clear dictionary cache

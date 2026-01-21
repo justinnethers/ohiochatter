@@ -14,6 +14,7 @@ describe('wordle:create-daily-puzzle', function () {
         $this->mock(WordRotationService::class, function (MockInterface $mock) {
             $mock->shouldReceive('hasAvailableWords')->andReturn(true);
             $mock->shouldReceive('getAvailableWords')->andReturn(['AKRON', 'DAYTON', 'TOLEDO']);
+            $mock->shouldReceive('getWordMetadata')->andReturn(['category' => 'place', 'description' => 'A city']);
             $mock->shouldReceive('addToUsedWords')->once();
             $mock->shouldReceive('clearDictionaryCache')->once();
         });
@@ -28,6 +29,7 @@ describe('wordle:create-daily-puzzle', function () {
         $this->mock(WordRotationService::class, function (MockInterface $mock) {
             $mock->shouldReceive('hasAvailableWords')->andReturn(true);
             $mock->shouldReceive('getAvailableWords')->andReturn(['AKRON', 'DAYTON', 'TOLEDO']);
+            $mock->shouldReceive('getWordMetadata')->andReturn(['category' => 'place', 'description' => 'A city']);
             $mock->shouldReceive('addToUsedWords')->once();
             $mock->shouldReceive('clearDictionaryCache')->once();
         });
@@ -42,6 +44,7 @@ describe('wordle:create-daily-puzzle', function () {
         $this->mock(WordRotationService::class, function (MockInterface $mock) {
             $mock->shouldReceive('hasAvailableWords')->andReturn(true);
             $mock->shouldReceive('getAvailableWords')->andReturn(['AKRON']);
+            $mock->shouldReceive('getWordMetadata')->with('AKRON')->andReturn(['category' => 'place', 'description' => 'A city in Summit County']);
             $mock->shouldReceive('addToUsedWords')->with('AKRON')->once();
             $mock->shouldReceive('clearDictionaryCache')->once();
         });
@@ -59,7 +62,7 @@ describe('wordle:create-daily-puzzle', function () {
 
         $this->artisan('wordle:create-daily-puzzle')
             ->assertFailed()
-            ->expectsOutput('No words available in ohio.txt');
+            ->expectsOutput('No words available in ohio.csv');
     });
 
     it('skips when puzzle already exists for date', function () {
@@ -81,6 +84,7 @@ describe('wordle:create-daily-puzzle', function () {
         $this->mock(WordRotationService::class, function (MockInterface $mock) {
             $mock->shouldReceive('hasAvailableWords')->andReturn(true);
             $mock->shouldReceive('getAvailableWords')->andReturn(['AKRON', 'DAYTON', 'TOLEDO']);
+            $mock->shouldReceive('getWordMetadata')->andReturn(['category' => 'place', 'description' => 'A city']);
             $mock->shouldReceive('addToUsedWords')->once();
             $mock->shouldReceive('clearDictionaryCache')->once();
         });
@@ -98,6 +102,7 @@ describe('wordle:create-daily-puzzle', function () {
         $this->mock(WordRotationService::class, function (MockInterface $mock) {
             $mock->shouldReceive('hasAvailableWords')->andReturn(true);
             $mock->shouldReceive('getAvailableWords')->andReturn(['AKRON', 'DAYTON', 'TOLEDO']);
+            $mock->shouldReceive('getWordMetadata')->andReturn(['category' => 'place', 'description' => 'A city']);
             $mock->shouldReceive('addToUsedWords')->never();
             $mock->shouldReceive('clearDictionaryCache')->never();
         });
@@ -113,6 +118,7 @@ describe('wordle:create-daily-puzzle', function () {
         $this->mock(WordRotationService::class, function (MockInterface $mock) {
             $mock->shouldReceive('hasAvailableWords')->andReturn(true);
             $mock->shouldReceive('getAvailableWords')->andReturn(['AKRON', 'DAYTON']);
+            $mock->shouldReceive('getWordMetadata')->with('DAYTON')->andReturn(['category' => 'place', 'description' => 'A city in Ohio']);
             $mock->shouldReceive('addToUsedWords')->with('DAYTON')->once();
             $mock->shouldReceive('clearDictionaryCache')->once();
         });
@@ -138,13 +144,14 @@ describe('wordle:create-daily-puzzle', function () {
 
         $this->artisan('wordle:create-daily-puzzle')
             ->assertFailed()
-            ->expectsOutput('No unused words available. All words in ohio.txt have already been used.');
+            ->expectsOutput('No unused words available. All words in ohio.csv have already been used.');
     });
 
     it('calculates word_length correctly', function () {
         $this->mock(WordRotationService::class, function (MockInterface $mock) {
             $mock->shouldReceive('hasAvailableWords')->andReturn(true);
             $mock->shouldReceive('getAvailableWords')->andReturn(['COLUMBUS']);
+            $mock->shouldReceive('getWordMetadata')->with('COLUMBUS')->andReturn(['category' => 'place', 'description' => 'Capital of Ohio']);
             $mock->shouldReceive('addToUsedWords')->once();
             $mock->shouldReceive('clearDictionaryCache')->once();
         });
@@ -161,6 +168,7 @@ describe('wordle:create-daily-puzzle', function () {
         $this->mock(WordRotationService::class, function (MockInterface $mock) {
             $mock->shouldReceive('hasAvailableWords')->andReturn(true);
             $mock->shouldReceive('getAvailableWords')->andReturn(['AKRON', 'DAYTON', 'TOLEDO', 'CANTON', 'ELYRIA', 'LORAIN']);
+            $mock->shouldReceive('getWordMetadata')->andReturn(['category' => 'place', 'description' => 'A city']);
             $mock->shouldReceive('addToUsedWords')->once();
             $mock->shouldReceive('clearDictionaryCache')->once();
         });
@@ -174,6 +182,7 @@ describe('wordle:create-daily-puzzle', function () {
         $this->mock(WordRotationService::class, function (MockInterface $mock) {
             $mock->shouldReceive('hasAvailableWords')->andReturn(true);
             $mock->shouldReceive('getAvailableWords')->andReturn(['AKRON']);
+            $mock->shouldReceive('getWordMetadata')->with('AKRON')->andReturn(['category' => 'place', 'description' => 'A city']);
             $mock->shouldReceive('addToUsedWords')->once();
             $mock->shouldReceive('clearDictionaryCache')->once();
         });
@@ -188,6 +197,7 @@ describe('wordle:create-daily-puzzle', function () {
         $this->mock(WordRotationService::class, function (MockInterface $mock) {
             $mock->shouldReceive('hasAvailableWords')->andReturn(true);
             $mock->shouldReceive('getAvailableWords')->andReturn(['AKRON', 'DAYTON']);
+            $mock->shouldReceive('getWordMetadata')->andReturn(['category' => 'place', 'description' => 'A city']);
             $mock->shouldReceive('addToUsedWords')->once();
             $mock->shouldReceive('clearDictionaryCache')->once();
         });

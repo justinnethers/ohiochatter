@@ -59,6 +59,19 @@
                 </div>
             @endif
 
+            {{-- Category Hint --}}
+            @if($word->category)
+                <div class="flex justify-center mb-4">
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm
+                        {{ $word->category === 'person' ? 'bg-blue-600/20 text-blue-300 border border-blue-500/30' : '' }}
+                        {{ $word->category === 'place' ? 'bg-green-600/20 text-green-300 border border-green-500/30' : '' }}
+                        {{ $word->category === 'thing' ? 'bg-purple-600/20 text-purple-300 border border-purple-500/30' : '' }}">
+                        <span class="font-medium">Hint:</span>
+                        <span class="font-bold uppercase">{{ $word->category }}</span>
+                    </div>
+                </div>
+            @endif
+
             {{-- Game Grid --}}
             <div class="flex flex-col items-center gap-1 mb-4">
                 @for($row = 0; $row < 6; $row++)
@@ -214,6 +227,23 @@
                             </div>
                         @endforeach
                     </div>
+
+                    {{-- Word metadata (category and description) --}}
+                    @if($word->hint || $word->category)
+                        <div class="bg-gray-800/50 rounded-lg p-4 mb-4 text-left">
+                            @if($word->category)
+                                <div class="inline-block px-2 py-1 rounded text-xs font-bold uppercase tracking-wide mb-2
+                                    {{ $word->category === 'person' ? 'bg-blue-600/30 text-blue-300' : '' }}
+                                    {{ $word->category === 'place' ? 'bg-green-600/30 text-green-300' : '' }}
+                                    {{ $word->category === 'thing' ? 'bg-purple-600/30 text-purple-300' : '' }}">
+                                    {{ $word->category }}
+                                </div>
+                            @endif
+                            @if($word->hint)
+                                <p class="text-gray-300 text-sm">{{ $word->hint }}</p>
+                            @endif
+                        </div>
+                    @endif
 
                     <p class="text-sm text-gray-400 mb-5">Come back tomorrow for a new puzzle!</p>
 

@@ -31,14 +31,16 @@ describe('isValidWord - English dictionary words', function () {
 
 describe('isValidWord - Ohio specific words', function () {
     it('accepts Ohio city names', function () {
+        // 5-letter Ohio city names from ohio.csv
         expect($this->dictionaryService->isValidWord('AKRON', 5))->toBeTrue();
-        expect($this->dictionaryService->isValidWord('DAYTON', 6))->toBeTrue();
-        expect($this->dictionaryService->isValidWord('TOLEDO', 6))->toBeTrue();
-        expect($this->dictionaryService->isValidWord('CANTON', 6))->toBeTrue();
+        expect($this->dictionaryService->isValidWord('BEREA', 5))->toBeTrue();
+        expect($this->dictionaryService->isValidWord('DOVER', 5))->toBeTrue();
+        expect($this->dictionaryService->isValidWord('PARMA', 5))->toBeTrue();
     });
 
     it('accepts Ohio landmark and geographic terms', function () {
-        expect($this->dictionaryService->isValidWord('BUCKEYE', 7))->toBeTrue();
+        // 5-letter Ohio-related terms
+        expect($this->dictionaryService->isValidWord('BUCKS', 5))->toBeTrue();
     });
 
     it('accepts famous Ohioan names', function () {
@@ -114,7 +116,7 @@ describe('dictionary loading', function () {
         expect($ohioWords)->toBeArray();
         expect($ohioWords)->not->toBeEmpty();
         expect($ohioWords)->toContain('AKRON');
-        expect($ohioWords)->toContain('DAYTON');
+        expect($ohioWords)->toContain('BENCH'); // 5-letter words only in CSV
     });
 });
 

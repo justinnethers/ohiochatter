@@ -5,7 +5,7 @@ namespace App\Modules\OhioWordle\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Modules\OhioWordle\Models\WordleUserStats;
 use App\Modules\OhioWordle\Models\WordleWord;
-use App\Modules\OhioWordle\Services\WordleService;
+use App\Modules\OhioWordle\Services\WordioService;
 use App\Services\SeoService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -14,12 +14,14 @@ class OhioWordleController extends Controller
 {
     public function __construct(
         private SeoService $seoService
-    ) {}
+    )
+    {
+    }
 
     /**
      * Display the OhioWordle game page for authenticated users.
      */
-    public function index(WordleService $wordleService)
+    public function index(WordioService $wordleService)
     {
         $userStats = null;
         if (Auth::check()) {
@@ -35,7 +37,7 @@ class OhioWordleController extends Controller
     /**
      * Display the game for guest users.
      */
-    public function guestPlay(WordleService $wordleService)
+    public function guestPlay(WordioService $wordleService)
     {
         $word = $wordleService->getTodaysWord();
         $seo = $this->seoService->forOhioWordle();
@@ -67,7 +69,7 @@ class OhioWordleController extends Controller
                 ->whereNotNull('completed_at')
                 ->first();
 
-            $todayCompleted = (bool) $todayProgress;
+            $todayCompleted = (bool)$todayProgress;
         }
 
         // Build query for recent words

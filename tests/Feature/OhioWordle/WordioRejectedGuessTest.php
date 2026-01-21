@@ -3,13 +3,13 @@
 use App\Models\User;
 use App\Modules\OhioWordle\Models\WordioRejectedGuess;
 use App\Modules\OhioWordle\Models\WordleWord;
-use App\Modules\OhioWordle\Services\WordleService;
+use App\Modules\OhioWordle\Services\WordioService;
 use Illuminate\Support\Facades\Cache;
 
 uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->wordleService = app(WordleService::class);
+    $this->wordleService = app(WordioService::class);
     $this->user = User::factory()->create();
     $this->word = WordleWord::factory()->today()->create(['word' => 'AKRON']);
     Cache::flush();

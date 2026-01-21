@@ -3,7 +3,7 @@
 namespace App\Modules\OhioWordle\Livewire;
 
 use App\Modules\OhioWordle\Models\WordleUserStats;
-use App\Modules\OhioWordle\Services\WordleService;
+use App\Modules\OhioWordle\Services\WordioService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
@@ -16,7 +16,7 @@ class OhioWordleGame extends Component
     public $gameState = [
         'guesses' => [],
         'feedback' => [],
-        'remainingGuesses' => WordleService::MAX_GUESSES,
+        'remainingGuesses' => WordioService::MAX_GUESSES,
         'gameComplete' => false,
         'gameWon' => false,
         'answer' => null,
@@ -32,7 +32,7 @@ class OhioWordleGame extends Component
 
     public $showWordStats = false;
 
-    public function mount(WordleService $wordleService)
+    public function mount(WordioService $wordleService)
     {
         $this->word = $wordleService->getTodaysWord();
 
@@ -73,7 +73,7 @@ class OhioWordleGame extends Component
     {
         $this->gameState['guesses'] = $guesses;
         $this->gameState['feedback'] = $feedback;
-        $this->gameState['remainingGuesses'] = WordleService::MAX_GUESSES - $attempts;
+        $this->gameState['remainingGuesses'] = WordioService::MAX_GUESSES - $attempts;
         $this->gameState['gameComplete'] = (bool)$completedAt;
         $this->gameState['gameWon'] = $solved;
 
@@ -111,12 +111,12 @@ class OhioWordleGame extends Component
 
     public function showWordStats(): void
     {
-        $wordleService = app(WordleService::class);
+        $wordleService = app(WordioService::class);
         $this->wordStats = $wordleService->loadWordStats($this->word);
         $this->showWordStats = true;
     }
 
-    public function submitGuess(string $guess, WordleService $wordleService): void
+    public function submitGuess(string $guess, WordioService $wordleService): void
     {
         if ($this->gameState['gameComplete']) {
             $this->errorMessage = 'This game is already complete.';

@@ -3,7 +3,7 @@
 namespace App\Modules\OhioWordle\Filament\Widgets;
 
 use App\Modules\OhioWordle\Models\WordleWord;
-use App\Modules\OhioWordle\Services\WordleService;
+use App\Modules\OhioWordle\Services\WordioService;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Carbon;
@@ -16,7 +16,7 @@ class TodaysWordleStatsWidget extends BaseWidget
     {
         $word = WordleWord::where('publish_date', Carbon::today()->toDateString())->first();
 
-        if (! $word) {
+        if (!$word) {
             return [
                 Stat::make('OhioWordle', 'No puzzle today')
                     ->description('No word scheduled for today')
@@ -24,7 +24,7 @@ class TodaysWordleStatsWidget extends BaseWidget
             ];
         }
 
-        $wordleService = app(WordleService::class);
+        $wordleService = app(WordioService::class);
         $stats = $wordleService->loadWordStats($word);
 
         return [
@@ -32,10 +32,10 @@ class TodaysWordleStatsWidget extends BaseWidget
                 ->description($word->category ?? 'OhioWordle')
                 ->color('success'),
             Stat::make('Players', $stats['totalPlayers'])
-                ->description($stats['solvedCount'].' solved')
+                ->description($stats['solvedCount'] . ' solved')
                 ->color('info'),
-            Stat::make('Completion Rate', $stats['completionRate'].'%')
-                ->description('Avg: '.($stats['averageGuesses'] === 'N/A' ? 'N/A' : $stats['averageGuesses'].' guesses'))
+            Stat::make('Completion Rate', $stats['completionRate'] . '%')
+                ->description('Avg: ' . ($stats['averageGuesses'] === 'N/A' ? 'N/A' : $stats['averageGuesses'] . ' guesses'))
                 ->color($stats['completionRate'] >= 50 ? 'success' : 'warning'),
         ];
     }

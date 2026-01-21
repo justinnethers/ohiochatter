@@ -10,7 +10,7 @@ use App\Modules\OhioWordle\Models\WordleUserStats;
 use App\Modules\OhioWordle\Models\WordleWord;
 use Illuminate\Support\Facades\Cache;
 
-class WordleService
+class WordioService
 {
     public const MAX_GUESSES = 6;
 
@@ -19,7 +19,27 @@ class WordleService
 
     public function __construct(
         private DictionaryService $dictionaryService
-    ) {}
+    )
+    {
+    }
+
+    /**
+     * Get guest progress for today's word.
+     */
+    public function getGuestProgress(): ?WordleAnonymousProgress
+    {
+        $word = $this->getTodaysWord();
+
+        if (!$word) {
+            return null;
+        }
+
+        $sessionId = session()->getId();
+
+        return WordleAnonymousProgress::where('word_id', $word->id)
+            ->where('session_id', $sessionId)
+            ->first();
+    }
 
     /**
      * Get today's word.
@@ -32,62 +52,19 @@ class WordleService
     }
 
     /**
-     * Get or create user progress for today's word.
-     */
-    public function getUserProgress(User $user): ?WordleUserProgress
-    {
-        $word = $this->getTodaysWord();
-
-        if (! $word) {
-            return null;
-        }
-
-        return WordleUserProgress::firstOrCreate(
-            [
-                'user_id' => $user->id,
-                'word_id' => $word->id,
-            ],
-            [
-                'solved' => false,
-                'attempts' => 0,
-                'guesses' => [],
-                'feedback' => [],
-            ]
-        );
-    }
-
-    /**
-     * Get guest progress for today's word.
-     */
-    public function getGuestProgress(): ?WordleAnonymousProgress
-    {
-        $word = $this->getTodaysWord();
-
-        if (! $word) {
-            return null;
-        }
-
-        $sessionId = session()->getId();
-
-        return WordleAnonymousProgress::where('word_id', $word->id)
-            ->where('session_id', $sessionId)
-            ->first();
-    }
-
-    /**
      * Process a guess for an authenticated user.
      */
     public function processGuess(?User $user, string $guess): array
     {
         $word = $this->getTodaysWord();
 
-        if (! $word) {
+        if (!$word) {
             return $this->errorResult('No puzzle available today');
         }
 
         // Validate the guess
         $validation = $this->validateGuess($guess, $word);
-        if (! $validation['valid']) {
+        if (!$validation['valid']) {
             $this->logRejectedGuess(
                 $guess,
                 $validation['reason'],
@@ -156,6 +133,23 @@ class WordleService
     }
 
     /**
+     * Create an error result.
+     */
+    private function errorResult(string $message, ?string $reason = null): array
+    {
+        $result = [
+            'valid' => false,
+            'error' => $message,
+        ];
+
+        if ($reason) {
+            $result['reason'] = $reason;
+        }
+
+        return $result;
+    }
+
+    /**
      * Validate a guess before processing.
      */
     private function validateGuess(string $guess, WordleWord $word): array
@@ -172,11 +166,50 @@ class WordleService
             return $this->errorResult("Guess must be {$wordLength} letters", WordioRejectedGuess::REASON_WRONG_LENGTH);
         }
 
-        if (! $this->dictionaryService->isValidWord($guess, $wordLength)) {
+        if (!$this->dictionaryService->isValidWord($guess, $wordLength)) {
             return $this->errorResult("'{$guess}' is not a valid word", WordioRejectedGuess::REASON_NOT_IN_DICTIONARY);
         }
 
         return ['valid' => true];
+    }
+
+    /**
+     * Log a rejected guess attempt.
+     */
+    private function logRejectedGuess(
+        string  $guess,
+        string  $reason,
+        ?int    $wordId,
+        ?int    $userId,
+        ?string $sessionId
+    ): void
+    {
+        WordioRejectedGuess::log($guess, $reason, $wordId, $userId, $sessionId);
+    }
+
+    /**
+     * Get or create user progress for today's word.
+     */
+    public function getUserProgress(User $user): ?WordleUserProgress
+    {
+        $word = $this->getTodaysWord();
+
+        if (!$word) {
+            return null;
+        }
+
+        return WordleUserProgress::firstOrCreate(
+            [
+                'user_id' => $user->id,
+                'word_id' => $word->id,
+            ],
+            [
+                'solved' => false,
+                'attempts' => 0,
+                'guesses' => [],
+                'feedback' => [],
+            ]
+        );
     }
 
     /**
@@ -200,36 +233,6 @@ class WordleService
                 'feedback' => [],
             ]
         );
-    }
-
-    /**
-     * Create an error result.
-     */
-    private function errorResult(string $message, ?string $reason = null): array
-    {
-        $result = [
-            'valid' => false,
-            'error' => $message,
-        ];
-
-        if ($reason) {
-            $result['reason'] = $reason;
-        }
-
-        return $result;
-    }
-
-    /**
-     * Log a rejected guess attempt.
-     */
-    private function logRejectedGuess(
-        string $guess,
-        string $reason,
-        ?int $wordId,
-        ?int $userId,
-        ?string $sessionId
-    ): void {
-        WordioRejectedGuess::log($guess, $reason, $wordId, $userId, $sessionId);
     }
 
     /**

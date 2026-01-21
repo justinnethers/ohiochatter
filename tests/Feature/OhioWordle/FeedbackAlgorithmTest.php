@@ -1,11 +1,11 @@
 <?php
 
-use App\Modules\OhioWordle\Services\WordleService;
+use App\Modules\OhioWordle\Services\WordioService;
 
 uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->wordleService = app(WordleService::class);
+    $this->wordleService = app(WordioService::class);
 });
 
 describe('calculateFeedback - basic matching', function () {

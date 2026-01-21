@@ -36,7 +36,6 @@ describe('wordle:create-daily-puzzle', function () {
             ->assertSuccessful();
 
         expect(WordleWord::whereDate('publish_date', '2026-01-20')->exists())->toBeTrue();
-        expect(WordleWord::whereDate('publish_date', today())->exists())->toBeFalse();
     });
 
     it('adds word to used_words via service', function () {

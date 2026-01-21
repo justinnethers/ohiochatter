@@ -6,7 +6,7 @@ use App\Modules\OhioWordle\Commands\CreateDailyPuzzle;
 use App\Modules\OhioWordle\Livewire\OhioWordleGame;
 use App\Modules\OhioWordle\Livewire\OhioWordleUserStats;
 use App\Modules\OhioWordle\Services\DictionaryService;
-use App\Modules\OhioWordle\Services\WordleService;
+use App\Modules\OhioWordle\Services\WordioService;
 use App\Modules\OhioWordle\Services\WordRotationService;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
@@ -19,8 +19,8 @@ class OhioWordleServiceProvider extends ServiceProvider
             return new DictionaryService();
         });
 
-        $this->app->singleton(WordleService::class, function ($app) {
-            return new WordleService($app->make(DictionaryService::class));
+        $this->app->singleton(WordioService::class, function ($app) {
+            return new WordioService($app->make(DictionaryService::class));
         });
 
         $this->app->singleton(WordRotationService::class, function ($app) {
@@ -30,7 +30,7 @@ class OhioWordleServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        $this->loadRoutesFrom(__DIR__.'/routes.php');
+        $this->loadRoutesFrom(__DIR__ . '/routes.php');
 
         Livewire::component('ohio-wordle-game', OhioWordleGame::class);
         Livewire::component('ohio-wordle-user-stats', OhioWordleUserStats::class);

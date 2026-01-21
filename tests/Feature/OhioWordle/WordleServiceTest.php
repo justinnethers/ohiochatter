@@ -5,13 +5,13 @@ use App\Modules\OhioWordle\Models\WordleAnonymousProgress;
 use App\Modules\OhioWordle\Models\WordleUserProgress;
 use App\Modules\OhioWordle\Models\WordleUserStats;
 use App\Modules\OhioWordle\Models\WordleWord;
-use App\Modules\OhioWordle\Services\WordleService;
+use App\Modules\OhioWordle\Services\WordioService;
 use Illuminate\Support\Facades\Cache;
 
 uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->wordleService = app(WordleService::class);
+    $this->wordleService = app(WordioService::class);
     $this->user = User::factory()->create();
     $this->word = WordleWord::factory()->today()->create(['word' => 'AKRON']);
     Cache::flush();
@@ -19,7 +19,7 @@ beforeEach(function () {
 
 describe('WordleService constants', function () {
     it('has max guesses of 6', function () {
-        expect(WordleService::MAX_GUESSES)->toBe(6);
+        expect(WordioService::MAX_GUESSES)->toBe(6);
     });
 });
 

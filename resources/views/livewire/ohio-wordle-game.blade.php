@@ -247,7 +247,7 @@
 
                     <p class="text-sm text-gray-400 mb-5">Come back tomorrow for a new puzzle!</p>
 
-                    <x-primary-button type="button" @click="$wire.call('getShareText').then(text => shareResults(text))" class="inline-flex items-center gap-2">
+                    <x-primary-button type="button" x-on:click="shareResults({{ Js::from($gameState['shareText']) }})" class="inline-flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
                         </svg>
@@ -363,20 +363,27 @@
         function shareResults(shareText) {
             if (!shareText) return;
 
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(shareText).then(() => {
-                    showCopiedToast();
+            // Copy to clipboard using execCommand fallback (Safari-compatible)
+            const textarea = document.createElement('textarea');
+            textarea.value = shareText;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showCopiedToast();
+            } catch (e) {
+                console.error(e);
+            }
+            document.body.removeChild(textarea);
 
-                    // After copying, also open share menu if available
-                    if (navigator.share) {
-                        setTimeout(() => {
-                            navigator.share({
-                                title: 'Wordio',
-                                text: shareText,
-                            }).catch(() => {}); // Ignore if user cancels
-                        }, 500);
-                    }
-                }).catch(console.error);
+            // Open share dialog
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Wordio',
+                    text: shareText,
+                }).catch(() => {});
             }
         }
 

@@ -20,6 +20,7 @@ class OhioWordleGame extends Component
         'gameComplete' => false,
         'gameWon' => false,
         'answer' => null,
+        'shareText' => null,
     ];
 
     public $keyboardState = [];
@@ -86,6 +87,7 @@ class OhioWordleGame extends Component
 
         if ($this->gameState['gameComplete']) {
             $this->gameState['answer'] = $this->word->word;
+            $this->gameState['shareText'] = $this->getShareText();
             $this->showWordStats();
         }
     }
@@ -147,6 +149,7 @@ class OhioWordleGame extends Component
 
         if ($result['gameComplete']) {
             $this->gameState['answer'] = $result['answer'];
+            $this->gameState['shareText'] = $this->getShareText();
 
             if (Auth::check()) {
                 $this->userStats = WordleUserStats::getOrCreateForUser(Auth::id());

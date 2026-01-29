@@ -8,6 +8,7 @@ class DictionaryService
 {
     private const SOWPODS_DICTIONARY_PATH = 'resources/data/dictionary/sowpods.txt';
     private const OHIO_WORDS_CSV_PATH = 'resources/data/dictionary/ohio.csv';
+    private const PROPER_NOUNS_PATH = 'resources/data/dictionary/proper_nouns.txt';
     private const CACHE_TTL = 60 * 60 * 24; // 24 hours
 
     /**
@@ -47,15 +48,16 @@ class DictionaryService
     }
 
     /**
-     * Get all words from both dictionaries.
+     * Get all words from all dictionaries.
      */
     public function getAllWords(): array
     {
         return Cache::remember('dictionary_all_words', self::CACHE_TTL, function () {
             $sowpodsWords = $this->getSowpodsWords();
             $ohioWords = $this->getOhioWords();
+            $properNouns = $this->getProperNouns();
 
-            return array_unique(array_merge($sowpodsWords, $ohioWords));
+            return array_unique(array_merge($sowpodsWords, $ohioWords, $properNouns));
         });
     }
 
@@ -78,6 +80,16 @@ class DictionaryService
             $csvData = $this->loadWordsFromCsv(self::OHIO_WORDS_CSV_PATH);
 
             return array_column($csvData, 'word');
+        });
+    }
+
+    /**
+     * Get proper nouns (names, places not in SOWPODS).
+     */
+    public function getProperNouns(): array
+    {
+        return Cache::remember('dictionary_proper_nouns', self::CACHE_TTL, function () {
+            return $this->loadWordsFromFile(self::PROPER_NOUNS_PATH);
         });
     }
 
@@ -113,6 +125,7 @@ class DictionaryService
         Cache::forget('dictionary_ohio_csv_full');
         Cache::forget('dictionary_all_words');
         Cache::forget('dictionary_sowpods');
+        Cache::forget('dictionary_proper_nouns');
 
         for ($length = 3; $length <= 15; $length++) {
             Cache::forget("dictionary_words_{$length}");

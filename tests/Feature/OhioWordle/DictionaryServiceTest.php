@@ -142,3 +142,34 @@ describe('SOWPODS dictionary validation', function () {
         expect($allWords)->toContain('ZAXES');
     });
 });
+
+describe('proper nouns dictionary', function () {
+    it('loads proper nouns', function () {
+        $properNouns = $this->dictionaryService->getProperNouns();
+
+        expect($properNouns)->toBeArray();
+    });
+
+    it('includes proper nouns in getAllWords', function () {
+        $allWords = $this->dictionaryService->getAllWords();
+        $properNouns = $this->dictionaryService->getProperNouns();
+
+        foreach (array_slice($properNouns, 0, 3) as $noun) {
+            expect($allWords)->toContain($noun);
+        }
+    });
+
+    it('caches proper nouns for performance', function () {
+        $this->dictionaryService->getProperNouns();
+
+        expect(Cache::has('dictionary_proper_nouns'))->toBeTrue();
+    });
+
+    it('clears proper nouns cache when clearCache is called', function () {
+        $this->dictionaryService->getProperNouns();
+        expect(Cache::has('dictionary_proper_nouns'))->toBeTrue();
+
+        $this->dictionaryService->clearCache();
+        expect(Cache::has('dictionary_proper_nouns'))->toBeFalse();
+    });
+});

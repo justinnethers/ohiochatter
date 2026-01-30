@@ -4,11 +4,15 @@ namespace App\Modules\OhioWordle\Filament\Resources;
 
 use App\Modules\OhioWordle\Filament\Resources\WordioRejectedGuessResource\Pages;
 use App\Modules\OhioWordle\Models\WordioRejectedGuess;
+use App\Modules\OhioWordle\Models\WordioValidGuess;
+use App\Modules\OhioWordle\Services\DictionaryService;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 
 class WordioRejectedGuessResource extends Resource
 {
@@ -90,9 +94,63 @@ class WordioRejectedGuessResource extends Resource
                         }
                     }),
             ])
-            ->actions([])
+            ->actions([
+                Tables\Actions\Action::make('approve')
+                    ->label('Approve')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->visible(fn (WordioRejectedGuess $record): bool => $record->reason === WordioRejectedGuess::REASON_NOT_IN_DICTIONARY)
+                    ->requiresConfirmation()
+                    ->modalHeading(fn (WordioRejectedGuess $record): string => "Approve \"{$record->guess}\"?")
+                    ->modalDescription('This word will be added to the valid guesses dictionary.')
+                    ->action(function (WordioRejectedGuess $record): void {
+                        WordioValidGuess::approve($record->guess, auth()->id());
+                        app(DictionaryService::class)->clearCache();
+                        $record->delete();
+
+                        Notification::make()
+                            ->title('Word approved')
+                            ->body("\"{$record->guess}\" has been added to the dictionary.")
+                            ->success()
+                            ->send();
+                    }),
+            ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\BulkAction::make('approve')
+                        ->label('Approve Selected')
+                        ->icon('heroicon-o-check-circle')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->modalHeading('Approve selected words?')
+                        ->modalDescription('Selected words with "Not in Dictionary" reason will be added to the valid guesses dictionary.')
+                        ->action(function (Collection $records): void {
+                            $approved = 0;
+                            foreach ($records as $record) {
+                                if ($record->reason === WordioRejectedGuess::REASON_NOT_IN_DICTIONARY) {
+                                    WordioValidGuess::approve($record->guess, auth()->id());
+                                    $record->delete();
+                                    $approved++;
+                                }
+                            }
+
+                            if ($approved > 0) {
+                                app(DictionaryService::class)->clearCache();
+
+                                Notification::make()
+                                    ->title('Words approved')
+                                    ->body("{$approved} word(s) have been added to the dictionary.")
+                                    ->success()
+                                    ->send();
+                            } else {
+                                Notification::make()
+                                    ->title('No words approved')
+                                    ->body('No eligible words were selected (only "Not in Dictionary" entries can be approved).')
+                                    ->warning()
+                                    ->send();
+                            }
+                        })
+                        ->deselectRecordsAfterCompletion(),
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])

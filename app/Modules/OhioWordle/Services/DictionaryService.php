@@ -56,8 +56,19 @@ class DictionaryService
             $sowpodsWords = $this->getSowpodsWords();
             $ohioWords = $this->getOhioWords();
             $properNouns = $this->getProperNouns();
+            $approvedGuesses = $this->getApprovedGuesses();
 
-            return array_unique(array_merge($sowpodsWords, $ohioWords, $properNouns));
+            return array_unique(array_merge($sowpodsWords, $ohioWords, $properNouns, $approvedGuesses));
+        });
+    }
+
+    /**
+     * Get admin-approved valid guesses from database.
+     */
+    public function getApprovedGuesses(): array
+    {
+        return Cache::remember('dictionary_approved_guesses', self::CACHE_TTL, function () {
+            return \App\Modules\OhioWordle\Models\WordioValidGuess::getAllWords();
         });
     }
 
@@ -126,6 +137,7 @@ class DictionaryService
         Cache::forget('dictionary_all_words');
         Cache::forget('dictionary_sowpods');
         Cache::forget('dictionary_proper_nouns');
+        Cache::forget('dictionary_approved_guesses');
 
         for ($length = 3; $length <= 15; $length++) {
             Cache::forget("dictionary_words_{$length}");

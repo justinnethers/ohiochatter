@@ -37,7 +37,7 @@
                             @if($firstMessage = $thread->messages->first())
                                 <x-avatar size="6" :avatar-path="$firstMessage->user->avatar_path" />
                                 <span class="text-steel-300">
-                                    started {{ $thread->created_at->setTimezone(auth()->user()->timezone ?? null)->diffForHumans() }}
+                                    started {{ $thread->created_at->setTimezone(auth()->user()->timezone ?? config('app.timezone'))->diffForHumans() }}
                                     by <a href="/profiles/{{ $firstMessage->user->username }}" class="text-accent-400 hover:text-accent-300 font-medium transition-colors">{{ $firstMessage->user->username }}</a>
                                 </span>
                             @endif
@@ -47,7 +47,7 @@
                             @if($firstMessage && $lastMessage->user_id !== $firstMessage->user_id)
                                 <div class="flex items-center justify-end space-x-2 py-2 px-3">
                                     <div class="text-right text-steel-300">
-                                        <span class="text-steel-400">{{ $lastMessage->created_at->setTimezone(auth()->user()->timezone ?? null)->diffForHumans() }}</span>
+                                        <span class="text-steel-400">{{ $lastMessage->created_at->setTimezone(auth()->user()->timezone ?? config('app.timezone'))->diffForHumans() }}</span>
                                         <a href="/profiles/{{ $lastMessage->user->username }}" class="text-accent-400 hover:text-accent-300 font-medium transition-colors">{{ $lastMessage->user->username }}</a>
                                     </div>
                                     <x-avatar size="6" :avatar-path="$lastMessage->user->avatar_path" />

@@ -156,7 +156,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
     public function touchActivity(): void
     {
         // Only update if last activity was more than a minute ago
-        if ($this->last_activity && $this->last_activity->diffInSeconds(now()) < 60) {
+        if ($this->last_activity && (int) $this->last_activity->diffInSeconds(now()) < 60) {
             return;
         }
 

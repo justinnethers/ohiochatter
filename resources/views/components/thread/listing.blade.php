@@ -45,12 +45,12 @@
             <x-avatar size="5" :avatar-path="$thread->lastReply->owner->avatar_path" class="ring-1 ring-steel-700"/>
             <a href="/profiles/{{ $thread->lastReply->owner->username }}" class="text-accent-400 hover:text-accent-300 font-medium">{{ $thread->lastReply->owner->username }}</a>
             <span>&middot;</span>
-            <span>{{ \Carbon\Carbon::parse($thread->lastReply->created_at)->setTimezone((auth()->check() ? auth()->user()->timezone : null))->diffForHumans() }}</span>
+            <span>{{ \Carbon\Carbon::parse($thread->lastReply->created_at)->setTimezone(auth()->user()?->timezone ?? config('app.timezone'))->diffForHumans() }}</span>
         @elseif ($thread->owner)
             <x-avatar size="5" :avatar-path="$thread->owner->avatar_path" class="ring-1 ring-steel-700"/>
             <a href="/profiles/{{ $thread->owner->username }}" class="text-accent-400 hover:text-accent-300 font-medium">{{ $thread->owner->username }}</a>
             <span>&middot;</span>
-            <span>{{ \Carbon\Carbon::parse($thread->created_at)->setTimezone((auth()->check() ? auth()->user()->timezone : null))->diffForHumans() }}</span>
+            <span>{{ \Carbon\Carbon::parse($thread->created_at)->setTimezone(auth()->user()?->timezone ?? config('app.timezone'))->diffForHumans() }}</span>
         @endif
     </div>
 
@@ -60,7 +60,7 @@
             @if ($thread->owner)
                 <x-avatar size="6" :avatar-path="$thread->owner->avatar_path" class="ring-2 ring-steel-700"/>
                 <span class="text-steel-300">
-                    {{ \Carbon\Carbon::parse($thread->created_at)->setTimezone((auth()->check() ? auth()->user()->timezone : null))->diffForHumans() }}
+                    {{ \Carbon\Carbon::parse($thread->created_at)->setTimezone(auth()->user()?->timezone ?? config('app.timezone'))->diffForHumans() }}
                      <a href="/profiles/{{ $thread->owner->username }}"
                         class="text-accent-400 hover:text-accent-300 hover:underline font-medium">{{ $thread->owner->username }}</a>
                 </span>
@@ -71,7 +71,7 @@
             @if ($thread->lastReply)
                 <div class="text-right text-steel-300">
                     <span class="mr-1">
-                        {{ \Carbon\Carbon::parse($thread->lastReply->created_at)->setTimezone((auth()->check() ? auth()->user()->timezone : null))->diffForHumans() }}
+                        {{ \Carbon\Carbon::parse($thread->lastReply->created_at)->setTimezone(auth()->user()?->timezone ?? config('app.timezone'))->diffForHumans() }}
                     </span>
                     <a href="/profiles/{{ $thread->lastReply->owner->username }}"
                        class="text-accent-400 hover:text-accent-300 hover:underline font-medium">{{ $thread->lastReply->owner->username }}</a>
@@ -80,7 +80,7 @@
             @else
                 <div class="text-steel-300">
                     <a href="/profiles/{{ $thread->owner->username }}" class="text-accent-400 hover:text-accent-300">{{ $thread->owner->username }}</a>
-                    <span>{{ \Carbon\Carbon::parse($thread->created_at)->setTimezone((auth()->check() ? auth()->user()->timezone : null))->diffForHumans() }}</span>
+                    <span>{{ \Carbon\Carbon::parse($thread->created_at)->setTimezone(auth()->user()?->timezone ?? config('app.timezone'))->diffForHumans() }}</span>
                 </div>
                 <x-avatar size="8" :avatar-path="$thread->owner->avatar_path" class="ring-2 ring-steel-700"/>
             @endif

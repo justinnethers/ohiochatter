@@ -20,7 +20,7 @@
             <x-avatar size="5" :avatar-path="$post->owner->avatar_path" class="ring-1 ring-steel-700"/>
             <a href="/profiles/{{ $post->owner->username }}" class="text-accent-400 hover:text-accent-300 font-medium">{{ $post->owner->username }}</a>
             <span>&middot;</span>
-            <span>{{ \Carbon\Carbon::parse($post->created_at)->setTimezone((auth()->check() ? auth()->user()->timezone : null))->diffForHumans() }}</span>
+            <span>{{ \Carbon\Carbon::parse($post->created_at)->setTimezone(auth()->user()?->timezone ?? config('app.timezone'))->diffForHumans() }}</span>
         @endif
     </div>
 
@@ -30,7 +30,7 @@
             @if ($post->owner)
                 <x-avatar size="6" :avatar-path="$post->owner->avatar_path" class="ring-2 ring-steel-700"/>
                 <span class="text-steel-300">
-                    {{ \Carbon\Carbon::parse($post->created_at)->setTimezone((auth()->check() ? auth()->user()->timezone : null))->diffForHumans() }}
+                    {{ \Carbon\Carbon::parse($post->created_at)->setTimezone(auth()->user()?->timezone ?? config('app.timezone'))->diffForHumans() }}
                     <a href="/profiles/{{ $post->owner->username }}"
                        class="text-accent-400 hover:text-accent-300 hover:underline font-medium">{{ $post->owner->username }}</a>
                 </span>

@@ -1,15 +1,14 @@
-@php
-    $colorMap = [
-        'Food & Drink' => ['bg' => 'bg-amber-500', 'bg-light' => 'bg-amber-500/10', 'border' => 'border-amber-500/20', 'text' => 'text-amber-400', 'text-muted' => 'text-amber-500'],
-        'Outdoors & Nature' => ['bg' => 'bg-emerald-500', 'bg-light' => 'bg-emerald-500/10', 'border' => 'border-emerald-500/20', 'text' => 'text-emerald-400', 'text-muted' => 'text-emerald-500'],
-        'Arts & Culture' => ['bg' => 'bg-violet-500', 'bg-light' => 'bg-violet-500/10', 'border' => 'border-violet-500/20', 'text' => 'text-violet-400', 'text-muted' => 'text-violet-500'],
-        'Entertainment' => ['bg' => 'bg-rose-500', 'bg-light' => 'bg-rose-500/10', 'border' => 'border-rose-500/20', 'text' => 'text-rose-400', 'text-muted' => 'text-rose-500'],
-        'Shopping' => ['bg' => 'bg-sky-500', 'bg-light' => 'bg-sky-500/10', 'border' => 'border-sky-500/20', 'text' => 'text-sky-400', 'text-muted' => 'text-sky-500'],
-        'Family' => ['bg' => 'bg-cyan-500', 'bg-light' => 'bg-cyan-500/10', 'border' => 'border-cyan-500/20', 'text' => 'text-cyan-400', 'text-muted' => 'text-cyan-500'],
-    ];
-@endphp
-
 <div class="space-y-3">
+    @php
+        $colorMap = [
+            'Food & Drink' => ['bg' => 'bg-amber-500', 'bg-light' => 'bg-amber-500/10', 'border' => 'border-amber-500/20', 'text' => 'text-amber-400', 'text-muted' => 'text-amber-500'],
+            'Outdoors & Nature' => ['bg' => 'bg-emerald-500', 'bg-light' => 'bg-emerald-500/10', 'border' => 'border-emerald-500/20', 'text' => 'text-emerald-400', 'text-muted' => 'text-emerald-500'],
+            'Arts & Culture' => ['bg' => 'bg-violet-500', 'bg-light' => 'bg-violet-500/10', 'border' => 'border-violet-500/20', 'text' => 'text-violet-400', 'text-muted' => 'text-violet-500'],
+            'Entertainment' => ['bg' => 'bg-rose-500', 'bg-light' => 'bg-rose-500/10', 'border' => 'border-rose-500/20', 'text' => 'text-rose-400', 'text-muted' => 'text-rose-500'],
+            'Shopping' => ['bg' => 'bg-sky-500', 'bg-light' => 'bg-sky-500/10', 'border' => 'border-sky-500/20', 'text' => 'text-sky-400', 'text-muted' => 'text-sky-500'],
+            'Family' => ['bg' => 'bg-cyan-500', 'bg-light' => 'bg-cyan-500/10', 'border' => 'border-cyan-500/20', 'text' => 'text-cyan-400', 'text-muted' => 'text-cyan-500'],
+        ];
+    @endphp
     {{-- Horizontal tabs for parent categories --}}
     <div class="flex flex-wrap gap-1 border-b border-steel-700/50">
         @foreach($this->parentCategories as $parent)

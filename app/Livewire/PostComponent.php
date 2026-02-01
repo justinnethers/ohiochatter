@@ -3,19 +3,24 @@
 namespace App\Livewire;
 
 use App\Models\Poll;
+use App\Models\Reply;
 use App\Models\Thread;
 use App\Services\MentionService;
 use Livewire\Attributes\On;
 use Livewire\Component;
-use App\Models\Reply;
 
 class PostComponent extends Component
 {
-    public Reply | Thread $post;
-    public Poll | bool $poll;
+    public Reply|Thread $post;
+
+    public Poll|bool $poll = false;
+
     public $editMode = false;
+
     public $canEdit = false;
+
     public $body;
+
     public bool $firstPostOnPage;
 
     protected $rules = [
@@ -31,8 +36,8 @@ class PostComponent extends Component
 
     public function toggleEditMode(): void
     {
-        $this->editMode = !$this->editMode;
-        if (!$this->editMode) {
+        $this->editMode = ! $this->editMode;
+        if (! $this->editMode) {
             $this->dispatch('destroy-editor', ['editorId' => $this->post->id]);
         }
     }

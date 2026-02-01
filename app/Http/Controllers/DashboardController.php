@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Neg;
 use App\Models\Rep;
 use App\Models\Reply;
 use App\Models\Thread;
@@ -20,7 +19,7 @@ class DashboardController extends Controller
 
         // Track dashboard visits (throttled to once per minute)
         $visitKey = "dashboard_visit:{$userId}";
-        if (!Cache::has($visitKey)) {
+        if (! Cache::has($visitKey)) {
             $user->increment('dashboard_visits');
             Cache::put($visitKey, true, 60);
         }
@@ -77,12 +76,12 @@ class DashboardController extends Controller
                     'threads.slug as thread_slug',
                     'forums.slug as forum_slug',
                     'replies.id as reply_id',
-                    DB::raw('(' . ReplyPaginationService::positionSubquery() . ') as reply_position')
+                    DB::raw('('.ReplyPaginationService::positionSubquery().') as reply_position')
                 )
                 ->orderByDesc('reps.created_at')
                 ->limit(5)
                 ->get()
-                ->map(fn($r) => ['type' => 'rep', 'username' => $r->username, 'thread_title' => $r->thread_title, 'thread_slug' => $r->thread_slug, 'forum_slug' => $r->forum_slug, 'reply_id' => $r->reply_id, 'reply_position' => $r->reply_position, 'created_at' => $r->created_at]);
+                ->map(fn ($r) => ['type' => 'rep', 'username' => $r->username, 'thread_title' => $r->thread_title, 'thread_slug' => $r->thread_slug, 'forum_slug' => $r->forum_slug, 'reply_id' => $r->reply_id, 'reply_position' => $r->reply_position, 'created_at' => $r->created_at]);
 
             $negs = DB::table('negs')
                 ->join('replies', function ($join) use ($userId) {
@@ -100,12 +99,12 @@ class DashboardController extends Controller
                     'threads.slug as thread_slug',
                     'forums.slug as forum_slug',
                     'replies.id as reply_id',
-                    DB::raw('(' . ReplyPaginationService::positionSubquery() . ') as reply_position')
+                    DB::raw('('.ReplyPaginationService::positionSubquery().') as reply_position')
                 )
                 ->orderByDesc('negs.created_at')
                 ->limit(5)
                 ->get()
-                ->map(fn($n) => ['type' => 'neg', 'username' => $n->username, 'thread_title' => $n->thread_title, 'thread_slug' => $n->thread_slug, 'forum_slug' => $n->forum_slug, 'reply_id' => $n->reply_id, 'reply_position' => $n->reply_position, 'created_at' => $n->created_at]);
+                ->map(fn ($n) => ['type' => 'neg', 'username' => $n->username, 'thread_title' => $n->thread_title, 'thread_slug' => $n->thread_slug, 'forum_slug' => $n->forum_slug, 'reply_id' => $n->reply_id, 'reply_position' => $n->reply_position, 'created_at' => $n->created_at]);
 
             $recentRepActivity = $reps->merge($negs)
                 ->sortByDesc('created_at')
@@ -123,12 +122,12 @@ class DashboardController extends Controller
 
             // Threads with new activity - simplified query
             $threadsWithActivity = Thread::whereIn('id', function ($query) use ($userId) {
-                    $query->select('thread_id')
-                        ->from('replies')
-                        ->where('user_id', $userId)
-                        ->distinct();
-                })
-                ->whereHas('lastReply', fn($q) => $q->where('user_id', '!=', $userId))
+                $query->select('thread_id')
+                    ->from('replies')
+                    ->where('user_id', $userId)
+                    ->distinct();
+            })
+                ->whereHas('lastReply', fn ($q) => $q->where('user_id', '!=', $userId))
                 ->with(['lastReply.owner', 'forum'])
                 ->withCount('replies')
                 ->orderByDesc('last_activity_at')
@@ -153,9 +152,10 @@ class DashboardController extends Controller
 
         // Game stats (already loaded with user or simple query)
         $gameStats = $user->gameStats;
+        $wordleStats = $user->wordleStats;
 
         // Messages - these need to be fresh
-        $unreadMessageCount = Cache::remember("user:{$userId}:unread_messages", 60, fn() => $user->unreadMessagesCount());
+        $unreadMessageCount = Cache::remember("user:{$userId}:unread_messages", 60, fn () => $user->unreadMessagesCount());
         $messageThreads = MessageThread::forUser($userId)
             ->latest('updated_at')
             ->limit(3)
@@ -167,6 +167,7 @@ class DashboardController extends Controller
             'recentRepActivity',
             'userThreads',
             'gameStats',
+            'wordleStats',
             'unreadMessageCount',
             'messageThreads',
             'repScore',

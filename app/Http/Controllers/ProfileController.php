@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\Content;
-use App\Models\Rep;
 use App\Models\Neg;
+use App\Models\Rep;
 use App\Models\Thread;
 use App\Models\User;
 use App\Services\ReplyPaginationService;
@@ -22,6 +22,7 @@ class ProfileController extends Controller
     public function __construct(
         private SeoService $seoService
     ) {}
+
     /**
      * Display a user's public profile.
      */
@@ -32,7 +33,7 @@ class ProfileController extends Controller
             $viewerId = auth()->id() ?? request()->ip();
             $cacheKey = "profile_view:{$viewerId}:{$user->id}";
 
-            if (!Cache::has($cacheKey)) {
+            if (! Cache::has($cacheKey)) {
                 $user->increment('profile_views');
                 Cache::put($cacheKey, true, now()->addMinutes(10));
             }
@@ -62,6 +63,7 @@ class ProfileController extends Controller
             $threadReps = Rep::where('repped_type', 'App\Models\Thread')
                 ->whereIn('repped_id', Thread::where('user_id', $user->id)->select('id'))
                 ->count();
+
             return $replyReps + $threadReps;
         });
 
@@ -73,11 +75,13 @@ class ProfileController extends Controller
             $threadNegs = Neg::where('negged_type', 'App\Models\Thread')
                 ->whereIn('negged_id', Thread::where('user_id', $user->id)->select('id'))
                 ->count();
+
             return $replyNegs + $threadNegs;
         });
 
         // Get game stats if they exist
         $gameStats = $user->gameStats;
+        $wordleStats = $user->wordleStats;
 
         // Get user's published guides
         $guides = Content::where('user_id', $user->id)
@@ -106,6 +110,7 @@ class ProfileController extends Controller
             'totalReps',
             'totalNegs',
             'gameStats',
+            'wordleStats',
             'lastPostDate',
             'joinDate',
             'accountAge',

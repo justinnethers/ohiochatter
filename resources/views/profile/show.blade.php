@@ -165,56 +165,119 @@
                     </div>
 
                     {{-- BuckEYE Game Stats --}}
-                    @if($gameStats && $gameStats->games_played > 0)
+                    {{--                    @if($gameStats && $gameStats->games_played > 0)--}}
+                    {{--                        <div--}}
+                    {{--                            class="bg-gradient-to-br from-steel-800 to-steel-850 p-6 rounded-xl shadow-lg shadow-black/20 border border-steel-700/50">--}}
+                    {{--                            <h3 class="text-lg font-semibold text-white mb-4">BuckEYE Stats</h3>--}}
+
+                    {{--                            <dl class="space-y-3">--}}
+                    {{--                                <div class="flex justify-between items-center py-2 border-b border-steel-700/50">--}}
+                    {{--                                    <dt class="text-steel-400">Games Played</dt>--}}
+                    {{--                                    <dd class="text-white font-medium">{{ number_format($gameStats->games_played) }}</dd>--}}
+                    {{--                                </div>--}}
+                    {{--                                <div class="flex justify-between items-center py-2 border-b border-steel-700/50">--}}
+                    {{--                                    <dt class="text-steel-400">Win Rate</dt>--}}
+                    {{--                                    <dd class="text-emerald-400 font-medium">--}}
+                    {{--                                        {{ $gameStats->games_played > 0 ? number_format(($gameStats->games_won / $gameStats->games_played) * 100, 1) : 0 }}--}}
+                    {{--                                        %--}}
+                    {{--                                    </dd>--}}
+                    {{--                                </div>--}}
+                    {{--                                <div class="flex justify-between items-center py-2 border-b border-steel-700/50">--}}
+                    {{--                                    <dt class="text-steel-400">Current Streak</dt>--}}
+                    {{--                                    <dd class="text-amber-400 font-medium flex items-center gap-1">--}}
+                    {{--                                        {{ $gameStats->current_streak }}--}}
+                    {{--                                        @if($gameStats->current_streak >= 5)--}}
+                    {{--                                            <span class="text-lg">🔥</span>--}}
+                    {{--                                        @endif--}}
+                    {{--                                    </dd>--}}
+                    {{--                                </div>--}}
+                    {{--                                <div class="flex justify-between items-center py-2">--}}
+                    {{--                                    <dt class="text-steel-400">Best Streak</dt>--}}
+                    {{--                                    <dd class="text-white font-medium">{{ $gameStats->max_streak }}</dd>--}}
+                    {{--                                </div>--}}
+                    {{--                            </dl>--}}
+
+                    {{--                            --}}{{-- Guess Distribution --}}
+                    {{--                            @if($gameStats->guess_distribution && count($gameStats->guess_distribution) > 0)--}}
+                    {{--                                <div class="mt-4 pt-4 border-t border-steel-700/50">--}}
+                    {{--                                    <h4 class="text-sm font-semibold text-steel-300 mb-3">Guess Distribution</h4>--}}
+                    {{--                                    @php--}}
+                    {{--                                        $maxGuesses = max($gameStats->guess_distribution);--}}
+                    {{--                                    @endphp--}}
+                    {{--                                    <div class="space-y-2">--}}
+                    {{--                                        @for($i = 1; $i <= 5; $i++)--}}
+                    {{--                                            @php--}}
+                    {{--                                                $count = $gameStats->guess_distribution[$i] ?? 0;--}}
+                    {{--                                                $percentage = $maxGuesses > 0 ? ($count / $maxGuesses) * 100 : 0;--}}
+                    {{--                                            @endphp--}}
+                    {{--                                            <div class="flex items-center gap-2">--}}
+                    {{--                                                <span class="w-4 text-steel-400 text-sm">{{ $i }}</span>--}}
+                    {{--                                                <div class="flex-1 h-5 bg-steel-900 rounded overflow-hidden">--}}
+                    {{--                                                    <div--}}
+                    {{--                                                        class="h-full bg-accent-500 rounded flex items-center justify-end px-2 text-xs font-medium text-white min-w-[2rem]"--}}
+                    {{--                                                        style="width: {{ max($percentage, 10) }}%">--}}
+                    {{--                                                        {{ $count }}--}}
+                    {{--                                                    </div>--}}
+                    {{--                                                </div>--}}
+                    {{--                                            </div>--}}
+                    {{--                                        @endfor--}}
+                    {{--                                    </div>--}}
+                    {{--                                </div>--}}
+                    {{--                            @endif--}}
+                    {{--                        </div>--}}
+                    {{--                    @endif--}}
+
+                    {{-- Wordio Stats --}}
+                    @if($wordleStats && $wordleStats->games_played > 0)
                         <div
                             class="bg-gradient-to-br from-steel-800 to-steel-850 p-6 rounded-xl shadow-lg shadow-black/20 border border-steel-700/50">
-                            <h3 class="text-lg font-semibold text-white mb-4">BuckEYE Stats</h3>
+                            <h3 class="text-lg font-semibold text-white mb-4">Wordio Stats</h3>
 
                             <dl class="space-y-3">
                                 <div class="flex justify-between items-center py-2 border-b border-steel-700/50">
                                     <dt class="text-steel-400">Games Played</dt>
-                                    <dd class="text-white font-medium">{{ number_format($gameStats->games_played) }}</dd>
+                                    <dd class="text-white font-medium">{{ number_format($wordleStats->games_played) }}</dd>
                                 </div>
                                 <div class="flex justify-between items-center py-2 border-b border-steel-700/50">
                                     <dt class="text-steel-400">Win Rate</dt>
                                     <dd class="text-emerald-400 font-medium">
-                                        {{ $gameStats->games_played > 0 ? number_format(($gameStats->games_won / $gameStats->games_played) * 100, 1) : 0 }}
+                                        {{ $wordleStats->games_played > 0 ? number_format(($wordleStats->games_won / $wordleStats->games_played) * 100, 1) : 0 }}
                                         %
                                     </dd>
                                 </div>
                                 <div class="flex justify-between items-center py-2 border-b border-steel-700/50">
                                     <dt class="text-steel-400">Current Streak</dt>
-                                    <dd class="text-amber-400 font-medium flex items-center gap-1">
-                                        {{ $gameStats->current_streak }}
-                                        @if($gameStats->current_streak >= 5)
+                                    <dd class="text-emerald-400 font-medium flex items-center gap-1">
+                                        {{ $wordleStats->current_streak }}
+                                        @if($wordleStats->current_streak >= 5)
                                             <span class="text-lg">🔥</span>
                                         @endif
                                     </dd>
                                 </div>
                                 <div class="flex justify-between items-center py-2">
                                     <dt class="text-steel-400">Best Streak</dt>
-                                    <dd class="text-white font-medium">{{ $gameStats->max_streak }}</dd>
+                                    <dd class="text-white font-medium">{{ $wordleStats->max_streak }}</dd>
                                 </div>
                             </dl>
 
                             {{-- Guess Distribution --}}
-                            @if($gameStats->guess_distribution && count($gameStats->guess_distribution) > 0)
+                            @if($wordleStats->guess_distribution && count($wordleStats->guess_distribution) > 0)
                                 <div class="mt-4 pt-4 border-t border-steel-700/50">
                                     <h4 class="text-sm font-semibold text-steel-300 mb-3">Guess Distribution</h4>
                                     @php
-                                        $maxGuesses = max($gameStats->guess_distribution);
+                                        $maxGuesses = max($wordleStats->guess_distribution);
                                     @endphp
                                     <div class="space-y-2">
-                                        @for($i = 1; $i <= 5; $i++)
+                                        @for($i = 1; $i <= 6; $i++)
                                             @php
-                                                $count = $gameStats->guess_distribution[$i] ?? 0;
+                                                $count = $wordleStats->guess_distribution[$i] ?? 0;
                                                 $percentage = $maxGuesses > 0 ? ($count / $maxGuesses) * 100 : 0;
                                             @endphp
                                             <div class="flex items-center gap-2">
                                                 <span class="w-4 text-steel-400 text-sm">{{ $i }}</span>
                                                 <div class="flex-1 h-5 bg-steel-900 rounded overflow-hidden">
                                                     <div
-                                                        class="h-full bg-accent-500 rounded flex items-center justify-end px-2 text-xs font-medium text-white min-w-[2rem]"
+                                                        class="h-full bg-emerald-500 rounded flex items-center justify-end px-2 text-xs font-medium text-white min-w-[2rem]"
                                                         style="width: {{ max($percentage, 10) }}%">
                                                         {{ $count }}
                                                     </div>

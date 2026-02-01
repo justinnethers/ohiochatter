@@ -4,8 +4,9 @@ namespace App\Models;
 
 use App\Modules\BuckEYE\Models\Puzzle;
 use App\Modules\BuckEYE\Models\UserGameProgress;
-use App\Modules\OhioWordle\Models\WordleUserProgress;
 use App\Modules\BuckEYE\Models\UserGameStats;
+use App\Modules\OhioWordle\Models\WordleUserProgress;
+use App\Modules\OhioWordle\Models\WordleUserStats;
 use App\Notifications\VerifyEmailNotification;
 use Cmgmyr\Messenger\Traits\Messagable;
 use Filament\Models\Contracts\FilamentUser;
@@ -25,7 +26,7 @@ use Laravel\Scout\Searchable;
 
 class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 {
-    use HasApiTokens, HasFactory, Notifiable, Messagable, Searchable, SoftDeletes;
+    use HasApiTokens, HasFactory, Messagable, Notifiable, Searchable, SoftDeletes;
 
     /**
      * Cache of thread view records for this request.
@@ -76,8 +77,9 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
     {
         if ($avatar) {
             // Use a configurable base URL for flexibility.
-            return rtrim(config('app.avatar_base_url', config('app.url')), '/') . '/' . ltrim($avatar, '/');
+            return rtrim(config('app.avatar_base_url', config('app.url')), '/').'/'.ltrim($avatar, '/');
         }
+
         return asset('images/avatars/default.png');
     }
 
@@ -120,6 +122,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
     public function lastViewedThreadAt(Thread $thread): ?Carbon
     {
         $record = $this->threadViewRecord($thread);
+
         return $record ? new Carbon($record->last_view) : null;
     }
 
@@ -176,8 +179,6 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 
     /**
      * Get the user's game statistics
-     *
-     * @return HasOne
      */
     public function gameStats(): HasOne
     {
@@ -186,15 +187,13 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 
     /**
      * Check if the user has played today's puzzle
-     *
-     * @return bool
      */
     public function hasPlayedToday(): bool
     {
         $todaysPuzzle = Puzzle::getTodaysPuzzle();
 
         // return true if there is no puzzle so the "new!" badge doesn't display.
-        if (!$todaysPuzzle) {
+        if (! $todaysPuzzle) {
             return true;
         }
 
@@ -206,8 +205,6 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 
     /**
      * Get game progress records for the user
-     *
-     * @return HasMany
      */
     public function gameProgress(): HasMany
     {
@@ -223,6 +220,14 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
     }
 
     /**
+     * Get the user's Wordio (Ohio Wordle) statistics
+     */
+    public function wordleStats(): HasOne
+    {
+        return $this->hasOne(WordleUserStats::class);
+    }
+
+    /**
      * Get user's progress for today's puzzle
      *
      * @return UserGameProgress|null
@@ -231,7 +236,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
     {
         $todaysPuzzle = Puzzle::getTodaysPuzzle();
 
-        if (!$todaysPuzzle) {
+        if (! $todaysPuzzle) {
             return null;
         }
 

@@ -54,7 +54,8 @@
         <div class="max-w-lg mx-auto">
             {{-- Error Message --}}
             @if($errorMessage)
-                <div class="bg-red-900/50 border border-red-500 text-red-200 px-4 py-2 rounded mb-4 text-center error-message">
+                <div
+                    class="bg-red-900/50 border border-red-500 text-red-200 px-4 py-2 rounded mb-4 text-center error-message">
                     {{ $errorMessage }}
                 </div>
             @endif
@@ -154,8 +155,8 @@
                                     type="button"
                                     @if($key === 'ENTER')
                                         @click="submitGuess()"
-                                        :disabled="isSubmitting"
-                                        :class="isSubmitting ? 'opacity-50 cursor-not-allowed' : ''"
+                                    :disabled="isSubmitting"
+                                    :class="isSubmitting ? 'opacity-50 cursor-not-allowed' : ''"
                                     @elseif($key === 'BACK')
                                         @click="removeLetter()"
                                     @else
@@ -164,14 +165,19 @@
                                     class="{{ $width }} h-12 md:h-14 px-1 md:px-2 rounded font-bold text-white text-sm md:text-base {{ $bgColor }} transition-all duration-150 flex items-center justify-center active:scale-95 active:brightness-90 shadow-sm hover:shadow-md touch-manipulation"
                                 >
                                     @if($key === 'BACK')
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414a2 2 0 001.414.586H19a2 2 0 002-2V7a2 2 0 00-2-2h-8.172a2 2 0 00-1.414.586L3 12z" />
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                             viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414a2 2 0 001.414.586H19a2 2 0 002-2V7a2 2 0 00-2-2h-8.172a2 2 0 00-1.414.586L3 12z"/>
                                         </svg>
                                     @elseif($key === 'ENTER')
                                         <span x-show="!isSubmitting">ENTER</span>
-                                        <svg x-show="isSubmitting" x-cloak class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        <svg x-show="isSubmitting" x-cloak class="animate-spin h-5 w-5"
+                                             xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                                    stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor"
+                                                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
                                     @else
                                         {{ $key }}
@@ -190,39 +196,52 @@
 
         {{-- Game Complete State - Answer Card (outside max-w-lg for full width) --}}
         @if($gameState['gameComplete'])
-            <div id="answer-card" class="relative overflow-hidden rounded-xl border-2 {{ $gameState['gameWon'] ? 'border-green-500/50 bg-gradient-to-br from-green-900/40 via-gray-900 to-gray-900' : 'border-red-500/50 bg-gradient-to-br from-red-900/40 via-gray-900 to-gray-900' }} p-6 text-center shadow-lg mt-6">
+            <div id="answer-card"
+                 class="relative overflow-hidden rounded-xl border-2 {{ $gameState['gameWon'] ? 'border-green-500/50 bg-gradient-to-br from-green-900/40 via-gray-900 to-gray-900' : 'border-red-500/50 bg-gradient-to-br from-red-900/40 via-gray-900 to-gray-900' }} p-6 text-center shadow-lg mt-6">
                 {{-- Decorative background glow --}}
-                <div class="absolute inset-0 {{ $gameState['gameWon'] ? 'bg-green-500/5' : 'bg-red-500/5' }} blur-3xl"></div>
+                <div
+                    class="absolute inset-0 {{ $gameState['gameWon'] ? 'bg-green-500/5' : 'bg-red-500/5' }} blur-3xl"></div>
 
                 <div class="relative">
                     {{-- Result icon --}}
                     @if($gameState['gameWon'])
-                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-500/20 mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        <div
+                            class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-500/20 mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-400" viewBox="0 0 20 20"
+                                 fill="currentColor">
+                                <path fill-rule="evenodd"
+                                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                      clip-rule="evenodd"/>
                             </svg>
                         </div>
                     @else
                         <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-500/20 mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-400" viewBox="0 0 20 20"
+                                 fill="currentColor">
+                                <path fill-rule="evenodd"
+                                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                      clip-rule="evenodd"/>
                             </svg>
                         </div>
                     @endif
 
                     {{-- Result message --}}
-                    <div class="font-bold text-2xl {{ $gameState['gameWon'] ? 'text-green-400' : 'text-red-400' }} mb-2">
+                    <div
+                        class="font-bold text-2xl {{ $gameState['gameWon'] ? 'text-green-400' : 'text-red-400' }} mb-2">
                         {{ $gameState['gameWon'] ? 'Excellent!' : 'Better luck tomorrow!' }}
                     </div>
 
                     @if($gameState['gameWon'])
-                        <p class="text-gray-400 text-sm mb-4">You got it in {{ count($gameState['guesses']) }} {{ count($gameState['guesses']) === 1 ? 'guess' : 'guesses' }}!</p>
+                        <p class="text-gray-400 text-sm mb-4">You got it
+                            in {{ count($gameState['guesses']) }} {{ count($gameState['guesses']) === 1 ? 'guess' : 'guesses' }}
+                            !</p>
                     @endif
 
                     {{-- Answer tiles --}}
                     <div class="flex justify-center gap-1 mb-4">
                         @foreach(str_split($gameState['answer']) as $letter)
-                            <div class="w-10 h-10 md:w-12 md:h-12 bg-green-600 rounded flex items-center justify-center text-lg md:text-xl font-bold text-white shadow-lg">
+                            <div
+                                class="w-10 h-10 md:w-12 md:h-12 bg-green-600 rounded flex items-center justify-center text-lg md:text-xl font-bold text-white shadow-lg">
                                 {{ $letter }}
                             </div>
                         @endforeach
@@ -247,9 +266,11 @@
 
                     <p class="text-sm text-gray-400 mb-5">Come back tomorrow for a new puzzle!</p>
 
-                    <x-primary-button type="button" x-on:click="shareResults({{ Js::from($gameState['shareText']) }})" class="inline-flex items-center gap-2">
+                    <x-primary-button type="button" x-on:click="shareResults({{ Js::from($gameState['shareText']) }})"
+                                      class="inline-flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
+                            <path
+                                d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"/>
                         </svg>
                         Share Results
                     </x-primary-button>
@@ -284,7 +305,8 @@
 
                     @if($wordStats['guessDistribution'])
                         <div class="mt-5 pt-4 border-t border-gray-700">
-                            <h4 class="text-sm font-bold text-gray-300 mb-3 uppercase tracking-wide">Guess Distribution</h4>
+                            <h4 class="text-sm font-bold text-gray-300 mb-3 uppercase tracking-wide">Guess
+                                Distribution</h4>
                             <div class="space-y-2">
                                 @php
                                     $maxCount = max($wordStats['guessDistribution'] ?: [0]);
@@ -321,16 +343,17 @@
                     <div class="bg-gray-900 rounded-xl border-2 border-gray-700 p-6 shadow-lg">
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="text-lg font-bold text-white">Your Stats</h3>
-                            <a href="{{ route('ohiowordle.stats') }}" class="text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors">
-                                View All →
-                            </a>
+                            {{--                            <a href="{{ route('ohiowordle.stats') }}" class="text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors">--}}
+                            {{--                                View All →--}}
+                            {{--                            </a>--}}
                         </div>
-                        <livewire:ohio-wordle-user-stats />
+                        <livewire:ohio-wordle-user-stats/>
                     </div>
                 @else
                     <div class="bg-gray-900 rounded-xl border-2 border-gray-700 p-6 shadow-lg">
                         <h3 class="text-lg font-bold text-white mb-4">Track Your Progress</h3>
-                        <p class="text-gray-400 mb-4">Create a free account to save your stats, track streaks, and earn achievements.</p>
+                        <p class="text-gray-400 mb-4">Create a free account to save your stats, track streaks, and earn
+                            achievements.</p>
                         <div class="flex flex-col sm:flex-row gap-3">
                             <a href="{{ route('register') }}" class="flex-1">
                                 <x-primary-button class="w-full justify-center">Create Free Account</x-primary-button>
@@ -383,7 +406,8 @@
                 navigator.share({
                     title: 'Wordio',
                     text: shareText,
-                }).catch(() => {});
+                }).catch(() => {
+                });
             }
         }
 
@@ -414,7 +438,7 @@
                 setTimeout(() => {
                     const answerCard = document.getElementById('answer-card');
                     if (answerCard) {
-                        answerCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        answerCard.scrollIntoView({behavior: 'smooth', block: 'center'});
                     }
                 }, 100);
             });

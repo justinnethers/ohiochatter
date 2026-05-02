@@ -9,6 +9,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReplyController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ThreadController;
+use App\Http\Controllers\UploadImageController;
 use App\Modules\Messages\Http\Controllers\MessageController;
 use Illuminate\Support\Facades\Route;
 
@@ -32,17 +33,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('threads', [ThreadController::class, 'store']);
     Route::post('forums/{forum}/{thread}/replies', [ReplyController::class, 'store']);
 
-    Route::post('upload-image', function (Request $request) {
-        $upload = request()->file('image');
-        $path = $upload->store('images', 'public');
-
-        $response = [
-            'success' => true,
-            'url' => url('/storage') . '/' . $path
-        ];
-
-        return response()->json($response);
-    });
+    Route::post('upload-image', UploadImageController::class)->name('images.upload');
 });
 
 Route::get('dashboard', DashboardController::class)
@@ -65,11 +56,11 @@ Route::prefix('archive')->group(function () {
 
 Route::get('search', [SearchController::class, 'show'])->name('search.show');
 
-//Route::get('search', [\App\Http\Controllers\SearchController::class, 'index'])->name('search.index');
-//Route::post('search', [\App\Http\Controllers\SearchController::class, 'show'])->name('search.show');
-//Route::get('search?search={search}', [\App\Http\Controllers\SearchController::class, 'show'])->name('search.index');
+// Route::get('search', [\App\Http\Controllers\SearchController::class, 'index'])->name('search.index');
+// Route::post('search', [\App\Http\Controllers\SearchController::class, 'show'])->name('search.show');
+// Route::get('search?search={search}', [\App\Http\Controllers\SearchController::class, 'show'])->name('search.index');
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';
 
 Route::middleware('auth')->group(function () {
     Route::get('messages', [MessageController::class, 'index'])->name('messages.index');
@@ -82,27 +73,13 @@ Route::middleware('auth')->group(function () {
     Route::get('api/users/search', UserSearchController::class)->name('api.users.search');
 });
 
-
-Route::middleware('auth')->group(function () {
-    Route::post('upload-image', function (Request $request) {
-        $upload = request()->file('image');
-        $path = $upload->store('images', 'public');
-
-        $response = [
-            'success' => true,
-            'url' => url('/storage') . '/' . $path
-        ];
-
-        return response()->json($response);
-    });
-});
-
 Route::get('/privacy', function () {
     return view('privacy');
 })->name('privacy');
 
 Route::post('/dismiss-signup-modal', function () {
     session(['signup_modal_dismissed' => true]);
+
     return response()->json(['success' => true]);
 })->name('dismiss-signup-modal');
 
@@ -133,7 +110,7 @@ Route::get('forum/showthread.php', function () {
     // If we have a title slug from the old URL, use it directly
     // Otherwise, let the controller redirect to the canonical URL
     if ($titleSlug) {
-        return redirect('/archive/thread/' . $threadId . '-' . $titleSlug, 301);
+        return redirect('/archive/thread/'.$threadId.'-'.$titleSlug, 301);
     }
 
     return redirect()->route('archive.thread', $threadId, 301);

@@ -83,38 +83,7 @@ Route::post('/dismiss-signup-modal', function () {
     return response()->json(['success' => true]);
 })->name('dismiss-signup-modal');
 
-Route::get('forum/showthread.php', function () {
-    // Grab the entire query string after the "?"
-    // For example, if the URL is:
-    //    https://ohiochatter.com/forum/showthread.php?48553-2017-OC-Mock-NFL-Draft-Round-1
-    // then $queryString will be:
-    //    "48553-2017-OC-Mock-NFL-Draft-Round-1"
-    $queryString = request()->getQueryString();
-
-    // If no query string is present, just redirect to some default
-    if (empty($queryString)) {
-        return redirect('/archive', 301);
-    }
-
-    // Remove trailing = that PHP adds when query string has no value
-    $queryString = rtrim($queryString, '=');
-
-    // Split at the first dash to separate the thread ID from the rest
-    // parts[0] = 48553
-    // parts[1] = 2017-OC-Mock-NFL-Draft-Round-1
-    $parts = explode('-', $queryString, 2);
-
-    $threadId = $parts[0];
-    $titleSlug = $parts[1] ?? '';
-
-    // If we have a title slug from the old URL, use it directly
-    // Otherwise, let the controller redirect to the canonical URL
-    if ($titleSlug) {
-        return redirect('/archive/thread/'.$threadId.'-'.$titleSlug, 301);
-    }
-
-    return redirect()->route('archive.thread', $threadId, 301);
-});
+Route::get('forum/showthread.php', [ArchiveController::class, 'legacyShowThreadRedirect']);
 
 Route::permanentRedirect('/forum', '/forums');
 Route::permanentRedirect('/forum/{any}', '/forums/{any}')

@@ -7,13 +7,13 @@ use App\Models\VbThread;
 use App\Services\SeoService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class ArchiveController extends Controller
 {
     public function __construct(
         private SeoService $seoService
     ) {}
+
     /**
      * Forum IDs that are publicly accessible in the archive.
      * Forums not in this list require admin access.
@@ -70,7 +70,7 @@ class ArchiveController extends Controller
             $groupedForums[$key] = [
                 'name' => $group['name'],
                 'forums' => collect($group['forums'])
-                    ->map(fn($id) => $forums->get($id))
+                    ->map(fn ($id) => $forums->get($id))
                     ->filter(),
             ];
         }
@@ -89,7 +89,7 @@ class ArchiveController extends Controller
         $currentKey = $request->segment(3); // Get raw URL segment: /archive/forum/{this}
 
         if ($currentKey !== $canonicalKey) {
-            return redirect('/archive/forum/' . $canonicalKey, 301);
+            return redirect('/archive/forum/'.$canonicalKey, 301);
         }
 
         $threads = $forum->threads()->with(['creator.avatar'])->paginate(50);
@@ -107,7 +107,7 @@ class ArchiveController extends Controller
         $currentKey = $request->segment(3); // Get raw URL segment: /archive/thread/{this}
 
         if ($currentKey !== $canonicalKey) {
-            return redirect('/archive/thread/' . $canonicalKey, 301);
+            return redirect('/archive/thread/'.$canonicalKey, 301);
         }
 
         $thread->load('forum');
@@ -115,6 +115,34 @@ class ArchiveController extends Controller
         $seo = $this->seoService->forArchiveThread($thread, $posts->first());
 
         return view('archive/thread', compact('posts', 'thread', 'seo'));
+    }
+
+    /**
+     * Redirect legacy vBulletin showthread.php URLs to the canonical archive URL.
+     *
+     * Legacy URL example:
+     *   /forum/showthread.php?48553-2017-OC-Mock-NFL-Draft-Round-1
+     * The query string after "?" carries the thread id and slug joined by a dash.
+     */
+    public function legacyShowThreadRedirect(Request $request)
+    {
+        $queryString = $request->getQueryString();
+
+        if (empty($queryString)) {
+            return redirect('/archive', 301);
+        }
+
+        // Strip the trailing "=" PHP appends when the query string has no value.
+        $queryString = rtrim($queryString, '=');
+
+        // Split into thread id and (optional) slug at the first dash.
+        [$threadId, $titleSlug] = array_pad(explode('-', $queryString, 2), 2, '');
+
+        if ($titleSlug !== '') {
+            return redirect('/archive/thread/'.$threadId.'-'.$titleSlug, 301);
+        }
+
+        return redirect()->route('archive.thread', $threadId, 301);
     }
 
     /**

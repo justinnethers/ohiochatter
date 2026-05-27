@@ -24,6 +24,17 @@ class Thread extends Model implements Sitemapable
 
     protected $with = ['owner', 'forum', 'poll'];
 
+    /**
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'locked' => 'boolean',
+            'hidden' => 'boolean',
+        ];
+    }
+
     protected static function boot(): void
     {
         parent::boot();
@@ -76,9 +87,6 @@ class Thread extends Model implements Sitemapable
 
     /**
      * Determine if the thread has updates for the given user.
-     *
-     * @param User $user
-     * @return bool
      */
     public function hasUpdatesFor(User $user): bool
     {
@@ -104,22 +112,17 @@ class Thread extends Model implements Sitemapable
 
     /**
      * Get the URL path for the thread.
-     *
-     * @param string $extra
-     * @return string
      */
     public function path(string $extra = ''): string
     {
         return route('thread.show', [
-                'forum'  => $this->forum->slug,
-                'thread' => $this->slug,
-            ]) . $extra;
+            'forum' => $this->forum->slug,
+            'thread' => $this->slug,
+        ]).$extra;
     }
 
     /**
      * Get the number of replies for the thread.
-     *
-     * @return int
      */
     public function replyCount(): int
     {
@@ -130,9 +133,6 @@ class Thread extends Model implements Sitemapable
 
     /**
      * Add a reply to the thread.
-     *
-     * @param  array  $reply
-     * @return Model
      */
     public function addReply(array $reply): Model
     {
@@ -141,9 +141,6 @@ class Thread extends Model implements Sitemapable
 
     /**
      * Set the slug attribute for the thread.
-     *
-     * @param string $value
-     * @return void
      */
     public function setSlugAttribute(string $value): void
     {
@@ -159,18 +156,16 @@ class Thread extends Model implements Sitemapable
 
     /**
      * Get the array representation of the model for Laravel Scout indexing.
-     *
-     * @return array
      */
     public function toSearchableArray(): array
     {
         return [
             'title' => $this->title,
-            'body'  => $this->body,
+            'body' => $this->body,
         ];
     }
 
-    public function toSitemapTag(): string | array|\Spatie\Sitemap\Tags\Url
+    public function toSitemapTag(): string|array|\Spatie\Sitemap\Tags\Url
     {
         return Url::create(route('thread.show', ['thread' => $this, 'forum' => $this->forum]))
             ->setLastModificationDate(Carbon::create($this->updated_at))

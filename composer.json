@@ -19,6 +19,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/scout": "^10.10",
         "laravel/tinker": "^2.8",
+        "league/flysystem-aws-s3-v3": "^3.0",
         "livewire/livewire": "^3.5",
         "openai-php/laravel": "^0.18",
         "predis/predis": "^2.3",

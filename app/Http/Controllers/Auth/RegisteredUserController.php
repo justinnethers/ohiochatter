@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Modules\SpamProtection\Rules\NotSpammer;
 use App\Providers\RouteServiceProvider;
 use App\Services\VbulletinService;
 use Carbon\Carbon;
@@ -15,7 +16,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
-use App\Modules\SpamProtection\Rules\NotSpammer;
 
 class RegisteredUserController extends Controller
 {
@@ -27,8 +27,8 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'username' => ['required', 'string', 'max:255', 'unique:' . User::class],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:' . User::class, new NotSpammer()],
+            'username' => ['required', 'string', 'max:255', 'unique:'.User::class],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class, new NotSpammer],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
@@ -42,7 +42,7 @@ class RegisteredUserController extends Controller
         if (Schema::hasTable('vb_users')) {
             // Check if username AND email match an existing VB account
             $vbUser = VbulletinService::getUserWithUsernameAndEmail($request->username, $request->email);
-//        dd($vbUser);
+            //        dd($vbUser);
             // If username and email are associated with an existing vb account
             if ($vbUser->count()) {
                 // Transfer VB user information
@@ -63,7 +63,7 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        Auth::login($user);
+        Auth::login($user, remember: true);
 
         return redirect(RouteServiceProvider::HOME);
     }

@@ -20,6 +20,7 @@ test('new users can register', function () {
     ]);
 
     $this->assertAuthenticated();
+    $response->assertCookie(\Illuminate\Support\Facades\Auth::guard()->getRecallerName());
     $response->assertRedirect(RouteServiceProvider::HOME);
 });
 

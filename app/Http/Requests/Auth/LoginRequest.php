@@ -36,20 +36,23 @@ class LoginRequest extends FormRequest
     /**
      * Attempt to authenticate the request's credentials.
      *
+     * Users are always remembered so that logins survive session loss
+     * (e.g. ephemeral storage being recycled on deploy).
+     *
      * @throws \Illuminate\Validation\ValidationException
      */
     public function authenticate(): void
     {
         $this->ensureIsNotRateLimited();
 
-        if (!Auth::attempt($this->only('username', 'password'), $this->boolean('remember'))) {
+        if (! Auth::attempt($this->only('username', 'password'), remember: true)) {
 
             $vbUser = VbulletinService::getUserWithLogin($this->username);
 
             if ($vbUser) {
                 $password = $this->password;
                 $salt = $vbUser[0]->salt;
-                $hashedPassword = md5(md5($password) . $salt);
+                $hashedPassword = md5(md5($password).$salt);
 
                 if ($hashedPassword == $vbUser[0]->password) {
                     // create new user from vbulletin and log them in
@@ -78,7 +81,7 @@ class LoginRequest extends FormRequest
      */
     public function ensureIsNotRateLimited(): void
     {
-        if (!RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
+        if (! RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
             return;
         }
 
@@ -99,6 +102,6 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->input('email')) . '|' . $this->ip());
+        return Str::transliterate(Str::lower($this->input('email')).'|'.$this->ip());
     }
 }

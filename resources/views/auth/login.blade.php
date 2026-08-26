@@ -33,15 +33,6 @@
                             <x-input-error :messages="$errors->get('password')" class="mt-2" />
                         </div>
 
-                        <!-- Remember Me -->
-                        <div>
-                            <label for="remember_me" class="inline-flex items-center text-steel-200 cursor-pointer">
-                                <input id="remember_me" type="checkbox" name="remember"
-                                    class="rounded border-steel-600 bg-steel-800 text-accent-500 focus:ring-2 focus:ring-accent-500/20 focus:ring-offset-steel-900">
-                                <span class="ml-3 font-medium">{{ __('Remember me') }}</span>
-                            </label>
-                        </div>
-
                         <div class="flex items-center justify-between">
                             @if (Route::has('password.request'))
                                 <a class="text-sm text-accent-400 hover:text-accent-300 transition-colors"

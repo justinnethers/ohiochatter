@@ -57,10 +57,16 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('head')
 
-    {{-- AdSense script for manual ad units only (no auto ads) --}}
-    <script async
-            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
-            crossorigin="anonymous"></script>
+    {{-- Guests get Auto ads (anchor, vignette, etc. per AdSense dashboard); members get manual units only --}}
+    @guest
+        <script async
+                src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4406607721782655"
+                crossorigin="anonymous"></script>
+    @else
+        <script async
+                src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+                crossorigin="anonymous"></script>
+    @endguest
 
     {{-- Add this to app.blade.php's <head> section --}}
     <script>

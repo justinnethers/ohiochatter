@@ -100,9 +100,6 @@
         <!-- Ad Section -->
         <article>
             <div class="p-4 bg-steel-800/50 rounded-xl border border-steel-700/30">
-                <script async
-                        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4406607721782655"
-                        crossorigin="anonymous"></script>
                 <ins class="adsbygoogle"
                      style="display:block"
                      data-ad-client="ca-pub-4406607721782655"

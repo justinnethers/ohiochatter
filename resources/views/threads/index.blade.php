@@ -34,9 +34,6 @@
                     @if (($loop->index + 1) % $check === 0)
                         <article
                             class="bg-gradient-to-br from-steel-800 to-steel-850 p-4 rounded-xl mb-3 md:mb-5 shadow-lg shadow-black/20 border border-steel-700/50">
-                            <script async
-                                    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4406607721782655"
-                                    crossorigin="anonymous"></script>
                             <!-- In-listing Ad -->
                             <ins class="adsbygoogle"
                                  style="display:block"
@@ -55,9 +52,6 @@
             {{ $threads->links('pagination::tailwind', ['top' => false]) }}
 
             <br>
-            <script async
-                    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4406607721782655"
-                    crossorigin="anonymous"></script>
             <ins class="adsbygoogle"
                  style="display:block"
                  data-ad-format="autorelaxed"

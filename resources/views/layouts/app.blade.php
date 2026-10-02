@@ -57,14 +57,10 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('head')
 
-    {{-- Guests get Auto ads (anchor, vignette, etc. per AdSense dashboard); members get manual units only --}}
+    {{-- All AdSense (Auto ads and manual units) is guests-only; members get an ad-free site --}}
     @guest
         <script async
                 src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4406607721782655"
-                crossorigin="anonymous"></script>
-    @else
-        <script async
-                src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
                 crossorigin="anonymous"></script>
     @endguest
 

@@ -17,6 +17,7 @@
                 ['title' => $forum->title],
             ]"/>
 
+            @guest
             <div class="bg-steel-800/50 p-3 rounded-xl mb-4 shadow-lg shadow-black/20 border border-steel-700/30">
                 <ins class="adsbygoogle"
                      style="display:block"
@@ -28,6 +29,7 @@
                     (adsbygoogle = window.adsbygoogle || []).push({});
                 </script>
             </div>
+            @endguest
 
             <section>
                 @php
@@ -79,6 +81,7 @@
 
                     {{-- In-content ad every 5 threads --}}
                     @if(($index + 1) % $adFrequency === 0 && $index < count($threads) - 1)
+                        @guest
                         <div class="bg-steel-800/50 p-3 rounded-xl mb-3 md:mb-5 shadow-lg shadow-black/20 border border-steel-700/30">
                             <ins class="adsbygoogle"
                                  style="display:block"
@@ -90,6 +93,7 @@
                                 (adsbygoogle = window.adsbygoogle || []).push({});
                             </script>
                         </div>
+                        @endguest
                     @endif
                 @endforeach
             </section>

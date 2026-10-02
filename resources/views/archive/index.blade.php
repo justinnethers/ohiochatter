@@ -14,6 +14,7 @@
                 ['title' => 'Archive'],
             ]"/>
 
+            @guest
             <div class="bg-steel-800/50 p-3 rounded-xl mb-4 shadow-lg shadow-black/20 border border-steel-700/30">
                 <ins class="adsbygoogle"
                      style="display:block"
@@ -25,6 +26,7 @@
                     (adsbygoogle = window.adsbygoogle || []).push({});
                 </script>
             </div>
+            @endguest
 
             @foreach($groupedForums as $group)
                 <h3 class="text-xl font-semibold text-steel-200 mb-3 mt-6 first:mt-0 flex items-center gap-2">

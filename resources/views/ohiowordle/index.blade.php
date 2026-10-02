@@ -82,6 +82,7 @@
                     </div>
                 </div>
 
+                @guest
                 <!-- Sidebar Ad -->
                 <div class="pt-4 border-t border-steel-700/30">
                     <ins class="adsbygoogle"
@@ -94,9 +95,11 @@
                         (adsbygoogle = window.adsbygoogle || []).push({});
                     </script>
                 </div>
+                @endguest
             </aside>
         </div>
 
+        @guest
         <!-- Ad Section -->
         <article>
             <div class="p-4 bg-steel-800/50 rounded-xl border border-steel-700/30">
@@ -111,5 +114,6 @@
                 </script>
             </div>
         </article>
+        @endguest
     </div>
 </x-app-layout>

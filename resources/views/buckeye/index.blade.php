@@ -110,6 +110,7 @@
             </article>
         </div>
 
+        @guest
         <!-- Ad Section -->
         <article>
             <div class="p-4 bg-steel-800/50 rounded-xl border border-steel-700/30">
@@ -124,5 +125,6 @@
                 </script>
             </div>
         </article>
+        @endguest
     </div>
 </x-app-layout>

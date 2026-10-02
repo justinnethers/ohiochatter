@@ -6,6 +6,7 @@
         <x-home.welcome />
 
         {{-- Mobile Ad - Small ad after search, mobile only --}}
+        @guest
         <div class="block lg:hidden mt-4">
             <ins class="adsbygoogle"
                  style="display:block"
@@ -17,6 +18,7 @@
                 (adsbygoogle = window.adsbygoogle || []).push({});
             </script>
         </div>
+        @endguest
 
         {{-- Main Content Grid --}}
         <div class="flex flex-col lg:grid lg:grid-cols-3 gap-6 mt-6 relative z-0">
@@ -73,6 +75,7 @@
                 </div>
 
                 {{-- Sidebar Ad --}}
+                @guest
                 <div class="bg-steel-800/50 p-3 rounded-xl shadow-lg shadow-black/20 border border-steel-700/30">
                     <ins class="adsbygoogle"
                          style="display:block"
@@ -84,6 +87,7 @@
                         (adsbygoogle = window.adsbygoogle || []).push({});
                     </script>
                 </div>
+                @endguest
 
                 {{-- Active Pick 'Em --}}
                 <livewire:active-pickem />

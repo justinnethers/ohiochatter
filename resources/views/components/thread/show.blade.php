@@ -35,6 +35,7 @@
             <livewire:post-component :$post :first-post-on-page="$firstPostOnPage"/>
 
             @if (($loop->index + 1) % $adFrequency === 0 && !$loop->last)
+                @guest
                 <div
                     class="bg-gradient-to-br from-steel-800 to-steel-850 p-4 rounded-xl mb-5 shadow-lg shadow-black/20 border border-steel-700/50">
                     <!-- In-thread Ad -->
@@ -48,6 +49,7 @@
                         (adsbygoogle = window.adsbygoogle || []).push({});
                     </script>
                 </div>
+                @endguest
                 @php $adCount++ @endphp
             @endif
         @endforeach

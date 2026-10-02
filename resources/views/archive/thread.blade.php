@@ -18,6 +18,7 @@
                 ['title' => $thread->title],
             ]"/>
 
+            @guest
             <div class="bg-steel-800/50 p-3 rounded-xl mb-4 shadow-lg shadow-black/20 border border-steel-700/30">
                 <ins class="adsbygoogle"
                      style="display:block"
@@ -29,6 +30,7 @@
                     (adsbygoogle = window.adsbygoogle || []).push({});
                 </script>
             </div>
+            @endguest
 
             @php
                 $adSlots = ['2001567130', '2900286656', '2521012709', '5660018222', '7961041643'];
@@ -61,6 +63,7 @@
 
                 {{-- In-content ad every 5 posts --}}
                 @if(($index + 1) % $adFrequency === 0 && $index < count($posts) - 1)
+                    @guest
                     <div class="bg-steel-800/50 p-3 rounded-xl mb-4 shadow-lg shadow-black/20 border border-steel-700/30">
                         <ins class="adsbygoogle"
                              style="display:block"
@@ -72,6 +75,7 @@
                             (adsbygoogle = window.adsbygoogle || []).push({});
                         </script>
                     </div>
+                    @endguest
                 @endif
             @endforeach
         </div>

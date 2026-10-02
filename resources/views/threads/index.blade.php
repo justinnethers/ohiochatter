@@ -32,6 +32,7 @@
                 @foreach ($threads as $thread)
                     <x-thread.listing :$thread/>
                     @if (($loop->index + 1) % $check === 0)
+                        @guest
                         <article
                             class="bg-gradient-to-br from-steel-800 to-steel-850 p-4 rounded-xl mb-3 md:mb-5 shadow-lg shadow-black/20 border border-steel-700/50">
                             <!-- In-listing Ad -->
@@ -45,12 +46,14 @@
                                 (adsbygoogle = window.adsbygoogle || []).push({});
                             </script>
                         </article>
+                        @endguest
                         @php $count++ @endphp
                     @endif
                 @endforeach
             </section>
             {{ $threads->links('pagination::tailwind', ['top' => false]) }}
 
+            @guest
             <br>
             <ins class="adsbygoogle"
                  style="display:block"
@@ -60,6 +63,7 @@
             <script>
                 (adsbygoogle = window.adsbygoogle || []).push({});
             </script>
+            @endguest
         </div>
     </div>
 </x-app-layout>

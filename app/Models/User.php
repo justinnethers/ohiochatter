@@ -8,6 +8,7 @@ use App\Modules\BuckEYE\Models\UserGameStats;
 use App\Modules\OhioWordle\Models\WordleUserProgress;
 use App\Modules\OhioWordle\Models\WordleUserStats;
 use App\Notifications\VerifyEmailNotification;
+use App\Services\AvatarUrl;
 use Cmgmyr\Messenger\Traits\Messagable;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
@@ -76,8 +77,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
     public function getAvatarPathAttribute($avatar): string
     {
         if ($avatar) {
-            // Use a configurable base URL for flexibility.
-            return rtrim(config('app.avatar_base_url', config('app.url')), '/').'/'.ltrim($avatar, '/');
+            return AvatarUrl::fromPath($avatar);
         }
 
         return asset('images/avatars/default.png');

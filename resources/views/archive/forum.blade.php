@@ -48,7 +48,7 @@
                             <div class="flex items-center space-x-2 py-2 px-3">
                                 @if ($thread->creator && $thread->creator->avatar)
                                     <img class="rounded-full h-6 w-6 object-cover ring-2 ring-steel-700"
-                                         src="/storage/avatars/archive/{{ $thread->creator->avatar->filename }}"
+                                         src="{{ $thread->creator->avatar->url }}"
                                          alt="{{ $thread->creator->username }}'s avatar"/>
                                 @else
                                     <div class="rounded-full h-6 w-6 bg-steel-700 flex items-center justify-center ring-2 ring-steel-600">

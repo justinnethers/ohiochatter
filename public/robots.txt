@@ -1,4 +1,33 @@
+# Crawlers intentionally allowed (they fall under the "*" group below):
+#   Googlebot, Bingbot, Applebot, DuckDuckBot (search engines)
+#   Mediapartners-Google and AdsBot-Google (REQUIRED for AdSense - never block)
+#   facebookexternalhit (link previews)
+#   OAI-SearchBot, ChatGPT-User, Claude-SearchBot, Claude-User, PerplexityBot (AI search / user-initiated fetches)
+# They are deliberately not named: a crawler matching a named group ignores "*",
+# which would drop the /index.php/ rule below.
+
+# AI-training and SEO/scraper crawlers
+User-agent: meta-externalagent
+User-agent: GPTBot
+User-agent: CCBot
+User-agent: Bytespider
+User-agent: ClaudeBot
+User-agent: Amazonbot
+User-agent: Applebot-Extended
+User-agent: Google-Extended
+User-agent: Diffbot
+User-agent: ImagesiftBot
+User-agent: Timpibot
+User-agent: SemrushBot
+User-agent: AhrefsBot
+User-agent: MJ12bot
+User-agent: DotBot
+User-agent: DataForSeoBot
+User-agent: Barkrowler
+User-agent: PetalBot
+Disallow: /
+
 User-agent: *
-Disallow:
+Disallow: /index.php/
 
 Sitemap: https://ohiochatter.com/sitemap.xml

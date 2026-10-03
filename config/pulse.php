@@ -138,7 +138,7 @@ return [
 
     'recorders' => [
         Recorders\CacheInteractions::class => [
-            'enabled' => env('PULSE_CACHE_INTERACTIONS_ENABLED', true),
+            'enabled' => env('PULSE_CACHE_INTERACTIONS_ENABLED', false),
             'sample_rate' => env('PULSE_CACHE_INTERACTIONS_SAMPLE_RATE', 1),
             'ignore' => [
                 ...Pulse::defaultVendorCacheKeys(),

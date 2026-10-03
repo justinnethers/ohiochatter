@@ -14,7 +14,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command(ProcessThreadsForSeo::class)->everyFiveMinutes();
+        $schedule->command(ProcessThreadsForSeo::class)
+            ->dailyAt('03:00')
+            ->timezone('America/New_York')
+            ->when(fn (): bool => (bool) config('services.openai.seo_meta_generation_enabled'));
 
         $schedule->command(CreateDailyPuzzle::class)
             ->dailyAt('00:00')
@@ -28,7 +31,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands(): void
     {
-        $this->load(__DIR__ . '/Commands');
+        $this->load(__DIR__.'/Commands');
 
         require base_path('routes/console.php');
     }

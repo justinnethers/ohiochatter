@@ -59,6 +59,8 @@ return [
 
     'avatar_base_url' => env('AVATAR_BASE_URL', env('APP_URL', 'http://localhost')),
 
+    'archive_avatar_path' => env('ARCHIVE_AVATAR_PATH', 'storage/avatars/archive'),
+
     'asset_url' => env('ASSET_URL'),
 
     /*

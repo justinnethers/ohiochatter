@@ -20,12 +20,12 @@ class ProcessThreadsForSeo extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Generate SEO meta tags via OpenAI for threads flagged with regenerate_meta';
 
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         // get the 10 latest threads with regenerate_meta = true
         $threadsToProcess = Thread::latest()

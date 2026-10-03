@@ -33,7 +33,7 @@
 
     @if($archiveAvatarFilename)
         <img class="rounded-full h-24 w-24 object-cover ring-4 ring-steel-700 shadow-lg"
-             src="/storage/avatars/archive/{{ $archiveAvatarFilename }}"
+             src="{{ \App\Models\VbCustomAvatar::urlForFilename($archiveAvatarFilename) }}"
              alt="{{ $displayUsername }}'s avatar" />
     @elseif($displayAvatarPath)
         <x-avatar :avatar-path="$displayAvatarPath" class="ring-4 ring-steel-700 shadow-lg" />
@@ -64,7 +64,7 @@
 <section class="md:hidden flex items-center p-4 space-x-4 text-white border-b border-steel-700/30">
     @if($archiveAvatarFilename)
         <img class="rounded-full h-12 w-12 object-cover ring-2 ring-steel-700"
-             src="/storage/avatars/archive/{{ $archiveAvatarFilename }}"
+             src="{{ \App\Models\VbCustomAvatar::urlForFilename($archiveAvatarFilename) }}"
              alt="{{ $displayUsername }}'s avatar" />
     @elseif($displayAvatarPath)
         <x-avatar size="16" :avatar-path="$displayAvatarPath" class="ring-2 ring-steel-600 shadow-lg" />

@@ -32,12 +32,13 @@ return [
     ],
 
     'giphy' => [
-        'key' => env('GIPHY_API_KEY', '')
+        'key' => env('GIPHY_API_KEY', ''),
     ],
 
     'openai' => [
         'enabled' => env('OPENAI_ENABLED', false),
         'cache_time' => env('OPENAI_CACHE_TIME', 604800),
+        'seo_meta_generation_enabled' => env('SEO_META_GENERATION_ENABLED', false),
     ],
 
 ];

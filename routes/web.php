@@ -5,13 +5,20 @@ use App\Http\Controllers\ArchiveController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ForumController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LegacyStorageRedirectController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReplyController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ThreadController;
 use App\Http\Controllers\UploadImageController;
+use App\Http\Middleware\EncryptCookies;
+use App\Http\Middleware\TrackUserActivity;
+use App\Http\Middleware\VerifyCsrfToken;
 use App\Modules\Messages\Http\Controllers\MessageController;
+use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Route;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 Route::get('/', HomeController::class)->name('home');
 
@@ -55,6 +62,18 @@ Route::prefix('archive')->group(function () {
 });
 
 Route::get('search', [SearchController::class, 'show'])->name('search.show');
+
+Route::get('storage/{path}', LegacyStorageRedirectController::class)
+    ->where('path', '.*')
+    ->withoutMiddleware([
+        EncryptCookies::class,
+        AddQueuedCookiesToResponse::class,
+        StartSession::class,
+        ShareErrorsFromSession::class,
+        VerifyCsrfToken::class,
+        TrackUserActivity::class,
+    ])
+    ->name('legacy-storage.redirect');
 
 // Route::get('search', [\App\Http\Controllers\SearchController::class, 'index'])->name('search.index');
 // Route::post('search', [\App\Http\Controllers\SearchController::class, 'show'])->name('search.show');

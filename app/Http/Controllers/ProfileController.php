@@ -6,6 +6,7 @@ use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\Content;
 use App\Models\Neg;
 use App\Models\Rep;
+use App\Models\Reply;
 use App\Models\Thread;
 use App\Models\User;
 use App\Services\ReplyPaginationService;
@@ -57,10 +58,10 @@ class ProfileController extends Controller
 
         // Count total reps received on user's posts (cached for 5 minutes)
         $totalReps = Cache::remember("user:{$user->id}:total_reps", 300, function () use ($user) {
-            $replyReps = Rep::where('repped_type', 'App\Models\Reply')
+            $replyReps = Rep::where('repped_type', Reply::class)
                 ->whereIn('repped_id', $user->replies()->select('id'))
                 ->count();
-            $threadReps = Rep::where('repped_type', 'App\Models\Thread')
+            $threadReps = Rep::where('repped_type', Thread::class)
                 ->whereIn('repped_id', Thread::where('user_id', $user->id)->select('id'))
                 ->count();
 
@@ -69,10 +70,10 @@ class ProfileController extends Controller
 
         // Count total negs received on user's posts (cached for 5 minutes)
         $totalNegs = Cache::remember("user:{$user->id}:total_negs", 300, function () use ($user) {
-            $replyNegs = Neg::where('negged_type', 'App\Models\Reply')
+            $replyNegs = Neg::where('negged_type', Reply::class)
                 ->whereIn('negged_id', $user->replies()->select('id'))
                 ->count();
-            $threadNegs = Neg::where('negged_type', 'App\Models\Thread')
+            $threadNegs = Neg::where('negged_type', Thread::class)
                 ->whereIn('negged_id', Thread::where('user_id', $user->id)->select('id'))
                 ->count();
 

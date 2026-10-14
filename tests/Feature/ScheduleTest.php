@@ -48,3 +48,11 @@ test('daily wordle puzzle is still scheduled at midnight', function () {
     expect($event)->not->toBeNull();
     expect($event->expression)->toBe('0 0 * * *');
 });
+
+test('sitemaps are regenerated daily at 4am Eastern', function () {
+    $event = scheduledEventFor('app:generate-sitemap');
+
+    expect($event)->not->toBeNull();
+    expect($event->expression)->toBe('0 4 * * *');
+    expect($event->timezone)->toBe('America/New_York');
+});

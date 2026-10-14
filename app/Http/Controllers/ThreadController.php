@@ -18,9 +18,7 @@ class ThreadController extends Controller
 {
     public function __construct(
         private SeoService $seoService
-    )
-    {
-    }
+    ) {}
 
     public function index()
     {
@@ -34,7 +32,7 @@ class ThreadController extends Controller
                     ->with(['owner', 'forum', 'poll'])
                     ->orderBy('last_activity_at', 'desc');
 
-                if (!$isAuthenticated) {
+                if (! $isAuthenticated) {
                     $query->whereHas('forum', function ($q) {
                         $q->where('name', '!=', 'Politics');
                     });
@@ -56,7 +54,7 @@ class ThreadController extends Controller
                 ->orderBy('last_activity_at', 'desc');
 
             // Exclude forum_id = 3 for unauthenticated users
-            if (!$isAuthenticated) {
+            if (! $isAuthenticated) {
                 $query->whereHas('forum', function ($q) {
                     $q->where('name', '!=', 'Politics');
                 });
@@ -91,7 +89,7 @@ class ThreadController extends Controller
     {
         return view('threads.create', [
             'forums' => Forum::where('is_active', true)->get(),
-            'forum' => $forum
+            'forum' => $forum,
         ]);
     }
 
@@ -108,18 +106,17 @@ class ThreadController extends Controller
     }
 
     public function show(
-        Request                $request,
-        Forum                  $forum,
-        Thread                 $thread,
-        FetchThreadDetails     $detailsFetcher,
+        Request $request,
+        Forum $forum,
+        Thread $thread,
+        FetchThreadDetails $detailsFetcher,
         HandleThreadNavigation $navigationHandler
-    )
-    {
+    ) {
         if ($forum->slug !== $thread->forum->slug) {
             return redirect($thread->path(), 301);
         }
 
-        if (!auth()->check() && ($forum->is_restricted || $forum->id == 3)) {
+        if (! auth()->check() && ($forum->is_restricted || $forum->id == 3)) {
             return redirect('login');
         }
 
@@ -130,7 +127,7 @@ class ThreadController extends Controller
         }
 
         $details = $detailsFetcher->execute($thread);
-        $seo = $this->seoService->forThread($thread);
+        $seo = $this->seoService->forThread($thread, $details['replies']->currentPage());
 
         return view('threads.show', array_merge($details, ['seo' => $seo]));
     }

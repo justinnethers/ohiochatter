@@ -1,47 +1,22 @@
 <?php
 
 use App\Actions\GenerateSitemap;
-use App\Models\Region;
-use App\Models\County;
 use App\Models\City;
+use App\Models\County;
+use App\Models\Region;
 use App\Models\VbForum;
 use App\Models\VbThread;
+use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
-    // Clean up any existing sitemap files
-    $files = [
-        'sitemap.xml',
-        'sitemap-main.xml',
-        'sitemap-locations.xml',
-        'sitemap-guides.xml',
-        'sitemap-archive.xml',
-    ];
-
-    foreach ($files as $file) {
-        $path = public_path($file);
-        if (file_exists($path)) {
-            unlink($path);
-        }
-    }
+    config(['filesystems.sitemap_disk' => 'sitemaps']);
+    Storage::fake('sitemaps');
 });
 
-afterEach(function () {
-    // Clean up sitemap files after tests
-    $files = [
-        'sitemap.xml',
-        'sitemap-main.xml',
-        'sitemap-locations.xml',
-        'sitemap-guides.xml',
-        'sitemap-archive.xml',
-    ];
-
-    foreach ($files as $file) {
-        $path = public_path($file);
-        if (file_exists($path)) {
-            unlink($path);
-        }
-    }
-});
+function sitemapContents(string $file): string
+{
+    return Storage::disk('sitemaps')->get("sitemaps/{$file}");
+}
 
 test('sitemap generation completes without errors', function () {
     // Create minimal test data
@@ -49,14 +24,16 @@ test('sitemap generation completes without errors', function () {
     $county = County::factory()->create(['region_id' => $region->id]);
     $city = City::factory()->create(['county_id' => $county->id]);
 
-    $action = new GenerateSitemap();
+    $action = new GenerateSitemap;
     $action();
 
-    expect(file_exists(public_path('sitemap.xml')))->toBeTrue();
-    expect(file_exists(public_path('sitemap-main.xml')))->toBeTrue();
-    expect(file_exists(public_path('sitemap-locations.xml')))->toBeTrue();
-    expect(file_exists(public_path('sitemap-guides.xml')))->toBeTrue();
-    expect(file_exists(public_path('sitemap-archive.xml')))->toBeTrue();
+    Storage::disk('sitemaps')->assertExists([
+        'sitemaps/sitemap.xml',
+        'sitemaps/sitemap-main.xml',
+        'sitemaps/sitemap-locations.xml',
+        'sitemaps/sitemap-guides.xml',
+        'sitemaps/sitemap-archive.xml',
+    ]);
 });
 
 test('sitemap handles null updated_at dates gracefully', function () {
@@ -76,14 +53,12 @@ test('sitemap handles null updated_at dates gracefully', function () {
         'updated_at' => null,
     ]);
 
-    $action = new GenerateSitemap();
+    $action = new GenerateSitemap;
 
     // Should not throw an exception
     $action();
 
-    expect(file_exists(public_path('sitemap-locations.xml')))->toBeTrue();
-
-    $content = file_get_contents(public_path('sitemap-locations.xml'));
+    $content = sitemapContents('sitemap-locations.xml');
     expect($content)->toContain($region->slug);
 });
 
@@ -99,14 +74,44 @@ test('archive sitemap uses SEO-friendly URLs with slugs', function () {
         'visible' => 1,
     ]);
 
-    $action = new GenerateSitemap();
+    $action = new GenerateSitemap;
     $action();
 
-    $content = file_get_contents(public_path('sitemap-archive.xml'));
+    $content = sitemapContents('sitemap-archive.xml');
 
     // Verify URLs contain slugs (ID-slug format)
     expect($content)->toContain("/archive/forum/{$forum->getRouteKey()}");
     expect($content)->toContain("/archive/thread/{$thread->getRouteKey()}");
+});
+
+test('sitemap index lists every section with absolute urls', function () {
+    (new GenerateSitemap)();
+
+    $index = sitemapContents('sitemap.xml');
+
+    foreach (['main', 'locations', 'guides', 'archive'] as $section) {
+        expect($index)->toContain(url("/sitemap-{$section}.xml"));
+    }
+});
+
+test('sitemap generation does not write into the public directory', function () {
+    (new GenerateSitemap)();
+
+    expect(file_exists(public_path('sitemap.xml')))->toBeFalse();
+});
+
+test('existing archive sitemap on the disk is reused instead of rebuilt', function () {
+    Storage::disk('sitemaps')->put('sitemaps/sitemap-archive.xml', '<urlset>cached</urlset>');
+
+    (new GenerateSitemap)();
+
+    expect(sitemapContents('sitemap-archive.xml'))->toBe('<urlset>cached</urlset>');
+});
+
+test('generate sitemap command writes the sitemaps', function () {
+    $this->artisan('app:generate-sitemap')->assertSuccessful();
+
+    Storage::disk('sitemaps')->assertExists('sitemaps/sitemap.xml');
 });
 
 test('VbThread generates correct SEO slug', function () {
@@ -154,7 +159,7 @@ test('VbThread resolves from SEO-friendly route key', function () {
 
     $routeKey = $thread->getRouteKey();
 
-    $resolved = (new VbThread())->resolveRouteBinding($routeKey);
+    $resolved = (new VbThread)->resolveRouteBinding($routeKey);
 
     expect($resolved)->not->toBeNull();
     expect($resolved->threadid)->toBe($thread->threadid);
@@ -163,7 +168,7 @@ test('VbThread resolves from SEO-friendly route key', function () {
 test('VbThread resolves from bare ID for backwards compatibility', function () {
     $thread = VbThread::factory()->create();
 
-    $resolved = (new VbThread())->resolveRouteBinding((string) $thread->threadid);
+    $resolved = (new VbThread)->resolveRouteBinding((string) $thread->threadid);
 
     expect($resolved)->not->toBeNull();
     expect($resolved->threadid)->toBe($thread->threadid);

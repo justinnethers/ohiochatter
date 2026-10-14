@@ -28,6 +28,18 @@ return [
     |
     */
 
+    /*
+    |--------------------------------------------------------------------------
+    | Sitemap Disk
+    |--------------------------------------------------------------------------
+    |
+    | The disk the generated XML sitemaps are written to and served from.
+    | Falls back to the default disk when not set.
+    |
+    */
+
+    'sitemap_disk' => env('SITEMAP_DISK'),
+
     'disks' => [
 
         'local' => [

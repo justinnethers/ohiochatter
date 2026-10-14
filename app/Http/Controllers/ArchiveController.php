@@ -93,7 +93,7 @@ class ArchiveController extends Controller
         }
 
         $threads = $forum->threads()->with(['creator.avatar'])->paginate(50);
-        $seo = $this->seoService->forArchiveForum($forum);
+        $seo = $this->seoService->forArchiveForum($forum, $threads->currentPage());
 
         return view('archive/forum', compact('forum', 'threads', 'seo'));
     }
@@ -112,7 +112,7 @@ class ArchiveController extends Controller
 
         $thread->load('forum');
         $posts = $thread->posts()->with(['creator.avatar'])->orderBy('dateline')->paginate(25);
-        $seo = $this->seoService->forArchiveThread($thread, $posts->first());
+        $seo = $this->seoService->forArchiveThread($thread, $posts->first(), $posts->currentPage());
 
         return view('archive/thread', compact('posts', 'thread', 'seo'));
     }

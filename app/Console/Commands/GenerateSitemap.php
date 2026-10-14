@@ -18,13 +18,17 @@ class GenerateSitemap extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Generate the XML sitemaps on the sitemap disk';
 
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
         app(\App\Actions\GenerateSitemap::class)();
+
+        $this->info('Sitemaps generated.');
+
+        return self::SUCCESS;
     }
 }

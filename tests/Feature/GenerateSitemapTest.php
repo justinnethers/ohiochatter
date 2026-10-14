@@ -211,5 +211,5 @@ test('legacy showthread.php URL redirects to archive with slug', function () {
     $response = $this->get("/forum/showthread.php?{$thread->threadid}-Test-Thread-Title");
 
     $response->assertStatus(301);
-    $response->assertRedirect("/archive/thread/{$thread->threadid}-Test-Thread-Title");
+    $response->assertRedirect(route('archive.thread', $thread));
 });

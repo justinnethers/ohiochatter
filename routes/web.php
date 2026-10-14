@@ -9,6 +9,7 @@ use App\Http\Controllers\LegacyStorageRedirectController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReplyController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\ThreadController;
 use App\Http\Controllers\UploadImageController;
 use App\Http\Middleware\EncryptCookies;
@@ -74,6 +75,20 @@ Route::get('storage/{path}', LegacyStorageRedirectController::class)
         TrackUserActivity::class,
     ])
     ->name('legacy-storage.redirect');
+
+Route::withoutMiddleware([
+    EncryptCookies::class,
+    AddQueuedCookiesToResponse::class,
+    StartSession::class,
+    ShareErrorsFromSession::class,
+    VerifyCsrfToken::class,
+    TrackUserActivity::class,
+])->group(function () {
+    Route::get('sitemap.xml', [SitemapController::class, 'index'])->name('sitemap.index');
+    Route::get('sitemap-{section}.xml', [SitemapController::class, 'show'])
+        ->whereIn('section', SitemapController::SECTIONS)
+        ->name('sitemap.show');
+});
 
 // Route::get('search', [\App\Http\Controllers\SearchController::class, 'index'])->name('search.index');
 // Route::post('search', [\App\Http\Controllers\SearchController::class, 'show'])->name('search.show');

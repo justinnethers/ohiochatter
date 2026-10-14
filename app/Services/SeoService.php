@@ -10,7 +10,9 @@ use Illuminate\Support\Str;
 class SeoService
 {
     protected string $siteName = 'OhioChatter';
+
     protected string $defaultImage = '/images/og-default.jpg';
+
     protected string $siteUrl;
 
     public function __construct()
@@ -39,13 +41,26 @@ class SeoService
         );
     }
 
+    /**
+     * Paginated pages are distinct content, so each page is its own canonical URL.
+     */
+    protected function withPageParameter(string $url, int $page): string
+    {
+        return $page > 1 ? "{$url}?page={$page}" : $url;
+    }
+
+    protected function withPageSuffix(string $title, int $page): string
+    {
+        return $page > 1 ? "{$title} - Page {$page}" : $title;
+    }
+
     protected function absoluteUrl(string $path): string
     {
         if (str_starts_with($path, 'http')) {
             return $path;
         }
 
-        return rtrim($this->siteUrl, '/') . '/' . ltrim($path, '/');
+        return rtrim($this->siteUrl, '/').'/'.ltrim($path, '/');
     }
 
     /**
@@ -70,7 +85,7 @@ class SeoService
                     '@type' => 'SearchAction',
                     'target' => [
                         '@type' => 'EntryPoint',
-                        'urlTemplate' => $this->siteUrl . '/search?q={search_term_string}',
+                        'urlTemplate' => $this->siteUrl.'/search?q={search_term_string}',
                     ],
                     'query-input' => 'required name=search_term_string',
                 ],
@@ -93,23 +108,23 @@ class SeoService
                 [
                     '@type' => 'SiteNavigationElement',
                     'name' => 'Serious Business',
-                    'url' => $this->siteUrl . '/forum/serious-business',
+                    'url' => $this->siteUrl.'/forum/serious-business',
                 ],
                 [
                     '@type' => 'SiteNavigationElement',
                     'name' => 'Sports',
-                    'url' => $this->siteUrl . '/forum/sports',
+                    'url' => $this->siteUrl.'/forum/sports',
                 ],
                 [
                     '@type' => 'SiteNavigationElement',
                     'name' => 'Forum Archive',
                     'url' => route('archive.index'),
                 ],
-//                [
-//                    '@type' => 'SiteNavigationElement',
-//                    'name' => 'BuckEYE Game',
-//                    'url' => route('buckeye.index'),
-//                ],
+                //                [
+                //                    '@type' => 'SiteNavigationElement',
+                //                    'name' => 'BuckEYE Game',
+                //                    'url' => route('buckeye.index'),
+                //                ],
             ],
         ];
     }
@@ -127,11 +142,12 @@ class SeoService
     /**
      * Generate SEO data for a thread page
      */
-    public function forThread(Thread $thread): SeoData
+    public function forThread(Thread $thread, int $page = 1): SeoData
     {
-        $title = $thread->meta_title ?: $thread->title;
+        $title = $this->withPageSuffix($thread->meta_title ?: $thread->title, $page);
         $description = $thread->meta_description ?: Str::limit(strip_tags($thread->body), 160);
-        $canonical = route('thread.show', [$thread->forum, $thread]);
+        $threadUrl = route('thread.show', [$thread->forum, $thread]);
+        $canonical = $this->withPageParameter($threadUrl, $page);
 
         $breadcrumbs = [
             ['name' => 'Forums', 'url' => route('thread.index')],
@@ -150,7 +166,7 @@ class SeoService
             ogType: 'article',
             ogUrl: $canonical,
             breadcrumbs: $breadcrumbs,
-            jsonLd: $this->buildThreadSchema($thread, $canonical),
+            jsonLd: $this->buildThreadSchema($thread, $threadUrl),
         );
     }
 
@@ -379,7 +395,7 @@ class SeoService
      */
     public function forProfile(\App\Models\User $user): SeoData
     {
-        $description = "{$user->username}'s profile on OhioChatter. Member since " . $user->created_at->format('F Y') . ".";
+        $description = "{$user->username}'s profile on OhioChatter. Member since ".$user->created_at->format('F Y').'.';
 
         return new SeoData(
             title: "{$user->username}'s Profile",
@@ -452,19 +468,21 @@ class SeoService
     /**
      * Generate SEO data for an archived forum page
      */
-    public function forArchiveForum(\App\Models\VbForum $forum): SeoData
+    public function forArchiveForum(\App\Models\VbForum $forum, int $page = 1): SeoData
     {
         $description = $forum->description ?: "Browse archived threads from {$forum->title} on OhioChatter.";
+        $canonical = $this->withPageParameter(route('archive.forum', $forum), $page);
+        $title = $this->withPageSuffix($forum->title, $page).' - Forum Archive';
 
         return new SeoData(
-            title: "{$forum->title} - Forum Archive",
+            title: $title,
             description: $description,
-            canonical: route('archive.forum', $forum),
-            ogTitle: "{$forum->title} - Forum Archive",
+            canonical: $canonical,
+            ogTitle: $title,
             ogDescription: $description,
             ogImage: $this->absoluteUrl($this->defaultImage),
             ogType: 'website',
-            ogUrl: route('archive.forum', $forum),
+            ogUrl: $canonical,
             breadcrumbs: $this->buildBreadcrumbs([
                 ['name' => 'Archive', 'url' => route('archive.index')],
                 ['name' => $forum->title],
@@ -487,19 +505,20 @@ class SeoService
     /**
      * Generate SEO data for an archived thread page
      */
-    public function forArchiveThread(\App\Models\VbThread $thread, $firstPost): SeoData
+    public function forArchiveThread(\App\Models\VbThread $thread, $firstPost, int $page = 1): SeoData
     {
         $description = Str::limit(strip_tags($firstPost?->pagetext ?? ''), 160);
+        $canonical = $this->withPageParameter(route('archive.thread', $thread), $page);
 
         return new SeoData(
-            title: "{$thread->title} - Forum Archive",
+            title: $this->withPageSuffix($thread->title, $page).' - Forum Archive',
             description: $description,
-            canonical: route('archive.thread', $thread),
+            canonical: $canonical,
             ogTitle: $thread->title,
             ogDescription: $description,
             ogImage: $this->absoluteUrl($this->defaultImage),
             ogType: 'article',
-            ogUrl: route('archive.thread', $thread),
+            ogUrl: $canonical,
             breadcrumbs: $this->buildBreadcrumbs([
                 ['name' => 'Archive', 'url' => route('archive.index')],
                 ['name' => $thread->forum->title ?? 'Forum', 'url' => $thread->forum ? route('archive.forum', $thread->forum) : null],

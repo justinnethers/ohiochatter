@@ -10,13 +10,30 @@ use App\Models\Region;
 use App\Models\Thread;
 use App\Models\VbForum;
 use App\Models\VbThread;
+use Illuminate\Support\Facades\Storage;
 use Spatie\Sitemap\Sitemap;
 use Spatie\Sitemap\SitemapIndex;
 use Spatie\Sitemap\Tags\Url;
 
 class GenerateSitemap
 {
-    public function __invoke()
+    /**
+     * Sitemaps live on a storage disk rather than in public/, so deploys don't
+     * wipe them and every app instance serves the same files via SitemapController.
+     */
+    public const DIRECTORY = 'sitemaps';
+
+    public static function disk(): string
+    {
+        return config('filesystems.sitemap_disk') ?? config('filesystems.default');
+    }
+
+    public static function path(string $file): string
+    {
+        return self::DIRECTORY.'/'.$file;
+    }
+
+    public function __invoke(): void
     {
         $this->generateMainSitemap();
         $this->generateLocationsSitemap();
@@ -33,7 +50,7 @@ class GenerateSitemap
             ->add(Url::create('/forums/serious-business')->setPriority(0.5)->setChangeFrequency(Url::CHANGE_FREQUENCY_DAILY))
             ->add(Url::create('/forums/sports')->setPriority(0.5)->setChangeFrequency(Url::CHANGE_FREQUENCY_DAILY))
             ->add(Url::create('/forums/politics')->setPriority(0.5)->setChangeFrequency(Url::CHANGE_FREQUENCY_DAILY))
-            ->writeToFile(public_path('sitemap-main.xml'));
+            ->writeToDisk(self::disk(), self::path('sitemap-main.xml'));
     }
 
     private function generateLocationsSitemap(): void
@@ -80,7 +97,7 @@ class GenerateSitemap
             });
         });
 
-        $sitemap->writeToFile(public_path('sitemap-locations.xml'));
+        $sitemap->writeToDisk(self::disk(), self::path('sitemap-locations.xml'));
     }
 
     private function generateGuidesSitemap(): void
@@ -147,7 +164,7 @@ class GenerateSitemap
             });
         });
 
-        $sitemap->writeToFile(public_path('sitemap-guides.xml'));
+        $sitemap->writeToDisk(self::disk(), self::path('sitemap-guides.xml'));
     }
 
     private function addCategoryPagesForLocation(Sitemap $sitemap, string $basePath): void
@@ -164,7 +181,7 @@ class GenerateSitemap
     private function generateArchiveSitemap(): void
     {
         // Skip if archive sitemap already exists (it never changes)
-        if (file_exists(public_path('sitemap-archive.xml'))) {
+        if (Storage::disk(self::disk())->exists(self::path('sitemap-archive.xml'))) {
             return;
         }
 
@@ -199,7 +216,7 @@ class GenerateSitemap
                 );
             });
 
-        $sitemap->writeToFile(public_path('sitemap-archive.xml'));
+        $sitemap->writeToDisk(self::disk(), self::path('sitemap-archive.xml'));
     }
 
     private function generateSitemapIndex(): void
@@ -209,6 +226,6 @@ class GenerateSitemap
             ->add('/sitemap-locations.xml')
             ->add('/sitemap-guides.xml')
             ->add('/sitemap-archive.xml')
-            ->writeToFile(public_path('sitemap.xml'));
+            ->writeToDisk(self::disk(), self::path('sitemap.xml'));
     }
 }

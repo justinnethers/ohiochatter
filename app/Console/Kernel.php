@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Console\Commands\GenerateSitemap;
 use App\Console\Commands\ProcessThreadsForSeo;
 use App\Modules\OhioWordle\Commands\CreateDailyPuzzle;
 use Illuminate\Console\Scheduling\Schedule;
@@ -18,6 +19,11 @@ class Kernel extends ConsoleKernel
             ->dailyAt('03:00')
             ->timezone('America/New_York')
             ->when(fn (): bool => (bool) config('services.openai.seo_meta_generation_enabled'));
+
+        $schedule->command(GenerateSitemap::class)
+            ->dailyAt('04:00')
+            ->timezone('America/New_York')
+            ->withoutOverlapping();
 
         $schedule->command(CreateDailyPuzzle::class)
             ->dailyAt('00:00')

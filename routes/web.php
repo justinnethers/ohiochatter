@@ -6,6 +6,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ForumController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LegacyStorageRedirectController;
+use App\Http\Controllers\LegacyVbulletinRedirectController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReplyController;
 use App\Http\Controllers\SearchController;
@@ -117,7 +118,12 @@ Route::post('/dismiss-signup-modal', function () {
     return response()->json(['success' => true]);
 })->name('dismiss-signup-modal');
 
-Route::get('forum/showthread.php', [ArchiveController::class, 'legacyShowThreadRedirect']);
+Route::get('{legacyPath}', LegacyVbulletinRedirectController::class)
+    ->where('legacyPath', '(?:forum/)?(?:(?:showthread|showpost|forumdisplay|member)\.php(?:/.*)?|archive/index\.php(?:/.*)?)')
+    ->name('legacy-vbulletin.redirect');
+Route::get('vb-legacy/{legacyPath}', LegacyVbulletinRedirectController::class)
+    ->where('legacyPath', '(?:forum/)?(?:showthread|showpost|forumdisplay|member|archive/index)')
+    ->name('legacy-vbulletin.alias');
 
 Route::permanentRedirect('/forum', '/forums');
 Route::permanentRedirect('/forum/{any}', '/forums/{any}')

@@ -14,16 +14,6 @@ class ArchiveController extends Controller
         private SeoService $seoService
     ) {}
 
-    /**
-     * Forum IDs that are publicly accessible in the archive.
-     * Forums not in this list require admin access.
-     */
-    private const PUBLIC_FORUM_IDS = [
-        6, 12, 35, 36,      // Serious Business, Politics, Thread Bomber's Basement, Hall of Fame
-        8, 34, 10, 41,      // HS Sports: Football, Scores and Updates, Wrestling, The Rest
-        7, 32, 42, 15, 16,  // College and Pro Sports
-    ];
-
     public function index()
     {
         // Define forum groups
@@ -118,39 +108,11 @@ class ArchiveController extends Controller
     }
 
     /**
-     * Redirect legacy vBulletin showthread.php URLs to the canonical archive URL.
-     *
-     * Legacy URL example:
-     *   /forum/showthread.php?48553-2017-OC-Mock-NFL-Draft-Round-1
-     * The query string after "?" carries the thread id and slug joined by a dash.
-     */
-    public function legacyShowThreadRedirect(Request $request)
-    {
-        $queryString = $request->getQueryString();
-
-        if (empty($queryString)) {
-            return redirect('/archive', 301);
-        }
-
-        // Strip the trailing "=" PHP appends when the query string has no value.
-        $queryString = rtrim($queryString, '=');
-
-        // Split into thread id and (optional) slug at the first dash.
-        [$threadId, $titleSlug] = array_pad(explode('-', $queryString, 2), 2, '');
-
-        if ($titleSlug !== '') {
-            return redirect('/archive/thread/'.$threadId.'-'.$titleSlug, 301);
-        }
-
-        return redirect()->route('archive.thread', $threadId, 301);
-    }
-
-    /**
      * Abort with 404 if the forum is not public and the user is not an admin.
      */
     private function authorizeForumAccess(Request $request, int $forumId): void
     {
-        if (in_array($forumId, self::PUBLIC_FORUM_IDS)) {
+        if (VbForum::isPublicForumId($forumId)) {
             return;
         }
 
